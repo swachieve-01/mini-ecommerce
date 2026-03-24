@@ -1,184 +1,131 @@
 import React from "react";
 import styled from "@emotion/styled";
-import { OverlappingButton, SearchButton } from "../button/CommonButtons";
+import { Button } from "../button/CommonButtons"; // 통합 버튼 임포트
 
-const SearchContainer = styled.div`
-  position: relative;
-  width: 100%;
-  max-width: 500px;
-  height: 48px;
-
-`;
-
-const StyledSearchInput = styled.input`
-  width: 100%;
-  height: 100%;
-  padding: 0 50px 0 25px;
-  border: 1.5px solid ${({theme}) => theme.colors.primary};
-  box-shadow: 0 1px 0 0.5px rgba(0, 0, 0, 0.5) inset;
-  border-radius: ${({theme}) => theme.radius.pill};
+// 1. 모든 인풋의 공통 스타일 (이것만 고치면 전부 바뀜)
+const BaseInput = styled.input`
+  width: ${({ width }) => width || "100%"};
+  height: ${({ height }) => height || "48px"};
+  padding: ${({ padding }) => padding || "0 16px"};
+  border: 1px solid ${({ theme, borderColor }) => theme.colors[borderColor] || theme.colors.border};
+  border-radius: ${({ theme, radius }) => theme.radius[radius] || "0px"};
+  font-size: ${({ theme, fontSize }) => theme.fontSize[fontSize] || theme.fontSize.md};
   outline: none;
-  font-size: ${({theme}) => theme.fontSize.md};
+  box-sizing: border-box;
 
   &:focus {
-    border-color: ${({theme}) => theme.colors.primary};
+    border-color: ${({ theme }) => theme.colors.primary};
   }
 `;
 
-const SearchIcon = styled.span`
-  position: absolute;
-  right: -50px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 20px;
-  cursor: pointer;
-  color: ${({theme}) => theme.colors.primaryDark};
+// 레이아웃용 스타일
+const InputWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 `;
 
-export function SearchInput({ onChange, onClick }) {
-  return (
-    <div>
-      <p style={{ marginBottom: "8px", fontWeight: "bold" }}>검색창</p>
+const FlexRow = styled.div`
+  display: flex;
+  align-items: center;
+  width: 100%;
+`;
 
-      <SearchContainer>
-        <StyledSearchInput
+// ============================================================================
+
+// 1. 검색창 (SearchInput)
+// 검색창을 감싸는 컨테이너 (포지션 기준점)
+const SearchWrapper = styled.div`
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: ${({ width }) => width || "100%"};
+  max-width: 500px; 
+`;
+
+// 돋보기 아이콘 스타일 (인풋창 내부 오른쪽 고정)
+const SearchIconWrapper = styled.div`
+  position: absolute;
+  right: 20px; 
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  color: ${({ theme }) => theme.colors.primary};
+  font-size: 20px;
+  
+  &:hover {
+    opacity: 0.7;
+  }
+`;
+
+// 1. 검색창 (SearchInput) - 아이콘이 안으로 들어간 버전
+export function SearchInput({ onChange, onClick, width }) {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+      <p style={{ fontWeight: "bold" }}>검색창</p>
+      <SearchWrapper width={width}>
+        <BaseInput 
           placeholder="검색어를 입력하세요"
+          radius="pill"
+          borderColor="primary"
+          padding="0 50px 0 25px" // 오른쪽 패딩을 50px 줘서 글자가 아이콘과 겹치지 않게 함
           onChange={onChange}
         />
-        <SearchIcon onClick={onClick}>🔍</SearchIcon>
-      </SearchContainer>
+
+        <SearchIconWrapper onClick={onClick}>
+          🔍
+        </SearchIconWrapper>
+      </SearchWrapper>
     </div>
   );
 }
 
-const LoginContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${({theme}) => theme.spacing.xs};
-  box-sizing: border-box;
-`;
-const IdInput = styled.input`
-  width: 270px;
-
-  padding: 16px 8px;
-  border-radius: ${({theme}) => theme.radius.xxl};
-  border: 1px solid ${({theme}) => theme.colors.border};
-`;
-const PwInput = styled.input`
-  width: 270px;
-  height: 17px;
-  padding: 16px 8px;
-  border-radius: ${({theme}) => theme.radius.xxl};
-  border: 1px solid ${({theme}) => theme.colors.border};
-`;
+// 2. 로그인창 (LoginInput)
 export function LoginInput({ onIdChange, onPwChange }) {
   return (
-    <div>
-      <p>로그인</p>
-      <LoginContainer>
-        <IdInput
-          type="text"
-          placeholder="아이디 또는 전화번호"
-          onChange={onIdChange}
-        ></IdInput>
-        <PwInput
-          type="password"
-          placeholder="비밀번호 (8~12자, 영문+숫자+특수문자)"
-          onChange={onPwChange}
-        ></PwInput>
-      </LoginContainer>
-    </div>
+    <InputWrapper>
+      <p style={{ fontWeight: "bold" }}>로그인</p>
+      <BaseInput width="270px" radius="xxl" placeholder="아이디" onChange={onIdChange} />
+      <BaseInput width="270px" radius="xxl" type="password" placeholder="비밀번호" onChange={onPwChange} />
+    </InputWrapper>
   );
 }
 
-const SignUpContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 420px;
-`;
-
-const Singbox = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${({theme })=> theme.spacing.sm};
-  padding: 16px 8px;
-`;
-
-const SignUpBox = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  margin: 0;
-  width: 100%;
-`;
-
-const SingInput = styled.input`
-  width: 244px;
-  border: 1px solid ${({theme}) => theme.colors.border};
-  border-radius: ${({theme}) => theme.radius.xxl};
-  margin: 0;
-  padding: 24px 10px;
-  width: 100%;
-`;
-
+// 3. 회원가입 (SignUpInput)
 export function SignUpInput({ values = {}, onChange, onCheckId }) {
   return (
-    <SignUpContainer>
-      <p>회원가입</p>
-      <Singbox>
-        <SignUpBox>
-          <SingInput
-            type="email"
-            placeholder="예) example@email.com"
-            value={values.email || ""}
-            onChange={(e) => onChange("email", e.target.value)}
-          />
-          <OverlappingButton onClick={onCheckId} />
-        </SignUpBox>
-        <SingInput
-          type="password"
-          placeholder="비밀번호 (8~12자, 영문+숫자+특수문자)"
-          value={values.pw || ""}
-          onChange={(e) => onChange("pw", e.target.value)}
+    <InputWrapper style={{ width: "420px" }}>
+      <p style={{ fontWeight: "bold" }}>회원가입</p>
+      <FlexRow>
+        <BaseInput 
+          radius="xxl" 
+          placeholder="예) example@email.com" 
+          value={values.email}
+          onChange={(e) => onChange("email", e.target.value)} 
         />
-        <SingInput
-          type="password"
-          placeholder="비밀번호 확인"
-          value={values.pwConfirm || ""}
-          onChange={(e) => onChange("pwConfirm", e.target.value)}
-        />
-        <SingInput
-          placeholder="이름 입력"
-          value={values.name || ""}
-          onChange={(e) => onChange("name", e.target.value)}
-        />
-      </Singbox>
-    </SignUpContainer>
+        <Button width="101px" height="48px" radius="xxl" marginLeft="7px" onClick={onCheckId}>
+          중복검사
+        </Button>
+      </FlexRow>
+      <BaseInput radius="xxl" type="password" placeholder="비밀번호" onChange={(e) => onChange("pw", e.target.value)} />
+      <BaseInput radius="xxl" placeholder="이름 입력" onChange={(e) => onChange("name", e.target.value)} />
+    </InputWrapper>
   );
 }
 
-const CartContainer = styled.div`
-  display: flex;
-  max-width: 1440px;
-`;
-const StyledInput = styled.div`
-  border: 1px solid black;
-  width: 1013px;
-  height: 62px;
-`;
-
-//주문 조회
-export function CartInput({ value = "", onChange }) {
+// 4. 주문 조회 (CartInput)
+export function CartInput({ value = "", onChange, onClick }) {
   return (
-    <CartContainer>
-
-      <StyledInput
-        type="number"
-        placeholder="수량"
+    <FlexRow style={{ maxWidth: "1440px" }}>
+      <BaseInput 
+        height="62px" 
+        placeholder="조회할 주문 번호를 입력하세요" 
         value={value}
         onChange={(e) => onChange && onChange(e.target.value)}
       />
-      <SearchButton />
-    </CartContainer>
+      <Button width="173px" height="62px" radius="md" marginLeft="14px" fontSize="xxxl" onClick={onClick}>
+        조회
+      </Button>
+    </FlexRow>
   );
 }
