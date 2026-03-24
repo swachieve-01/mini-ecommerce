@@ -4,6 +4,13 @@ const theme = {
     padding: "0 20px",
   },
 
+  // 페이지 중앙 정렬
+  container: {
+    width: "100%",
+    maxWidth: "1440px",
+    margin: "0 auto",
+  },
+
   fontSize: {
     xs: "12px",
     sm: "14px",
@@ -20,6 +27,12 @@ const theme = {
     displayXxxl: "68px",
   },
 
+  fontWeight: {
+    regular: 400,
+    medium: 500,
+    semibold: 600,
+    bold: 700,
+  },
   colors: {
     primary: "#8FA77E",
     primaryDark: "#4F6A4E",
@@ -41,7 +54,7 @@ const theme = {
     navy: "#1D39C4",
     purple: "#722ED1",
 
-    /* ========================= 단색 ( 필요 시 사용 )========================= */
+    /* ========================= 테두리 & 경계선 or 텍스트 활용 ========================= */
     white: "#FFFFFF",
     black: "#000000",
     gray100: "#F5F5F5",
@@ -73,13 +86,33 @@ const theme = {
     xl: "10px",
     xxl: "12px",
     xxxl: "34px",
-
     pill: "999px",
   },
 
   spacing: {
-    section: "120px",
-    title: "70px",
+    xs: "4px",
+    sm: "8px",
+    md: "16px",
+    lg: "24px",
+    xl: "40px",
+    titleBlock: "70px", // 타이틀 위아래
+    section: "120px", // 섹션 ↔ 상품
+  },
+
+  transition: {
+    fast: "0.2s ease",
+    normal: "0.3s ease",
+  },
+
+  opacity: {
+    hover: 0.7,
+    disabled: 0.4,
+  },
+
+  // 웹에서 확임 필요함
+  scale: {
+    hover: 1.03,
+    active: 0.97,
   },
 
   media: {
