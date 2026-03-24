@@ -100,6 +100,7 @@ const StyledSearch = styled.button`
   width: 173px;
   height: 62px;
   border: none;
+ margin-left :14px ;
   background-color: ${({theme}) => theme.colors.primary};
   border-radius: ${({theme}) => theme.radius.md};
   cursor: pointer;
@@ -122,16 +123,16 @@ export function SearchButton({ onClick }) {
 const StyledOverlapping = styled.button`
   width: 101px;
   height: 48px;
-  margin-left: 10px;
-  border-radius: 12px;
+margin-left: 7px;
+  border-radius: ${({theme}) => theme.radius.xxl};
   border: none;
   background-color:${({theme}) => theme.colors.primary};
 
   cursor: pointer;
 `;
 const Overlapping = styled.span`
-  font-size: 16px;
-  font-weight: 500;
+  font-size: ${({theme}) => theme.fontSize.md};
+  font-weight: ${({theme}) => theme.fontWeight.medium};
   color: ${({theme}) => theme.colors.white};
 `;
 
@@ -145,7 +146,6 @@ export function OverlappingButton({ onClick }) {
 const StyledOder = styled.button`
   width: 100px;
   height: 32px;
-  margin-left: 10px;
   border: none;
   background-color:${({theme}) => theme.colors.primary};
 
@@ -166,14 +166,14 @@ export function OderButton({ onClick }) {
 const StyledKakao = styled.button`
   width: 176px;
   height: 44px;
-  margin-left: 10px;
+
   border: none;
   background-color: ${({theme}) => theme.colors.primary};
 
   cursor: pointer;
 `;
 const Kakao = styled.span`
-  font-size: 18px;
+  font-size: ${({theme}) => theme.fontSize.lg};
   font-weight: ${({theme}) => theme.fontWeight.regular};
   color: ${({theme}) => theme.colors.white};
 `;
@@ -188,7 +188,6 @@ export function KakaoButton({ onClick }) {
 const StyledInquiry = styled.button`
   width: 176px;
   height: 44px;
-  margin-left: 10px;
   border: none;
   background-color:${({theme}) => theme.colors.primary};
 
@@ -196,7 +195,7 @@ const StyledInquiry = styled.button`
   cursor: pointer;
 `;
 const Inquiry = styled.span`
-  font-size: 18px;
+  font-size: ${({theme}) => theme.fontSize.lg};
   font-weight: ${({theme}) => theme.fontWeight.regular};
   color: ${({theme}) => theme.colors.white};
 `;
@@ -212,17 +211,17 @@ export function InquiryButton({ onClick }) {
 const StyledReview = styled.button`
   width: 169px;
   height: 42px;
-  margin-left: 10px;
+
   border: none;
-  background-color: ${({theme}) => theme.colors.primary};
+  background-color: ${({theme}) => theme.colors.white};
 
 
   cursor: pointer;
 `;
 const Review = styled.span`
-  font-size: 14px;
+  font-size: ${({theme}) => theme.fontSize.sm};
   font-weight:${({theme}) => theme.fontWeight.regular};
-  color: ${({theme}) => theme.colors.white};
+  color: ${({theme}) => theme.colors.black};
 `;
 
 export function ReviewButton({ onClick }) {
@@ -236,7 +235,7 @@ export function ReviewButton({ onClick }) {
 const StyledCheck = styled.button`
   width: 100px;
   height: 32px;
-  margin-left: 10px;
+
   border: none;
   background-color: ${({theme}) => theme.colors.primary};
 
@@ -258,14 +257,14 @@ export function CheckButton({ onClick }) {
 const StyledCancell = styled.button`
   width: 100px;
   height: 32px;
-  margin-left: 10px;
+
   border: none;
-  background-color: rgba(234, 234, 234, 1);
+  background-color: ${({theme}) => theme.colors.gray200};
 
   cursor: pointer;
 `;
 const Cancell = styled.span`
-  color: black;
+  color: ${({theme}) => theme.colors.black};
 `;
 
 export function CancellButton({ onClick }) {
@@ -279,9 +278,9 @@ export function CancellButton({ onClick }) {
 const StyledViewProduct = styled.button`
   width: 280px;
   height: 48px;
-  margin-left: 10px;
+
   border: none;
-  border-radius: 2px;
+  border-radius: ${({theme}) => theme.radius.sm};
   background-color: ${({theme}) => theme.colors.primary};
  
   cursor: pointer;
@@ -294,11 +293,11 @@ const ViewProduct = styled.span`
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  gap: 10px;
+  gap: ${({theme}) => theme.spacing.sm};
 `;
 
 const ArrowIcon = styled.span`
-  color: white;
+  color: ${({theme}) => theme.colors.white};
 `;
 
 export function ViewProductButton() {
@@ -316,13 +315,13 @@ export function ViewProductButton() {
 const StyledDeleit = styled.button`
   width: 120px;
   height: 38px;
-  border: 1px solid #dcdcdc;
+  border: 1px solid ${({theme}) => theme.colors.borderFocus};
   background-color: ${({theme}) => theme.colors.white};
   cursor: pointer;
 `;
 const Deleit = styled.span`
-  color: black;
-  font-size: 18px;
+  color: ${({theme}) => theme.colors.black};
+  font-size: ${({theme}) => theme.fontSize.lg};
   font-weight: ${({theme}) => theme.fontWeight.regular};
 `;
 
@@ -342,9 +341,9 @@ const StyledAllCategories = styled.button`
   cursor: pointer;
 `;
 const AllCategories = styled.span`
-  font-size: 28px;
+  font-size: ${({theme}) => theme.fontSize.xxxl};
   font-weight: ${({theme}) => theme.fontWeight.regular};
-  color: white;
+  color: ${({theme})=> theme.colors.white};
 `;
 
 export function AllCategoriesButton({ onClick }) {
@@ -362,7 +361,7 @@ const StyledMakeUp = styled.button`
   cursor: pointer;
 `;
 const MakeUp = styled.span`
-  font-size: 28px;
+  font-size: ${({theme}) => theme.fontSize.xxxl};
   font-weight:${({theme}) => theme.fontWeight.regular};
 `;
 
@@ -381,7 +380,7 @@ const StyledCleanser = styled.button`
   cursor: pointer;
 `;
 const Cleanser = styled.span`
-  font-size: 28px;
+  font-size: ${({theme}) => theme.fontSize.xxxl};
   font-weight: ${({theme}) => theme.fontWeight.regular};
 `;
 
@@ -400,7 +399,7 @@ const StyledCare = styled.button`
   cursor: pointer;
 `;
 const Care = styled.span`
-  font-size: 28px;
+  font-size: ${({theme}) => theme.fontSize.xxxl};
   font-weight:${({theme}) => theme.fontWeight.regular};
 `;
 
@@ -419,7 +418,7 @@ const StyledPerfume = styled.button`
   cursor: pointer;
 `;
 const Perfume = styled.span`
-  font-size: 28px;
+  font-size:${({theme}) => theme.fontSize.xxxl};
   font-weight: ${({theme}) => theme.fontWeight.regular};
 `;
 
@@ -438,7 +437,7 @@ const StyledProps = styled.button`
   cursor: pointer;
 `;
 const Props = styled.span`
-  font-size: 28px;
+  font-size: ${({theme}) => theme.fontSize.xxxl};
   font-weight: ${({theme}) => theme.fontWeight.regular};
 `;
 
@@ -452,16 +451,16 @@ export function PropsButton({ onClick }) {
 
 const StyledGo = styled.div`
   width: 332px;
-  height: 60.87px;
-  border-radius: 16px;
+  height: 61px;
+  border-radius: ${({theme}) => theme.radius.xxl};
   background-color: ${({theme}) => theme.colors.white};
   cursor: pointer;
   text-align: center;
 `;
 
 const Go = styled.span`
-  font-size: 30px;
-  font-weight: 500;
+  font-size: ${({theme}) => theme.fontSize.displaySm};
+  font-weight: ${({theme})=> theme.fontWeight.medium};
 `;
 
 export function GoButton({ onClick }) {

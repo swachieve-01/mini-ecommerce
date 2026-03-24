@@ -7,21 +7,21 @@ const SearchContainer = styled.div`
   width: 100%;
   max-width: 500px;
   height: 48px;
-  margin-top: 10px;
+
 `;
 
 const StyledSearchInput = styled.input`
   width: 100%;
   height: 100%;
   padding: 0 50px 0 25px;
-  border: 1.5px solid #8fa77e;
+  border: 1.5px solid ${({theme}) => theme.colors.primary};
   box-shadow: 0 1px 0 0.5px rgba(0, 0, 0, 0.5) inset;
-  border-radius: 50px;
+  border-radius: ${({theme}) => theme.radius.pill};
   outline: none;
-  font-size: 16px;
+  font-size: ${({theme}) => theme.fontSize.md};
 
   &:focus {
-    border-color: #8fa77e;
+    border-color: ${({theme}) => theme.colors.primary};
   }
 `;
 
@@ -32,7 +32,7 @@ const SearchIcon = styled.span`
   transform: translateY(-50%);
   font-size: 20px;
   cursor: pointer;
-  color: #5a6a52;
+  color: ${({theme}) => theme.colors.primaryDark};
 `;
 
 export function SearchInput({ onChange, onClick }) {
@@ -54,23 +54,22 @@ export function SearchInput({ onChange, onClick }) {
 const LoginContainer = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  margin-top: 10px;
+  gap: ${({theme}) => theme.spacing.xs};
   box-sizing: border-box;
 `;
 const IdInput = styled.input`
   width: 270px;
 
   padding: 16px 8px;
-  border-radius: 12px;
-  border: 1px solid #e2e2e2;
+  border-radius: ${({theme}) => theme.radius.xxl};
+  border: 1px solid ${({theme}) => theme.colors.border};
 `;
 const PwInput = styled.input`
   width: 270px;
   height: 17px;
   padding: 16px 8px;
-  border-radius: 12px;
-  border: 1px solid #e2e2e2;
+  border-radius: ${({theme}) => theme.radius.xxl};
+  border: 1px solid ${({theme}) => theme.colors.border};
 `;
 export function LoginInput({ onIdChange, onPwChange }) {
   return (
@@ -101,14 +100,13 @@ const SignUpContainer = styled.div`
 const Singbox = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: ${({theme })=> theme.spacing.sm};
   padding: 16px 8px;
 `;
 
 const SignUpBox = styled.div`
   display: flex;
   flex-direction: row;
-
   align-items: center;
   margin: 0;
   width: 100%;
@@ -116,10 +114,10 @@ const SignUpBox = styled.div`
 
 const SingInput = styled.input`
   width: 244px;
-  border: 1px solid #e2e2e2;
-  border-radius: 12px;
+  border: 1px solid ${({theme}) => theme.colors.border};
+  border-radius: ${({theme}) => theme.radius.xxl};
   margin: 0;
-  padding: 24px 0;
+  padding: 24px 10px;
   width: 100%;
 `;
 
@@ -161,7 +159,6 @@ export function SignUpInput({ values = {}, onChange, onCheckId }) {
 
 const CartContainer = styled.div`
   display: flex;
-
   max-width: 1440px;
 `;
 const StyledInput = styled.div`
@@ -170,10 +167,11 @@ const StyledInput = styled.div`
   height: 62px;
 `;
 
+//주문 조회
 export function CartInput({ value = "", onChange }) {
   return (
     <CartContainer>
-      <p>주문 조회</p>
+
       <StyledInput
         type="number"
         placeholder="수량"
