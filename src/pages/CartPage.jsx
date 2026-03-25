@@ -3,10 +3,10 @@ import styled from "@emotion/styled";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { useNavigate } from "react-router-dom";
-import useCartStore from "../Store/useCartStore";
+import { useCartStore } from "../stores/useCartStore";
 
+import { Button } from "../components/ui/Button";
 
-import { Button } from "../button/CommonButtons";
 const CartPageContainer = styled.div`
   width: 100%;
   max-width: 1440px;
@@ -91,7 +91,7 @@ const StyleCheckText = styled.label`
   display: inline-block;
   width: 90px;
   font-size: ${({ theme }) => theme.fontSize.lg};
-  font-weight: ${({theme}) => theme.fontWeight.medium};
+  font-weight: ${({ theme }) => theme.fontWeight.medium};
 `;
 
 const DelBox = styled.div`
@@ -114,13 +114,13 @@ const CartBox = styled.div`
 
 const CartMainTitle = styled.h2`
   font-size: ${({ theme }) => theme.fontSize.displaySm};
-  font-weight:  ${({theme}) => theme.fontWeight.regular};
+  font-weight: ${({ theme }) => theme.fontWeight.regular};
   margin: 0;
 `;
 
 const CartMainMemo = styled.p`
   font-size: ${({ theme }) => theme.fontSize.sm};
-  font-weight:  ${({theme}) => theme.fontWeight.regular};
+  font-weight: ${({ theme }) => theme.fontWeight.regular};
   text-align: center;
   margin: 0;
   margin-top: 18px;
@@ -128,7 +128,7 @@ const CartMainMemo = styled.p`
 
 export default function CartPage() {
   const navigate = useNavigate(); // 버튼 이동을 위해 필요
-  const cart = useCartStore((state) => state.cart); 
+  const cart = useCartStore((state) => state.cart);
   const updateQuantity = useCartStore((state) => state.updateQuantity);
   const removeFromCart = useCartStore((state) => state.removeFromCart);
 
@@ -148,13 +148,12 @@ export default function CartPage() {
           </CheckBox>
 
           <DelBox>
-            <Button 
-              width="120px" 
-              height="38px" 
-              variant="outline" 
-              textColor="black" 
+            <Button
+              width="120px"
+              height="38px"
+              variant="outline"
+              textColor="black"
               fontSize="lg"
-
             >
               선택삭제
             </Button>
@@ -167,10 +166,10 @@ export default function CartPage() {
             <CartMainMemo>원하시는 상품을 장바구니에 담아보세요</CartMainMemo>
 
             {/* 3. 기존 ViewProductButton 대신 공통 Button 사용 */}
-            <Button 
-              width="280px" 
-              height="48px" 
-              radius="sm" 
+            <Button
+              width="280px"
+              height="48px"
+              radius="sm"
               fontSize="xl"
               style={{ marginTop: "20px" }}
               onClick={() => navigate("/products")}

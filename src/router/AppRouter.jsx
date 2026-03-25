@@ -10,7 +10,6 @@ import ReviewPage from "../pages/ReviewPage";
 
 // protected pages
 import CartPage from "../pages/CartPage";
-import OrderListPage from "../pages/OrderListPage";
 
 // etc
 import NotFoundPage from "../pages/NotFoundPage";
@@ -30,7 +29,6 @@ function AppRouter() {
       {/* 로그인 필요한 페이지 */}
       <Route element={<ProtectedRoute />}>
         <Route path="/cart" element={<CartPage />} />
-        <Route path="/orders" element={<OrderListPage />} />
       </Route>
 
       {/* 404 */}
