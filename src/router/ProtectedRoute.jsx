@@ -1,5 +1,5 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom";
-import { useAuthStore } from "../store/useAuthStore";
+import { useAuthStore } from "../stores/useAuthStore";
 
 export default function ProtectedRoute({ allowedRoles }) {
   // Zusstand 스토어에서 상태와 유저 정보 가져오기
