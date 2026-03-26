@@ -15,7 +15,7 @@ import CartPage from "../pages/CartPage";
 import NotFoundPage from "../pages/NotFoundPage";
 import ProtectedRoute from "./ProtectedRoute";
 
-function AppRouter() {
+export default function AppRouter() {
   return (
     <Routes>
       {/* 공개 페이지 */}
@@ -36,5 +36,3 @@ function AppRouter() {
     </Routes>
   );
 }
-
-export default AppRouter;
