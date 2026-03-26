@@ -130,9 +130,7 @@ const style = (theme) => css`
   }
 `;
 
-function GlobalStyle() {
+export default function GlobalStyle() {
   const theme = useTheme();
   return <Global styles={style(theme)} />;
 }
-
-export default GlobalStyle;
