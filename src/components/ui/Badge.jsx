@@ -74,7 +74,7 @@ const getBadgeMap = (theme) => {
   };
 };
 
-function Badge({ variant = "free", children, className }) {
+export default function Badge({ variant = "free", children, className }) {
   return (
     <StyledBadge className={className} $variant={variant}>
       {children}
@@ -106,4 +106,17 @@ const StyledBadge = styled.span`
   }}
 `;
 
-export default Badge;
+/*
+사용법
+
+<Badge variant="free">무료배송</Badge>
+<Badge variant="best">BEST</Badge>
+
+설명
+- 공용 배지 UI 컴포넌트
+- variant 값에 따라 배경색, 크기, 스타일이 달라짐
+- 배지 안에 들어갈 텍스트는 children으로 직접 전달해서 사용
+
+사용 가능한 variant
+- free / best / sale / new / coupon / percent / shipping / done
+*/
