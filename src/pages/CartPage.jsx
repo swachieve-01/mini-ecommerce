@@ -16,6 +16,7 @@ const CartPageContainer = styled.div`
 const CartPageHeaer = styled.div`
   display: flex;
   flex-direction: column;
+  align-items: start;
   gap: ${({ theme }) => theme.spacing.lg};
   padding-left: 17px;
 `;
