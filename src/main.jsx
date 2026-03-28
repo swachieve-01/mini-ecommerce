@@ -8,12 +8,12 @@ import theme from "./styles/theme";
 import GlobalStyle from "./styles/GlobalStyle";
 
 createRoot(document.getElementById("root")).render(
-	<StrictMode>
-		<ThemeProvider theme={theme}>
-			<BrowserRouter>
-				<GlobalStyle />
-				<App />
-			</BrowserRouter>
-		</ThemeProvider>
-	</StrictMode>
+  <StrictMode>
+    <ThemeProvider theme={theme}>
+      <BrowserRouter>
+        <GlobalStyle />
+        <App />
+      </BrowserRouter>
+    </ThemeProvider>
+  </StrictMode>,
 );
