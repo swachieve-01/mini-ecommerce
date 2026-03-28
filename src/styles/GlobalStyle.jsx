@@ -12,7 +12,8 @@ const style = (theme) => css`
   html,
   body,
   #root {
-    height: 100%;
+    width: 100%;
+    min-height: 100dvh;
   }
 
   /* body 기본 */
@@ -27,18 +28,12 @@ const style = (theme) => css`
     line-height: 1.5;
     background-color: ${theme.colors.bg};
     color: ${theme.colors.textMain};
-    min-height: 100dvh;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* 가운데 정렬 및 전체 구조 */
+  /* 앱 전체 기준 */
   #root {
-    width: 1126px;
-    max-width: 100%;
-    margin: 0 auto;
-    text-align: center;
-    border-inline: 1px solid ${theme.colors.border};
     min-height: 100dvh;
     display: flex;
     flex-direction: column;
