@@ -26,6 +26,8 @@ export default function AppRouter() {
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
+        {/* 수정 */}
+        <Route path="/category/:category/*" element={<ProductListPage />} />
         <Route path="/products" element={<ProductListPage />} />
         <Route path="/products/:id" element={<ProductDetailPage />} />
         <Route path="/reviews" element={<ReviewPage />} />
