@@ -18,8 +18,8 @@ export default function DefaultLayout() {
 
 /* 일반 페이지 공통 레이아웃 */
 const LayoutContainer = styled.div`
-  width: 1126px;
-  max-width: 100%;
+  width: 100%;
+  max-width: 1920px;
   min-height: 100dvh;
   margin: 0 auto;
   border-inline: 1px solid ${({ theme }) => theme.colors.border};
