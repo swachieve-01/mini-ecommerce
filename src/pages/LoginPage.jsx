@@ -1,7 +1,7 @@
 import { useState } from "react";
 import styled from "@emotion/styled";
 import { Link, useNavigate } from "react-router-dom";
-import login from "../api/auth";
+import { login } from "../api";
 import logoImage from "../assets/images/푸터 로고.png";
 import { useAuthStore } from "../stores/useAuthStore";
 import { LoginInput } from "../components/ui/Input";
