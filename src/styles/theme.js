@@ -53,6 +53,8 @@ const theme = {
     blue: "#1677FF",
     navy: "#1D39C4",
     purple: "#722ED1",
+    stars: "#f5a623;",
+    reviewBadge: "#FDECEC",
 
     /* ========================= 테두리 & 경계선 or 텍스트 활용 ========================= */
     white: "#FFFFFF",
@@ -69,15 +71,26 @@ const theme = {
   },
 
   badge: {
+    free: "#E8F0FE",
+    best: "#FDECEC",
+    sale: "#FFF4E5",
+    new: "#EAF7ED",
+    coupon: "#E6F7F5",
+    shipping: "#F5F1E6",
+    done: "#EDF6E9",
+  },
+
+  badgeText: {
     free: "#3561E5",
     best: "#E53935",
     sale: "#FB8C00",
     new: "#43A047",
     coupon: "#14B8A6",
-    percent: "#8FA77E",
     shipping: "#BC9D37",
     done: "#6CA346",
+    review: "#E57373",
   },
+
   border: {
     thin: "1px solid #E2E2E2",
     thick: "2px solid #DCDCDC",
@@ -99,8 +112,8 @@ const theme = {
     md: "16px",
     lg: "24px",
     xl: "40px",
-    section: "70px", // 섹션 ↔ 상품
-    titleBlock: "120px", // 타이틀 위아래
+    titleBlock: "70px", // 타이틀 위아래
+    section: "120px", // 섹션 ↔ 상품
   },
 
   transition: {
