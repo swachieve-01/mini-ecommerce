@@ -8,7 +8,7 @@ import LogoImg from "../../assets/images/푸터 로고.png";
 
 const FooterContainer = styled.footer`
   width: 100%;
-  max-width: 1440px;
+  /* max-width: 1440px; */
   min-height: 562px;
   padding: 60px 0 40px;
   background-color: ${(props) => props.theme.colors.bgSoft};
@@ -20,14 +20,14 @@ const FooterContainer = styled.footer`
 `;
 
 const InnerContainer = styled.div`
-  width: 90%;
-  max-width: 1167px;
+  width: 100%;
+  max-width: 1440px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 0 20px;
+  padding: 0 30px;
 `;
 
 const LogoWrapper = styled.div`
