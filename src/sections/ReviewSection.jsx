@@ -106,6 +106,11 @@ export const ReviewCardDate = styled.p`
   text-align: end;
 `;
 
+// 푸터쪽 영역 간격
+const ReviewWrapper = styled(Section)`
+  margin-bottom: 140px;
+`;
+
 export default function ReviewSection() {
   const [reviews, setReviews] = useState([]);
 
@@ -123,7 +128,7 @@ export default function ReviewSection() {
   }, []);
 
   return (
-    <Section>
+    <ReviewWrapper>
       <SectionTitle>상품 후기</SectionTitle>
       <ReviewCardArea>
         {reviews.map((item) => (
@@ -140,6 +145,6 @@ export default function ReviewSection() {
           </ReviewCard>
         ))}
       </ReviewCardArea>
-    </Section>
+    </ReviewWrapper>
   );
 }
