@@ -174,7 +174,7 @@ const TermsItem = styled.div`
 
     &::after {
       content: ">";
-      font-size: $14px;
+      font-size: ${({ theme }) => theme.fontSize.sm};
     }
   }
 `;
