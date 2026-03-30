@@ -31,4 +31,5 @@ const LayoutContainer = styled.div`
 /* 페이지 본문 영역 */
 const Main = styled.main`
   flex: 1;
+  margin-top: 132px;
 `;
