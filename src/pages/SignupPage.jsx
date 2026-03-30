@@ -54,6 +54,7 @@ const Input = styled.input`
     /* border-color: ${({ error }) => (error ? "#D74040" : "#8fa77e")}; */
     border-color: ${({ error, theme }) =>
       error ? theme.colors.error : theme.colors.primary};
+    outline: none;
   }
 `;
 
