@@ -8,7 +8,7 @@ import LogoImg from "../../assets/images/푸터 로고.png";
 
 const FooterContainer = styled.footer`
   width: 100%;
-  /* max-width: 1440px; */
+  max-width: 1900px;
   min-height: 562px;
   padding: 60px 0 40px;
   background-color: ${(props) => props.theme.colors.bgSoft};
@@ -20,14 +20,14 @@ const FooterContainer = styled.footer`
 `;
 
 const InnerContainer = styled.div`
-  width: 100%;
+  width: 90%;
   max-width: 1440px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  padding: 0 30px;
+  padding: 0 20px;
 `;
 
 const LogoWrapper = styled.div`
@@ -54,10 +54,10 @@ const TopSection = styled.div`
   display: flex;
   justify-content: space-between;
   width: 100%;
-  /* max-width: 1167px; */
   min-height: 284px;
   margin: 0 auto;
   flex-wrap: wrap;
+  gap: 20px;
 `;
 
 const ButtonGroup = styled.div`
@@ -115,7 +115,7 @@ const Title = styled.h3`
   text-align: left;
 `;
 
-const List = styled.a`
+const List = styled.ul`
   list-style: none;
   display: flex;
   flex-direction: column;
@@ -128,7 +128,7 @@ const CustomerList = styled(List)`
   gap: 10px;
 `;
 
-const ListItem = styled.a`
+const ListItem = styled.li`
   list-style: none;
   display: flex;
   gap: 0;
@@ -215,7 +215,7 @@ const CircleButtonList = styled.div`
   justify-content: center;
   align-items: center;
   gap: 30px;
-  margin-top: 40px;
+  margin-top: 60px;
   width: 100%;
 `;
 
@@ -286,7 +286,7 @@ export default function Footer() {
               {customerService.emails.map((e) => (
                 <EmailItem key={e.id}>
                   <span>{e.title}</span>
-                  <a href={e.url}>{e.address}</a>
+                  <a href={`mailto:${e.address}`}>{e.address}</a>
                 </EmailItem>
               ))}
             </CustomerList>

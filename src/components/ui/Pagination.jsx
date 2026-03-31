@@ -63,13 +63,13 @@ const Wrapper = styled.nav`
   gap: 10px;
 `;
 
-const PageList = styled.div`
+const NumberGroup = styled.div`
   display: flex;
   align-items: center;
   gap: 5px;
 `;
 
-const NavButton = styled.button`
+const MoveButton = styled.button`
   min-width: 42px;
   height: 32px;
   padding: 0 11px;
