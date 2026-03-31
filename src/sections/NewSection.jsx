@@ -12,19 +12,32 @@ const NewTextBox = styled.div`
   right: 40%;
   transform: translateY(-50%);
   z-index: 2;
+
+  @media (max-width: 768px) {
+    left: 50%;
+    right: auto;
+    transform: translate(-50%, -50%);
+    text-align: center;
+  }
 `;
 
 // 신제품 문구
 const NewTitle = styled.h2`
   color: white;
-  font-size: 60px;
+  font-size: clamp(24px, 5vw, 60px);
+
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
   margin-bottom: 20px;
+
+  @media (max-width: 768px) {
+    white-space: pre-line;
+  }
 `;
 
 const NewSubText = styled.p`
   color: white;
-  font-size: 20px;
+  font-size: clamp(12px, 2vw, 20px);
+  line-height: 1.2;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
 `;
 
@@ -52,7 +65,7 @@ export default function NewSection() {
       <BannerWrapper height="400px">
         <BannerImage src={banner.imageUrl} />
         <NewTextBox>
-          <NewTitle>순하게 씻어내는 그린티 클렌징</NewTitle>
+          <NewTitle>{"순하게 씻어내는\n그린티 클렌징"}</NewTitle>
           <NewSubText>BHA 함유로 매끈한 피부결 케어 </NewSubText>
         </NewTextBox>
       </BannerWrapper>

@@ -5,7 +5,22 @@ export const BannerWrapper = styled.div`
   position: relative;
   width: 100%;
   height: ${(props) => props.height};
-  /* height: 600px; */
+  overflow: hidden;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0);
+    transition: background 0.3s ease;
+    z-index: 1;
+  }
+
+  @media (max-width: 768px) {
+    &:hover::after {
+      background: rgba(255, 255, 255, 0.25); //
+    }
+  }
 `;
 
 // 배너 이미지 꽉 채우는
