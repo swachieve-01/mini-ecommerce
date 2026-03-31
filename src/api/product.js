@@ -96,3 +96,43 @@ export async function searchProducts(keyword) {
     data: res.data,
   };
 }
+
+// 핫딜 상품 목록 조회
+export async function getHotDeals() {
+  if (isDev) {
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    return {
+      success: true,
+      data: [],
+    };
+  }
+
+  const res = await apiClient("/api/team1/main/hotdeals");
+
+  return {
+    success: res.success,
+    data: res.data,
+  };
+}
+
+// 메인 카테고리
+export async function getCategories() {
+  if (isDev) {
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    return [
+      { id: 1, name: "스킨케어", categoryId: "skin" },
+      { id: 2, name: "메이크업", categoryId: "makeup" },
+      { id: 3, name: "클렌저", categoryId: "cleanser" },
+      { id: 4, name: "헤어/바디", categoryId: "hairbody" },
+      { id: 5, name: "향수", categoryId: "perfume" },
+      { id: 6, name: "소품", categoryId: "beautytool" },
+    ];
+  }
+
+  const res = await apiClient("/api/team1/main/categories");
+  const data = res.data?.data ?? res.data;
+
+  return Array.isArray(data) ? data : [];
+}

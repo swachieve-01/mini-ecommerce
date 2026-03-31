@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import styled from "@emotion/styled";
 import theme from "../styles/theme";
 import { getCategories } from "../api/main";
@@ -59,29 +60,36 @@ export default function CategorySection() {
 
   useEffect(() => {
     const fetchCategories = async () => {
-      try {
-        const data = await getCategories();
-        setCategories(data);
-      } catch (error) {
-        console.error(error);
-      }
+      const data = await getCategories();
+      setCategories(data);
     };
 
     fetchCategories();
   }, []);
 
+  const categoryMap = {
+    skincare: "skin",
+    care: "hairbody",
+  };
+
   const handleClick = (id) => {
-    navigate(`/category/${id}`);
+    const normalized = String(id).toLowerCase().trim();
+    const mapped = categoryMap[normalized] || normalized;
+
+    navigate(`/category/${mapped}`);
   };
 
   return (
     <CategoryList>
-      {categories.map((item) => (
-        <CategoryImage key={item.id} onClick={() => handleClick(item.id)}>
-          <CategoryItem src={item.imageUrl} alt={item.name} />
-          <CategoryName>{item.name}</CategoryName>
-        </CategoryImage>
-      ))}
+      {categories.map((item) => {
+        const id = item.categoryId;
+        return (
+          <CategoryImage key={id} onClick={() => handleClick(id)}>
+            <CategoryItem src={item.imageUrl} alt={item.name} />
+            <CategoryName>{item.name}</CategoryName>
+          </CategoryImage>
+        );
+      })}
     </CategoryList>
   );
 }
