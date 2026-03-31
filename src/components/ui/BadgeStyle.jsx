@@ -5,7 +5,7 @@ import styled from "@emotion/styled";
 const StyledBadge = styled.span`
   font-size: ${({ theme }) => theme.fontSize.xs};
   padding: 2px 10px;
-  border-radius: ${({ theme }) => theme.radius.lg};
+  border-radius: ${({ theme }) => theme.radius.md};
   background: ${({ theme, type }) => theme?.badge?.[type] || "#f5f5f5"};
 
   color: ${({ theme, type }) => theme?.badgeText?.[type] || "#333"};
@@ -15,7 +15,7 @@ const StyledBadge = styled.span`
 const getBadgeType = (text) => {
   if (text.includes("세일")) return "sale";
   if (text.includes("무료")) return "free";
-  if (text.includes("Best")) return "best";
+  if (text.includes("BEST")) return "best";
   if (text.includes("NEW")) return "new";
   if (text.includes("쿠폰")) return "coupon";
   return null;
