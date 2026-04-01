@@ -24,20 +24,21 @@ const Card = styled.div`
   }
 
   ${({ theme }) => theme.media.tablet} {
+    justify-content: flex-start;
     gap: 20px;
+    padding: 25px 15px;
   }
 
   ${({ theme }) => theme.media.mobile} {
     flex-direction: column;
-    gap: 25px;
-    padding: 20px 15px;
+    align-items: stretch;
+    gap: 16px;
   }
 `;
 
 const MainImg = styled.img`
   width: 100%;
   height: 100%;
-  max-height: 280px;
   object-fit: cover;
   transition: filter ${({ theme }) => theme.transition.normal};
 `;
@@ -81,20 +82,41 @@ const ImageSection = styled.div`
     visibility: visible;
   }
 
+  ${({ theme }) => theme.media.tablet} {
+    /* 태블릿일 때 이미지가 너무 작아 보이면 가로폭을 살짝 키워 밸런스를 맞춤 */
+    width: 180px;
+    height: 220px;
+  }
+
   ${({ theme }) => theme.media.mobile} {
     width: 100%;
     height: auto;
+  }
+
+  ${({ theme }) => theme.media.smallMobile} {
+    max-height: 220px;
   }
 `;
 
 const ContentSection = styled.div`
   flex: 1;
-  min-height: 250px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
+  min-height: 250px;
   text-align: left;
   width: 100%;
+
+  ${({ theme }) => theme.media.tablet} {
+    /* 태블릿에서 이미지는 작고 글만 옆으로 너무 길어지는 것 방지 */
+    max-width: 100%;
+  }
+
+  ${({ theme }) => theme.media.mobile} {
+    min-height: auto;
+    justify-content: flex-start;
+    gap: 12px;
+  }
 `;
 
 const Header = styled.div`
@@ -103,6 +125,12 @@ const Header = styled.div`
   align-items: flex-start;
   margin-bottom: 12px;
   width: 100%;
+
+  ${({ theme }) => theme.media.smallMobile} {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
 
   button {
     span {
@@ -184,10 +212,15 @@ const BottomSection = styled.div`
   margin-top: auto;
   gap: 20px;
 
-  ${({ theme }) => theme.media.mobile} {
+  ${({ theme }) => theme.media.tablet} {
     flex-direction: column;
-    align-items: flex-start;
-    gap: 20px;
+    align-items: flex-end;
+  }
+
+  ${({ theme }) => theme.media.mobile} {
+    margin-top: 10px;
+    flex-direction: column;
+    gap: 15px;
   }
 `;
 
@@ -196,11 +229,13 @@ const SubImages = styled.div`
   gap: 10px;
   align-items: flex-end;
   flex-wrap: nowrap;
-  /* width: 100%;
-  max-width: calc(100% - 150px); */
 
   ${({ theme }) => theme.media.mobile} {
-    max-width: 100%;
+    width: 100%;
+    /* 모바일에서 서브 이미지들이 가로를 균등하게 점유 */
+    & > div {
+      flex: 1;
+    }
   }
 `;
 
