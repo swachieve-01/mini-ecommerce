@@ -10,7 +10,7 @@ const EvenWrapper = styled.div`
   width: 100%;
   max-width: 707px;
   aspect-ratio: 707 / 300;
-  height: ${(props) => props.height};
+  /* height: ${(props) => props.height}; */
 
   &::after {
     content: "";
