@@ -1,8 +1,8 @@
 import React from "react";
 import styled from "@emotion/styled";
-import { Button } from "./Button"; // 통합 버튼 임포트
+import { Button } from "./Button";
 
-// 1. 모든 인풋의 공통 스타일 (이것만 고치면 전부 바뀜)
+// 1. 모든 인풋의 공통 스타일
 const BaseInput = styled.input`
   width: ${({ width }) => width || "100%"};
   height: ${({ height }) => height || "48px"};
@@ -15,9 +15,17 @@ const BaseInput = styled.input`
     theme.fontSize[fontSize] || theme.fontSize.md};
   outline: none;
   box-sizing: border-box;
+  background: ${({ theme }) => theme.colors.white};
+
+  &::placeholder {
+    color: ${({ theme }) => theme.colors.gray400};
+    font-size: ${({ theme }) => theme.fontSize.sm};
+    opacity: 1;
+  }
 
   &:focus {
     border-color: ${({ theme }) => theme.colors.primary};
+    box-shadow: 0 0 0 1px ${({ theme }) => theme.colors.primary};
   }
 `;
 
@@ -37,7 +45,6 @@ const FlexRow = styled.div`
 // ============================================================================
 
 // 1. 검색창 (SearchInput)
-// 검색창을 감싸는 컨테이너 (포지션 기준점)
 const SearchWrapper = styled.div`
   position: relative;
   display: flex;
@@ -46,7 +53,6 @@ const SearchWrapper = styled.div`
   max-width: 500px;
 `;
 
-// 돋보기 아이콘 스타일 (인풋창 내부 오른쪽 고정)
 const SearchIconWrapper = styled.div`
   position: absolute;
   right: 20px;
@@ -61,7 +67,6 @@ const SearchIconWrapper = styled.div`
   }
 `;
 
-// 1. 검색창 (SearchInput) - 아이콘이 안으로 들어간 버전
 export function SearchInput({ onChange, onClick, width }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
@@ -71,7 +76,7 @@ export function SearchInput({ onChange, onClick, width }) {
           placeholder="검색어를 입력하세요"
           radius="pill"
           borderColor="primary"
-          padding="0 50px 0 25px" // 오른쪽 패딩을 50px 줘서 글자가 아이콘과 겹치지 않게 함
+          padding="0 50px 0 25px"
           onChange={onChange}
         />
 
@@ -95,7 +100,7 @@ export function LoginInput({
       <BaseInput
         width={width}
         radius="xxl"
-        placeholder="아이디"
+        placeholder="예) example@email.com"
         value={idValue}
         onChange={onIdChange}
       />
@@ -103,7 +108,7 @@ export function LoginInput({
         width={width}
         radius="xxl"
         type="password"
-        placeholder="비밀번호"
+        placeholder="비밀번호 (8~12자, 영문+숫자+특수문자)"
         value={pwValue}
         onChange={onPwChange}
       />
@@ -136,7 +141,7 @@ export function SignUpInput({ values = {}, onChange, onCheckId }) {
       <BaseInput
         radius="xxl"
         type="password"
-        placeholder="비밀번호"
+        placeholder="비밀번호 (8~12자, 영문+숫자+특수문자)"
         onChange={(e) => onChange("pw", e.target.value)}
       />
       <BaseInput

@@ -90,7 +90,7 @@ export default function LoginPage() {
         <LogoSection>
           <Logo src={logoImage} alt="NatureGlow 로고" />
           <Description>
-            회원가입하시면 다양한 혜택 서비스를 누릴 수 있습니다.
+            회원가입하시면 다양한 혜택 서비스를 누리실 수 있습니다.
           </Description>
         </LogoSection>
 
@@ -154,7 +154,7 @@ export default function LoginPage() {
 const Page = styled.div`
   width: 100%;
   min-height: 100vh;
-  padding: 60px 20px 80px;
+  padding: 100px 20px 80px;
   background-color: ${({ theme }) => theme.colors.background || "#ffffff"};
   box-sizing: border-box;
 
@@ -175,7 +175,7 @@ const LogoSection = styled.section`
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 26px;
+  margin-bottom: 50px;
 `;
 
 /* 로고 이미지 */
@@ -226,6 +226,7 @@ const Title = styled.h1`
   font-weight: ${({ theme }) => theme.fontWeight.medium};
   line-height: 1.2;
   text-align: center;
+  letter-spacing: 0.08em;
 
   @media (max-width: 768px) {
     margin-bottom: 20px;
