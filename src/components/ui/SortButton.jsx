@@ -13,6 +13,10 @@ export const SortDropdownSelected = styled.div`
   border-radius: 6px;
   cursor: pointer;
   background: #fff;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 export const SortDropdownList = styled.ul`
