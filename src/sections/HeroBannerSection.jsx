@@ -4,15 +4,13 @@ import { getMainBanner } from "../api/Banner";
 import { BannerImage, BannerWrapper } from "../styles/BannerStyle";
 import styled from "@emotion/styled";
 
-// 이미지 위 텍스트 박스
+// 텍스트 박스
 const TextBox = styled.div`
   position: absolute;
   top: ${({ position }) => position?.top || "50%"};
   left: ${({ position }) => position?.left};
   right: ${({ position }) => position?.right};
-
   transform: translateY(-50%);
-
   text-align: ${({ align }) => align || "center"};
   z-index: 2;
 
@@ -22,7 +20,6 @@ const TextBox = styled.div`
     right: auto;
     transform: translate(-50%, -50%);
     text-align: center;
-    width: 90%;
   }
 `;
 
@@ -40,35 +37,124 @@ const SubText = styled.p`
   font-size: clamp(14px, 2.5vw, 30px);
   white-space: pre-line;
   color: ${({ isWhiteText }) => (isWhiteText ? "white" : "#4f6a4e")};
-
-  @media (max-width: 1024px) {
-    font-size: 22px;
-  }
-
-  @media (max-width: 768px) {
-    font-size: 14px;
-  }
 `;
 
-// 배너 버튼
+// 버튼
 const BannerButton = styled.button`
   color: ${({ isWhite }) => (isWhite ? "#4f6a4e" : "white")};
   background: ${({ isWhite }) => (isWhite ? "white" : "#8FA77E")};
   font-size: clamp(12px, 1.5vw, 20px);
   border-radius: 50px;
-  /* border: 2px solid #4f6a4e; */
   margin-top: 45px;
   padding: clamp(8px, 1vw, 15px) clamp(20px, 3vw, 60px);
   transition: all 0.3s ease;
-
   cursor: pointer;
 `;
 
-export default function HeroSection() {
-  const [index, setIndex] = useState(0);
-  const [banners, setBanners] = useState([]);
+// 화살표
+const BannerArrowButton = styled.button`
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
 
-  // 데이터 가져오고
+  width: clamp(28px, 4vw, 42px);
+  height: clamp(28px, 4vw, 42px);
+
+  border-radius: 50%;
+  border: none;
+
+  color: rgba(10, 10, 10, 0.87);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+  z-index: 3;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(68, 68, 68, 0.247);
+    backdrop-filter: blur(4px);
+  }
+
+  svg {
+    width: clamp(16px, 2.5vw, 24px);
+    height: clamp(16px, 2.5vw, 24px);
+  }
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+`;
+
+const BannerLeftArrow = styled(BannerArrowButton)`
+  left: 20px;
+`;
+
+const BannerRightArrow = styled(BannerArrowButton)`
+  right: 20px;
+`;
+
+// 인디케이터
+const IndicatorWrapper = styled.div`
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  z-index: 3;
+`;
+
+const BannerDot = styled.div`
+  width: clamp(6px, 1vw, 10px);
+  height: clamp(6px, 1vw, 10px);
+  border-radius: 50%;
+
+  background: ${({ active }) =>
+    active ? "#0c0c0c5a" : "rgba(255,255,255,0.4)"};
+
+  transition: all 0.3s ease;
+  cursor: pointer;
+`;
+
+const LeftIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none">
+    <path
+      d="M15 6L9 12L15 18"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+const RightIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none">
+    <path
+      d="M9 6L15 12L9 18"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+export default function HeroSection() {
+  const [banners, setBanners] = useState([]);
+  const [current, setCurrent] = useState(0);
+
+  // pc버전 밀어서
+  const [isDragging, setIsDragging] = useState(false);
+
+  // 모바일 버전 밀어서
+  const [touchStart, setTouchStart] = useState(0);
+  const [touchEnd, setTouchEnd] = useState(0);
+
+  // 데이터 가져오기
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -78,36 +164,95 @@ export default function HeroSection() {
         console.error(e);
       }
     };
-
     fetchData();
   }, []);
 
-  // 초기화
-  useEffect(() => {
-    if (banners.length > 0) {
-      setIndex(0);
-    }
-  }, [banners]);
-
-  // 슬라이드 부분
+  // 자동 슬라이드
   useEffect(() => {
     if (banners.length === 0) return;
 
     const interval = setInterval(() => {
-      setIndex((prev) => (prev + 1) % banners.length);
-    }, 3000);
+      setCurrent((prev) => (prev + 1) % banners.length);
+    }, 4000);
 
     return () => clearInterval(interval);
   }, [banners]);
 
-  const banner = banners[index];
-  const meta = heroBannerMeta[index + 1] || {};
+  // 이동 함수
+  const prevSlide = () => {
+    setCurrent((prev) => (prev === 0 ? banners.length - 1 : prev - 1));
+  };
 
-  // 방어코드
-  if (!banner) return null;
+  const nextSlide = () => {
+    setCurrent((prev) => (prev === banners.length - 1 ? 0 : prev + 1));
+  };
+
+  if (banners.length === 0) return null;
+
+  // 모바일버전
+  const handleTouchStart = (e) => {
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+
+    const distance = touchStart - touchEnd;
+
+    if (distance > 50) {
+      // 왼쪽으로 밀면 다음
+      nextSlide();
+    }
+
+    if (distance < -50) {
+      // 오른쪽으로 밀면 이전
+      prevSlide();
+    }
+  };
+
+  // pc버전
+  const handleMouseDown = (e) => {
+    setIsDragging(true);
+    setTouchStart(e.clientX);
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDragging) return;
+    setTouchEnd(e.clientX);
+  };
+
+  const handleMouseUp = () => {
+    if (!isDragging) return;
+    setIsDragging(false);
+
+    if (!touchStart || !touchEnd) return;
+
+    const distance = touchStart - touchEnd;
+
+    if (distance > 50) nextSlide();
+    if (distance < -50) prevSlide();
+  };
+
+  const banner = banners[current];
+  const meta = heroBannerMeta[current + 1] || {};
 
   return (
-    <BannerWrapper height="clamp(300px, 50vw, 600px)">
+    <BannerWrapper
+      height="clamp(300px, 50vw, 600px)"
+      // 모바일
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      // pc
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseUp}
+    >
       <BannerImage src={banner.src} />
 
       <TextBox position={meta.position} align={meta.align}>
@@ -120,6 +265,26 @@ export default function HeroSection() {
           </BannerButton>
         )}
       </TextBox>
+
+      {/* 화살표 */}
+      <BannerLeftArrow onClick={prevSlide}>
+        <LeftIcon />
+      </BannerLeftArrow>
+
+      <BannerRightArrow onClick={nextSlide}>
+        <RightIcon />
+      </BannerRightArrow>
+
+      {/* 인디케이터 */}
+      <IndicatorWrapper>
+        {banners.map((_, idx) => (
+          <BannerDot
+            key={idx}
+            active={idx === current}
+            onClick={() => setCurrent(idx)}
+          />
+        ))}
+      </IndicatorWrapper>
     </BannerWrapper>
   );
 }
