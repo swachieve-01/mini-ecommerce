@@ -9,13 +9,13 @@ import GlobalStyle from "./styles/GlobalStyle";
 import Toast from "./components/feedback/Toast.jsx";
 
 createRoot(document.getElementById("root")).render(
-  <StrictMode>
-    <ThemeProvider theme={theme}>
-      <BrowserRouter>
-        <GlobalStyle />
-        <Toast />
-        <App />
-      </BrowserRouter>
-    </ThemeProvider>
-  </StrictMode>,
+	<StrictMode>
+		<ThemeProvider theme={theme}>
+			<BrowserRouter>
+				<GlobalStyle />
+				<Toast />
+				<App />
+			</BrowserRouter>
+		</ThemeProvider>
+	</StrictMode>
 );
