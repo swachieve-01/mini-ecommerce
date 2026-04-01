@@ -24,7 +24,7 @@ export default async function login(id, password) {
     };
   }
 
-  const res = await apiClient("/auth/login", {
+  const res = await apiClient("/api/team1/auth/login", {
     method: "POST",
     body: JSON.stringify({ id, password }),
   });
@@ -59,7 +59,7 @@ export async function signup({
     };
   }
 
-  const res = await apiClient("/auth/signup", {
+  const res = await apiClient("/api/team1/auth/signup", {
     method: "POST",
     body: JSON.stringify({
       id,
@@ -90,7 +90,9 @@ export async function getMe() {
     };
   }
 
-  const res = await apiClient("/auth/me");
+  const res = await apiClient("/api/team1/auth/me", {
+    method: "GET",
+  });
 
   return {
     success: res.success,
