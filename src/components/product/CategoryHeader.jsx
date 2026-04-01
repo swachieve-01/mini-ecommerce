@@ -83,6 +83,21 @@ const CategoryDropdown = styled.div`
   align-items: center;
 `;
 
+// 드롭다운 화살표 추가
+const DropdownArrowIcon = styled.span`
+  position: absolute;
+  right: 10px;
+  display: flex;
+  align-items: center;
+
+  svg {
+    width: 14px;
+    height: 14px;
+    transition: transform 0.25s ease;
+    transform: rotate(${({ open }) => (open ? "180deg" : "0deg")});
+  }
+`;
+
 export default function CategoryHeader({
   categories = [], // API로 받아온 카테고리 목록
   category, // 현재 선택된 카테고리 (URL 기반)
@@ -154,6 +169,18 @@ export default function CategoryHeader({
         <SortDropdownWrapper ref={dropdownRef}>
           <SortDropdownSelected onClick={() => setOpen((prev) => !prev)}>
             {current?.label}
+
+            <DropdownArrowIcon open={open}>
+              <svg viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M6 9l6 6 6-6"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </DropdownArrowIcon>
           </SortDropdownSelected>
 
           {/* 드롭다운 열렸을 때 */}
