@@ -157,6 +157,10 @@ const Page = styled.div`
   padding: 60px 20px 80px;
   background-color: ${({ theme }) => theme.colors.background || "#ffffff"};
   box-sizing: border-box;
+
+  @media (max-width: 768px) {
+    padding: 40px 16px 60px;
+  }
 `;
 
 /* 중앙 정렬 컨테이너 */
@@ -180,6 +184,10 @@ const Logo = styled.img`
   max-width: 100%;
   height: auto;
   display: block;
+
+  @media (max-width: 768px) {
+    width: 240px;
+  }
 `;
 
 /* 설명 텍스트 */
@@ -200,6 +208,14 @@ const LoginBox = styled.section`
   background-color: rgba(251, 251, 251, 0.66);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   box-sizing: border-box;
+
+  @media (max-width: 1024px) {
+    padding: 48px 28px;
+  }
+
+  @media (max-width: 768px) {
+    padding: 36px 20px;
+  }
 `;
 
 /* 제목 */
@@ -210,6 +226,10 @@ const Title = styled.h1`
   font-weight: ${({ theme }) => theme.fontWeight.medium};
   line-height: 1.2;
   text-align: center;
+
+  @media (max-width: 768px) {
+    margin-bottom: 20px;
+  }
 `;
 
 /* 폼 레이아웃 */
@@ -291,6 +311,11 @@ const LinkRow = styled.div`
   gap: 16px;
   margin-top: 35px;
   flex-wrap: wrap;
+
+  @media (max-width: 768px) {
+    gap: 10px;
+    margin-top: 24px;
+  }
 `;
 
 /* 링크 스타일 */
