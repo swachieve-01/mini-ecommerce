@@ -5,6 +5,7 @@ import ProductCardList from "../components/product/ProductCardList";
 import { getCategories } from "../api/main";
 import apiClient from "../api/apiClient";
 import styled from "@emotion/styled";
+import { useSearchParams } from "react-router-dom";
 
 const PaginationWrapper = styled.div`
   display: flex;
@@ -43,9 +44,14 @@ const PageButton = styled.button`
 `;
 
 export default function ProductsListPage() {
+  const [searchParams] = useSearchParams();
+  const keyword = searchParams.get("keyword");
+
   const { category: paramCategory } = useParams();
 
   // URL 기반 category
+  // 바뀔 때만 계산하려고 (불필요 렌더 방ㅈㅣ)
+  // api 수정전 작업 + 서버/URL 값 방어코드 그대로 활용
   const category = useMemo(() => {
     if (!paramCategory) return "all";
 
@@ -69,6 +75,7 @@ export default function ProductsListPage() {
   const itemsPerPage = 16;
 
   // 카테고리 목록 API
+  // 에러방지 + 기존 데이터만 수정 (map 사용)
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -89,24 +96,29 @@ export default function ProductsListPage() {
     fetchCategories();
   }, []);
 
-  // 상품 API + 필터
+  // 상품 API + 필터 + 검색
+  // 값 강제통일 (중복 방지용)
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await apiClient("/api/team1/products");
+        const res = keyword
+          ? await apiClient(`/api/team1/search?keyword=${keyword}`)
+          : await apiClient("/api/team1/products");
 
         const list = res?.data?.content || res?.data || [];
 
         const normalizedList = list.map((item, index) => ({
           ...item,
-          id: `${item.id}-${index}`,
+          id: item.productId || item.id,
           categoryId: String(item.categoryId ?? item.categoryid)
             .toLowerCase()
             .trim(),
+          option: getOptionLabel(item.categoryId),
         }));
 
-        const finalList =
-          category === "all"
+        const finalList = keyword
+          ? normalizedList
+          : category === "all"
             ? normalizedList
             : normalizedList.filter((item) => item.categoryId === category);
 
@@ -118,7 +130,12 @@ export default function ProductsListPage() {
     };
 
     fetchProducts();
-  }, [category]);
+  }, [category, keyword]);
+
+  // 위로 자동 스크롤
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [currentPage]);
 
   // 정렬
   const sortedData = useMemo(() => {
@@ -162,6 +179,25 @@ export default function ProductsListPage() {
     { key: "sale", label: "세일순" },
     { key: "free", label: "무료배송" },
   ];
+
+  const getOptionLabel = (categoryId) => {
+    switch (categoryId) {
+      case "skin":
+        return "보습/진정 케어";
+      case "cleanser":
+        return "저자극 클렌징";
+      case "makeup":
+        return "데일리 메이크업";
+      case "hairbody":
+        return "바디/헤어 케어";
+      case "perfume":
+        return "향기/프레그런스";
+      case "beautyTool":
+        return "뷰티 디바이스";
+      default:
+        return "";
+    }
+  };
 
   return (
     <>

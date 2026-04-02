@@ -8,6 +8,7 @@ import { useCartStore } from "../stores/useCartStore";
 import Modal from "../components/ui/Modal";
 import { Button } from "../components/ui/Button";
 import theme from "../styles/theme";
+import useToastStore from "../stores/useToastStore";
 
 function toImageArray(value) {
   if (!value) return [];
@@ -24,6 +25,7 @@ function toImageArray(value) {
 }
 
 export default function ProductDetailPage() {
+  const showToast = useToastStore((state) => state.showToast);
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
@@ -184,6 +186,7 @@ export default function ProductDetailPage() {
       return;
     }
 
+    // ✅ 수정 1: 선택한 수량(quantity)만큼 담기
     addToCart({
       id: product.id,
       name: product.name,
@@ -194,23 +197,27 @@ export default function ProductDetailPage() {
       quantity,
     });
 
-    navigate("/cart");
+    // ✅ 수정 2: 페이지 이동 대신 토스트 알림
+    showToast(`${product.name} ${quantity}개가 장바구니에 담겼습니다! 🛒`);
   };
 
   if (loading) {
-    return <div css={messageStyle}>로딩 중...</div>;
+    return <div css={productDetailMessageStyle}>로딩 중...</div>;
   }
 
   if (error || !product) {
-    return <div css={messageStyle}>{error || "상품 정보가 없습니다."}</div>;
+    return (
+      <div css={productDetailMessageStyle}>
+        {error || "상품 정보가 없습니다."}
+      </div>
+    );
   }
-
   return (
     <>
-      <div css={pageWrap}>
-        <div css={sheet}>
+      <div css={productDetailPageWrap}>
+        <div css={productDetailSheet}>
           <section css={topSection}>
-            <div css={leftArea}>
+            <div css={productDetailLeftArea}>
               <div css={mainImageStage}>
                 {thumbImages.length > 1 && (
                   <button
@@ -278,7 +285,7 @@ export default function ProductDetailPage() {
               </div>
             </div>
 
-            <div css={rightArea}>
+            <div css={productDetailRightArea}>
               <h1 css={titleText}>{product.name}</h1>
 
               <div
@@ -287,11 +294,12 @@ export default function ProductDetailPage() {
                 style={{ cursor: "pointer" }}
               >
                 <span css={stars}>★★★★★</span>
-                <span css={count}>
+                <span css={productDetailReviewCount}>
                   {rating}
                   {reviewCount > 0 ? ` (${reviewCount})` : ""}
                 </span>
               </div>
+
               <div css={priceArea}>
                 <div css={priceRow}>
                   <span css={salePriceText}>
@@ -312,7 +320,7 @@ export default function ProductDetailPage() {
 
               <div css={infoList}>
                 <div css={infoLine}>
-                  <span css={dot} />
+                  <span css={productDetailInfoDot} />
                   <span>
                     {product.deliveryInfo || (
                       <>
@@ -323,7 +331,7 @@ export default function ProductDetailPage() {
                 </div>
 
                 <div css={infoLine}>
-                  <span css={dot} />
+                  <span css={productDetailInfoDot} />
                   <span>
                     {product.pointInfo || (
                       <>
@@ -480,7 +488,7 @@ export default function ProductDetailPage() {
 
 /* ================= 스타일 ================= */
 
-const pageWrap = css`
+const productDetailPageWrap = css`
   background: ${theme.colors.gray100};
   min-height: 100vh;
   padding: 100px 0 40px;
@@ -498,7 +506,7 @@ const pageWrap = css`
   }
 `;
 
-const sheet = css`
+const productDetailSheet = css`
   width: min(1440px, calc(100% - 48px));
   margin: 0 auto;
   padding: 54px 0 20px;
@@ -547,7 +555,7 @@ const topSection = css`
   }
 `;
 
-const leftArea = css`
+const productDetailLeftArea = css`
   flex: 1 1 0;
   min-width: 0;
   max-width: 657px;
@@ -704,7 +712,7 @@ const thumbImage = css`
   display: block;
 `;
 
-const rightArea = css`
+const productDetailRightArea = css`
   flex: 0 1 390px;
   min-width: 320px;
   max-width: 390px;
@@ -756,7 +764,7 @@ const stars = css`
   font-size: 14px;
 `;
 
-const count = css`
+const productDetailReviewCount = css`
   color: ${theme.colors.textSub};
   font-size: 13px;
   font-weight: ${theme.fontWeight.medium};
@@ -832,7 +840,7 @@ const infoLine = css`
   }
 `;
 
-const dot = css`
+const productDetailInfoDot = css`
   width: 12px;
   height: 12px;
   border-radius: 50%;
@@ -977,6 +985,7 @@ const quantityRow = css`
     }
   }
 `;
+
 const cartButtonWrap = css`
   flex: 1;
   height: 56px;
@@ -1025,7 +1034,7 @@ const emptyDetailBox = css`
   }
 `;
 
-const messageStyle = css`
+const productDetailMessageStyle = css`
   text-align: center;
   padding: 100px 20px;
   font-size: 20px;
