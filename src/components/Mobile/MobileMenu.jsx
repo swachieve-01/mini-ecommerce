@@ -4,7 +4,7 @@ import { useCategoryStore } from "../../stores/CategoryStore";
 import { useEffect } from "react";
 import useAuthStore from "../../stores/useAuthStore";
 
-const MobileCategoryMenuWrapper = styled.div`
+const MobileCategoryWrapper = styled.div`
   position: fixed;
   top: 0;
   left: 0;
@@ -104,7 +104,7 @@ export default function MobileCategoryMenu({ open, onClose }) {
     <>
       <MobileCategoryOverlay open={open} onClick={onClose} />
 
-      <MobileCategoryMenuWrapper open={open}>
+      <MobileCategoryWrapper open={open}>
         <MobileCategoryCloseButton onClick={onClose}>
           ✕
         </MobileCategoryCloseButton>
@@ -185,7 +185,7 @@ export default function MobileCategoryMenu({ open, onClose }) {
               </li>
 
               <li>
-                <NavLink to="/orders" onClick={onClose}>
+                <NavLink to="/steamlist" onClick={onClose}>
                   찜목록
                 </NavLink>
               </li>
@@ -198,7 +198,7 @@ export default function MobileCategoryMenu({ open, onClose }) {
             </>
           )}
         </MobileCategoryList>
-      </MobileCategoryMenuWrapper>
+      </MobileCategoryWrapper>
     </>
   );
 }
