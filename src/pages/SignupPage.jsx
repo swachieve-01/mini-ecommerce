@@ -18,37 +18,51 @@ export default function SignUpPage() {
     name: "",
   });
 
+  /* 약관 동의 상태 */
   const [terms, setTerms] = useState({
     service: false,
     privacy: false,
     marketing: false,
   });
 
+  /* 약관 읽음 상태 */
   const [readTerms, setReadTerms] = useState({
     service: false,
     privacy: false,
     marketing: false,
   });
 
+  /* 모달 상태 */
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTerm, setSelectedTerm] = useState(null);
 
+  /* 이메일 중복 검사 */
   const [isEmailChecked, setIsEmailChecked] = useState(false);
   const [isEmailDuplicate, setIsEmailDuplicate] = useState(null);
 
+  /* 이메일 형식 검사 */
   const isValidEmail = (email) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   };
 
+  /* 비밀번호 형식 검사 */
+  const isValidPassword = (pw) => {
+    return /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&]).{8,12}$/.test(pw);
+  };
+
+  /* 유효성 검사 */
   const isEmailValid = isValidEmail(values.email);
   const isPwMatch = values.pw === values.pwConfirm;
+  const isValidPw = isValidPassword(values.pw);
   const isPwError = values.pwConfirm && !isPwMatch;
 
+  /* 전체 동의 상태 */
   const allChecked = terms.service && terms.privacy && terms.marketing;
 
+  /* 제출 가능 여부 */
   const canSubmit =
     isEmailValid &&
-    values.pw.length >= 8 &&
+    isValidPw &&
     isPwMatch &&
     values.name &&
     terms.service &&
@@ -56,6 +70,7 @@ export default function SignUpPage() {
     isEmailChecked &&
     !isEmailDuplicate;
 
+  /* 입력 변경 핸들러 */
   const handleChange = (key, value) => {
     setValues((prev) => ({ ...prev, [key]: value }));
 
@@ -65,6 +80,7 @@ export default function SignUpPage() {
     }
   };
 
+  /* 약관 동의 핸들러 */
   const handleTermsChange = (key) => {
     if (!readTerms[key]) {
       alert("보기 버튼으로 약관 내용을 먼저 확인해주세요.");
@@ -74,12 +90,14 @@ export default function SignUpPage() {
     setTerms((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
+  /* 전체 동의 핸들러 */
   const handleAllTerms = () => {
     if (!readTerms.service || !readTerms.privacy) {
       alert("필수 약관을 먼저 확인해주세요.");
       return;
     }
 
+    /* 전체 동의 토글 */
     const newValue = !allChecked;
 
     setTerms({
@@ -89,17 +107,20 @@ export default function SignUpPage() {
     });
   };
 
+  /* 모달 열기 */
   const openModal = (termId) => {
     const foundTerm = termsData.find((term) => term.id === termId);
     setSelectedTerm(foundTerm || null);
     setIsModalOpen(true);
   };
 
+  /* 모달 닫기 */
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedTerm(null);
   };
 
+  /* 모달 확인 */
   const handleConfirmTerm = () => {
     if (selectedTerm) {
       setReadTerms((prev) => ({
@@ -116,6 +137,7 @@ export default function SignUpPage() {
     handleCloseModal();
   };
 
+  /* 이메일 중복 검사 */
   const handleCheckEmail = () => {
     if (!isEmailValid) return;
 
@@ -128,6 +150,7 @@ export default function SignUpPage() {
     setIsEmailChecked(true);
   };
 
+  /* 폼 제출 핸들러 */
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -169,6 +192,8 @@ export default function SignUpPage() {
                   type="button"
                   onClick={handleCheckEmail}
                   disabled={!isEmailValid}
+                  isChecked={isEmailChecked}
+                  isDuplicate={isEmailDuplicate}
                 >
                   {isEmailChecked
                     ? isEmailDuplicate
@@ -216,6 +241,12 @@ export default function SignUpPage() {
               />
 
               <MessageArea>
+                {values.pw && !isValidPw && (
+                  <ErrorText>
+                    비밀번호는 8~12자, 영문/숫자/특수문자를 포함해야 합니다.
+                  </ErrorText>
+                )}
+
                 {values.pwConfirm && (
                   <ErrorText match={isPwMatch}>
                     {isPwMatch
@@ -471,10 +502,19 @@ const CheckButton = styled.button`
   border: none;
   box-sizing: border-box;
   cursor: pointer;
+
   background: ${({ theme }) => theme.colors.primary};
   color: ${({ theme }) => theme.colors.white};
   font-size: ${({ theme }) => theme.fontSize.sm};
   font-weight: ${({ theme }) => theme.fontWeight.medium};
+
+  &:hover {
+    ${({ isChecked, isDuplicate }) =>
+      !(isChecked && !isDuplicate) &&
+      `
+      opacity: 0.85;
+    `}
+  }
 
   &:disabled {
     background: ${({ theme }) => theme.colors.gray300};
