@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { getProductDetail } from "../api/product";
 import { useAuthStore } from "../stores/useAuthStore";
 import { useCartStore } from "../stores/useCartStore";
@@ -26,6 +26,7 @@ function toImageArray(value) {
 export default function ProductDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const addToCart = useCartStore((state) => state.addToCart);
@@ -177,7 +178,9 @@ export default function ProductDetailPage() {
 
   const handleAddToCart = () => {
     if (!isAuthenticated) {
-      navigate("/login");
+      navigate("/login", {
+        state: { from: location.pathname },
+      });
       return;
     }
 
@@ -958,6 +961,8 @@ const quantityRow = css`
   }
 
   input[type="number"] {
+    appearance: none;
+    -webkit-appearance: none;
     -moz-appearance: textfield;
   }
 

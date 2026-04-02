@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styled from "@emotion/styled";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "../components/ui/Button";
 import Modal from "../components/ui/Modal";
 import { termsData } from "../data/termsData";
@@ -8,6 +8,8 @@ import logoImage from "../assets/images/푸터 로고.png";
 
 export default function SignUpPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from || "/";
 
   const [values, setValues] = useState({
     email: "",
@@ -133,7 +135,10 @@ export default function SignUpPage() {
 
     console.log("회원가입 완료", values);
     alert("회원가입이 완료되었습니다.");
-    navigate("/login");
+    navigate("/login", {
+      state: { from },
+      replace: true,
+    });
   };
 
   return (

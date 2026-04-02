@@ -1,6 +1,6 @@
 import { useState } from "react";
 import styled from "@emotion/styled";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { login } from "../api";
 import logoImage from "../assets/images/푸터 로고.png";
 import { useAuthStore } from "../stores/useAuthStore";
@@ -9,6 +9,8 @@ import { Button } from "../components/ui/Button";
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from || "/";
 
   /* 저장된 아이디 불러오기 */
   const savedLoginId = localStorage.getItem("savedLoginId") || "";
@@ -76,7 +78,7 @@ export default function LoginPage() {
       useAuthStore.getState().login(result);
 
       alert("로그인 성공!");
-      navigate("/");
+      navigate(from, { replace: true });
     } catch (error) {
       console.error("로그인 에러:", error);
       setErrorMessage(error.message || "로그인 중 오류가 발생했습니다.");
@@ -137,7 +139,9 @@ export default function LoginPage() {
 
             {/* 하단 링크 */}
             <LinkRow>
-              <StyledLink to="/signup">회원가입</StyledLink>
+              <StyledLink to="/signup" state={{ from }}>
+                회원가입
+              </StyledLink>{" "}
               <Divider>|</Divider>
               <StyledLink to="/find-id">아이디 찾기</StyledLink>
               <Divider>|</Divider>
