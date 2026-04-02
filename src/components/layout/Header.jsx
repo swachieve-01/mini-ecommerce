@@ -6,6 +6,7 @@ import styled from "@emotion/styled";
 import MobileCategoryMenu from "../Mobile/MobileMenu";
 import logo from "../../assets/images/logo2.svg";
 import { useAuthStore } from "../../stores/useAuthStore";
+import { useNavigate } from "react-router-dom";
 
 const HeaderWrap = styled.header`
   position: fixed;
@@ -358,6 +359,13 @@ export default function Header() {
   const [cartCount, setCartCount] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
   const { isAuthenticated, logout } = useAuthStore();
+  const [keyword, setKeyword] = useState("");
+  const navigate = useNavigate();
+
+  const handleSearch = () => {
+    if (!keyword.trim()) return;
+    navigate(`/products?keyword=${keyword}`);
+  };
 
   useEffect(() => {
     const updateCartCount = () => {
@@ -404,18 +412,34 @@ export default function Header() {
           </HeaderLogo>
 
           <SearchBox>
-            <input type="text" />
-            <button type="button" aria-label="검색">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                fill="currentColor"
-                viewBox="0 0 16 16"
-              >
-                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
-              </svg>
-            </button>
+            <form
+              style={{
+                display: "flex",
+                alignItems: "center",
+                width: "100%",
+              }}
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleSearch();
+              }}
+            >
+              <input
+                type="text"
+                value={keyword}
+                onChange={(e) => setKeyword(e.target.value)}
+              />
+              <button type="button" aria-label="검색" onClick={handleSearch}>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  fill="currentColor"
+                  viewBox="0 0 16 16"
+                >
+                  <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
+                </svg>
+              </button>
+            </form>
           </SearchBox>
 
           {/* 햄버거 버튼 (모바일) */}
@@ -431,8 +455,12 @@ export default function Header() {
           )}
 
           <UserMenu>
+            <NavLink to="/steamlist">
+              <span>찜리스트</span>
+            </NavLink>
+
             <NavLink to="/orders">
-              <span>찜목록</span>
+              <span>Error</span>
             </NavLink>
 
             <NavLink to="/reviews">
