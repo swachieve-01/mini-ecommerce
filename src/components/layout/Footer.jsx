@@ -113,7 +113,7 @@ const ButtonGroup = styled.div`
 `;
 
 // 임시 버튼 스타일
-const TempButton = styled.div`
+const TempButton = styled.a`
   width: 176px;
   height: 44px;
   background-color: ${(props) => props.theme.colors.primary};
@@ -271,6 +271,7 @@ const CircleButtonList = styled.div`
   gap: 30px;
   margin-top: 60px;
   width: 100%;
+  cursor: pointer;
 
   @media (max-width: 768px) {
     gap: 20px;
@@ -278,7 +279,7 @@ const CircleButtonList = styled.div`
   }
 `;
 
-const CircleButton = styled.div`
+const CircleButton = styled.a`
   width: 47px;
   height: 47px;
   border-radius: 50%;

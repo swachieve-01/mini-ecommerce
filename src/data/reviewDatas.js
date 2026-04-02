@@ -10,8 +10,8 @@ const reviewDatas = [
     title: "촉촉하고 산뜻해서 진정이 필요 할 때 쓰면 너무너무 좋아요!",
     content:
       "평소 면도 독 때문에 턱 주변이 늘 붉었는데, 그린티 팩 쓰고 나서 확실히 진정이 빨라요!! 끈적이는 걸 싫어하는데 마무리가 엄청 좋네요!! 그래서 또 사용하게 되네요.",
-    userId: "anj1****",
-    date: "2025.04.06",
+    userId: "wki34****",
+    date: "2025.11.06",
     option: "3종 팩(10매)",
     categoryId: "skin",
     images: [
@@ -50,7 +50,7 @@ const reviewDatas = [
     content:
       "처음 뿌렸을 때는 상큼한 느낌이 나고 시간이 지나면 부드러운 꽃향이 남아향이 무겁지 않아서 부담 없이 사용할 수 있고 데이트나 약속 있을 때 뿌리기 좋은향수 같아서 디자인도 예쁘고 화당대 위에 올려두고 인테리어 느낌도 나서 만족이에요!!",
     userId: "vvas1****",
-    date: "2025.03.28",
+    date: "2025.01.08",
     option: "로즈 향 80ml",
     categoryId: "perfume",
     images: [
@@ -89,7 +89,7 @@ const reviewDatas = [
     content:
       "집에 쓰고 있는 파운데이션을 다 써가서 추천받아서 구매하게 되었는데요. 발랐을 때 적당한 촉촉함과 자연스럽게 피부연출이 되고 특유의 끈적한 느낌이 없어서 좋았어요!!",
     userId: "anj1****",
-    date: "2025.03.26",
+    date: "2025.03.02",
     option: "150ml (파테)",
     categoryId: "makeup",
     images: [
@@ -106,8 +106,8 @@ const reviewDatas = [
     title: "촉촉하고 가볍게 흡수돼서 진정이 필요할 때 쓰기 좋아요!",
     content:
       "평소 피부가 예민해서 붉어지기 쉬웠는데, 그린티 앰플 쓰고 나서 확실히 진정이 빨라졌어요! 끈적임 없이 흡수돼서 부담 없이 매일 쓰기 좋고, 피부가 편안해지는 느낌이라 계속 손이 가네요!",
-    userId: "anj1****",
-    date: "2025.03.23",
+    userId: "efrqq****",
+    date: "2025.05.02",
     option: "200ml",
     categoryId: "skin",
     images: [
@@ -124,8 +124,8 @@ const reviewDatas = [
     title: "제품이 좀 이상하네요 불량이.. 바로 써야하는데 뭐죠?",
     content:
       "받았는데 하나는 찢어져있는 아주... 네 이상해요. 자주 사용하는 제품인데 이러면 신뢰가 떨어져요.. 상태 보고 사용 하겠습니다.",
-    userId: "anj1****",
-    date: "2025.03.23",
+    userId: "qaze55****",
+    date: "2025.04.11",
     option: "열 케어 650ml",
     categoryId: "hairBody",
     images: [
