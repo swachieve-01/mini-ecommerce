@@ -1,18 +1,21 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import styled from "@emotion/styled";
-import { Section } from "../styles/SectionStyle"; // SectionTitle은 아래에서 커스텀해서 사용
+import { Section } from "../styles/SectionStyle";
 import Pagination from "../components/ui/Pagination";
 import { Link } from "react-router-dom";
 import ReviewItem from "../components/Review/ReviewItem";
 import reviewDatas from "../data/reviewDatas";
+import Modal from "../components/ui/Modal.jsx";
 
+/* =========================
+   레이아웃
+========================= */
 const PageContainer = styled(Section)`
   width: 100%;
-  min-height: auto; /* 내용에 맞게 조절되도록 수정 */
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 100px 0; /* theme.spacing.section 느낌 반영 */
+  padding: 100px 0;
   background-color: ${(props) => props.theme.colors.bg};
 
   @media (max-width: 1024px) {
@@ -20,52 +23,33 @@ const PageContainer = styled(Section)`
   }
 `;
 
-/* 커스텀 섹션 타이틀 (스크린샷의 '스킨케어' 느낌 재현) */
 const CustomSectionTitle = styled.h2`
-  font-size: ${(props) => props.theme.fontSize.displayMd}; /* 40px */
+  font-size: ${(props) => props.theme.fontSize.displayMd};
   font-weight: ${(props) => props.theme.fontWeight.bold};
-  color: ${(props) => props.theme.colors.primaryDark}; /* 녹색 계열 */
-  margin-bottom: 20px;
+  color: ${(props) => props.theme.colors.primaryDark};
+  margin-bottom: 40px;
   text-align: center;
-  padding-bottom: 60px;
-
-  @media (max-width: 768px) {
-    font-size: ${(props) => props.theme.fontSize.xxxl}; /* 모바일 대응 */
-    padding-bottom: 40px;
-  }
 `;
 
 const ReviewSubHeader = styled.div`
   width: 95%;
-  max-width: ${(props) => props.theme.layout.maxWidth}; /* 1440px */
+  max-width: ${(props) => props.theme.layout.maxWidth};
   margin: 0 auto 30px;
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  border-bottom: 2px solid ${(props) => props.theme.colors.black}; /* 두꺼운 실선 */
+  border-bottom: 2px solid ${(props) => props.theme.colors.black};
   padding-bottom: 20px;
 
   @media (max-width: 1024px) {
     flex-direction: column;
-    align-items: center; /* 모바일 중앙 정렬 */
+    align-items: center;
     gap: 20px;
   }
 `;
 
-const NoticeGroup = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-`;
-
 const MainNotice = styled.p`
-  font-size: ${(props) => props.theme.fontSize.xxl}; /* 24px */
-  font-weight: ${(props) => props.theme.fontWeight.medium};
-  color: ${(props) => props.theme.colors.textMain};
-
-  @media (max-width: 1024px) {
-    font-size: ${(props) => props.theme.fontSize.xl};
-  }
+  font-size: ${(props) => props.theme.fontSize.xxl};
 `;
 
 const SubNotice = styled.p`
@@ -74,16 +58,12 @@ const SubNotice = styled.p`
 `;
 
 const MoreLink = styled(Link)`
+  align-self: flex-end;
   font-size: ${(props) => props.theme.fontSize.md};
   font-weight: ${(props) => props.theme.fontWeight.semibold};
-  color: ${(props) => props.theme.colors.textMain};
-  text-decoration: none;
-  border-bottom: 1px solid transparent;
-  transition: ${(props) => props.theme.transition.fast};
 
   &:hover {
     color: ${(props) => props.theme.colors.primary};
-    border-bottom: 1px solid ${(props) => props.theme.colors.primary};
   }
 `;
 
@@ -92,51 +72,171 @@ const ReviewList = styled.div`
   max-width: 1280px;
   display: flex;
   flex-direction: column;
-  gap: 40px; /* 리뷰 간 간격 */
-  margin-bottom: 80px;
+  gap: 20px;
 `;
 
+/* =========================
+   모달
+========================= */
+const ModalImageWrapper = styled.div`
+  position: relative;
+  width: 100%;
+  background: #f9f9f9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const ModalImage = styled.img`
+  max-width: 100%;
+  max-height: 60vh;
+  object-fit: contain;
+`;
+
+const ArrowButton = styled.button`
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.7);
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  ${(props) => (props.direction === "left" ? "left: 10px;" : "right: 10px;")}
+`;
+
+const DetailInfoBox = styled.div`
+  margin-top: 20px;
+  padding: 25px;
+  background: #fff;
+  border-radius: 12px;
+`;
+
+const SectionBlock = styled.div`
+  border-top: 1px solid #eee;
+  padding: 15px 0;
+
+  &:first-of-type {
+    border-top: none;
+  }
+`;
+
+/* =========================
+   컴포넌트
+========================= */
 export default function ReviewPage() {
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
+  const [selectedReview, setSelectedReview] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentImgIdx, setCurrentImgIdx] = useState(0);
 
+  const itemsPerPage = 5;
   const totalPages = Math.ceil(reviewDatas.length / itemsPerPage);
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentReviews = reviewDatas.slice(indexOfFirstItem, indexOfLastItem);
+
+  const currentReviews = reviewDatas.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage,
+  );
+
+  const openModal = (review) => {
+    setSelectedReview(review);
+    setIsModalOpen(true);
+    setCurrentImgIdx(0);
+  };
+
+  const closeModal = () => {
+    setSelectedReview(null);
+    setIsModalOpen(false);
+  };
+
+  const nextImg = useCallback(() => {
+    if (!selectedReview) return;
+    setCurrentImgIdx((prev) => (prev + 1) % selectedReview.images.length);
+  }, [selectedReview]);
+
+  const prevImg = useCallback(() => {
+    if (!selectedReview) return;
+    setCurrentImgIdx(
+      (prev) =>
+        (prev - 1 + selectedReview.images.length) %
+        selectedReview.images.length,
+    );
+  }, [selectedReview]);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (!isModalOpen) return;
+      if (e.key === "ArrowLeft") prevImg();
+      else if (e.key === "ArrowRight") nextImg();
+      else if (e.key === "Escape") closeModal();
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isModalOpen, prevImg, nextImg]);
 
   return (
     <PageContainer>
-      {/* 1. 상단 제목 영역 (스킨케어 페이지 스타일 인용) */}
       <CustomSectionTitle>고객 리뷰</CustomSectionTitle>
 
-      {/* 2. 안내 및 링크 영역 */}
       <ReviewSubHeader>
-        <NoticeGroup>
-          <MainNotice>
-            상품 정보 및 가격은 내부 사정에 따라 변경될 수 있습니다.
-          </MainNotice>
-          <SubNotice>
-            ※ 상품 후기는 실제 구매 고객이 작성한 내용이며 개인의 경험에 따라
-            차이가 있을 수 있습니다.
-          </SubNotice>
-        </NoticeGroup>
+        <MainNotice>
+          상품 정보 및 가격은 내부 사정에 따라 변경될 수 있습니다.
+        </MainNotice>
+        <SubNotice>※ 실제 구매 후기이며 개인차가 있을 수 있습니다.</SubNotice>
         <MoreLink to="/products">상품 더보러가기 →</MoreLink>
       </ReviewSubHeader>
 
-      {/* 3. 리뷰 리스트 영역 */}
+      {/* ✅ 핵심 변경 부분 */}
       <ReviewList>
         {currentReviews.map((review) => (
-          <ReviewItem key={review.id} review={review} />
+          <ReviewItem key={review.id} review={review} onOpenModal={openModal} />
         ))}
       </ReviewList>
 
-      {/* 4. 페이지네이션 */}
       <Pagination
         totalPages={totalPages}
         currentPage={currentPage}
         onPageChange={setCurrentPage}
       />
+
+      <Modal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        title={selectedReview?.productName}
+      >
+        {selectedReview && (
+          <>
+            <ModalImageWrapper>
+              {selectedReview.images?.length > 1 && (
+                <>
+                  <ArrowButton direction="left" onClick={prevImg}>
+                    &#10094;
+                  </ArrowButton>
+                  <ArrowButton direction="right" onClick={nextImg}>
+                    &#10095;
+                  </ArrowButton>
+                </>
+              )}
+              <ModalImage src={selectedReview.images?.[currentImgIdx]} />
+            </ModalImageWrapper>
+
+            <DetailInfoBox>
+              <SectionBlock>⭐ {selectedReview.rating}</SectionBlock>
+
+              <SectionBlock>
+                ID: {selectedReview.userId} | {selectedReview.date}
+              </SectionBlock>
+
+              <SectionBlock>
+                <h4>{selectedReview.title}</h4>
+                <p>{selectedReview.content}</p>
+              </SectionBlock>
+            </DetailInfoBox>
+          </>
+        )}
+      </Modal>
     </PageContainer>
   );
 }
