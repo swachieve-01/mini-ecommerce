@@ -8,6 +8,7 @@ import { useCartStore } from "../stores/useCartStore";
 import Modal from "../components/ui/Modal";
 import { Button } from "../components/ui/Button";
 import theme from "../styles/theme";
+import useToastStore from "../stores/useToastStore";
 
 function toImageArray(value) {
   if (!value) return [];
@@ -24,6 +25,7 @@ function toImageArray(value) {
 }
 
 export default function ProductDetailPage() {
+  const showToast = useToastStore((state) => state.showToast);
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
@@ -184,6 +186,7 @@ export default function ProductDetailPage() {
       return;
     }
 
+    // ✅ 수정 1: 선택한 수량(quantity)만큼 담기
     addToCart({
       id: product.id,
       name: product.name,
@@ -194,7 +197,8 @@ export default function ProductDetailPage() {
       quantity,
     });
 
-    navigate("/cart");
+    // ✅ 수정 2: 페이지 이동 대신 토스트 알림
+    showToast(`${product.name} ${quantity}개가 장바구니에 담겼습니다! 🛒`);
   };
 
   if (loading) {
@@ -208,7 +212,6 @@ export default function ProductDetailPage() {
       </div>
     );
   }
-
   return (
     <>
       <div css={productDetailPageWrap}>
