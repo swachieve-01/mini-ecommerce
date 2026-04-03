@@ -6,6 +6,7 @@ import { getCategories } from "../api/main";
 import apiClient from "../api/apiClient";
 import styled from "@emotion/styled";
 import { useSearchParams } from "react-router-dom";
+import { useLoadingStore } from "../stores/useLoadingStore";
 
 const PaginationWrapper = styled.div`
   display: flex;
@@ -46,6 +47,8 @@ const PageButton = styled.button`
 export default function ProductsListPage() {
   const [searchParams] = useSearchParams();
   const keyword = searchParams.get("keyword");
+  const startLoading = useLoadingStore((state) => state.startLoading);
+  const stopLoading = useLoadingStore((state) => state.stopLoading);
 
   const { category: paramCategory } = useParams();
 
@@ -101,6 +104,7 @@ export default function ProductsListPage() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
+        startLoading();
         const res = keyword
           ? await apiClient(`/api/team1/search?keyword=${keyword}`)
           : await apiClient("/api/team1/products");
@@ -126,6 +130,8 @@ export default function ProductsListPage() {
       } catch (e) {
         console.error(e);
         setProducts([]);
+      } finally {
+        stopLoading("상품을 불러오고 있어요");
       }
     };
 

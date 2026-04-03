@@ -9,6 +9,7 @@ import useToastStore from "../stores/useToastStore";
 import Modal from "../components/ui/Modal";
 import { Button } from "../components/ui/Button";
 import theme from "../styles/theme";
+import { useLoadingStore } from "../stores/useLoadingStore";
 
 function toImageArray(value) {
   if (Array.isArray(value)) return value.filter(Boolean);
@@ -21,12 +22,13 @@ export default function ProductDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
+  const startLoading = useLoadingStore((state) => state.startLoading);
+  const stopLoading = useLoadingStore((state) => state.stopLoading);
 
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const addToCart = useCartStore((state) => state.addToCart);
 
   const [product, setProduct] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [selectedImage, setSelectedImage] = useState("");
   const [quantity, setQuantity] = useState(1);
@@ -39,7 +41,7 @@ export default function ProductDetailPage() {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        setLoading(true);
+        startLoading();
         setError("");
 
         const result = await getProductDetail(id);
@@ -58,14 +60,14 @@ export default function ProductDetailPage() {
       } catch (err) {
         setError(err.message || "오류가 발생했습니다.");
       } finally {
-        setLoading(false);
+        stopLoading("상품을 불러오고 있어요");
       }
     };
 
     if (id) {
       fetchProduct();
     }
-  }, [id]);
+  }, [id, startLoading, stopLoading]);
 
   useEffect(() => {
     if (!isModalOpen) return;
@@ -172,10 +174,6 @@ export default function ProductDetailPage() {
 
     showToast(`${product.name} ${quantity}개가 장바구니에 담겼습니다! 🛒`);
   };
-
-  if (loading) {
-    return <div css={productDetailMessageStyle}>로딩 중...</div>;
-  }
 
   if (error || !product) {
     return (
