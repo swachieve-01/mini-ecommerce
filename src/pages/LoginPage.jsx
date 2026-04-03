@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "@emotion/styled";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { login } from "../api";
@@ -11,6 +11,10 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from || "/";
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   /* 저장된 아이디 불러오기 */
   const savedLoginId = localStorage.getItem("savedLoginId") || "";
