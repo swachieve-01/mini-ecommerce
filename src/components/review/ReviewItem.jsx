@@ -1,9 +1,7 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 
 import { Button } from "../ui/Button";
 import styled from "@emotion/styled";
-
-// --- Styled Components ---
 
 const Card = styled.div`
   width: 100%;
@@ -15,7 +13,6 @@ const Card = styled.div`
   background: #fff;
   border: 1px solid ${({ theme }) => theme.colors.gray200};
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
-
   transition: all 0.2s ease;
 
   &:hover {
@@ -76,7 +73,6 @@ const ImageSection = styled.div`
   }
 
   ${({ theme }) => theme.media.tablet} {
-    /* 태블릿일 때 이미지가 너무 작아 보이면 가로폭을 살짝 키워 밸런스를 맞춤 */
     width: 180px;
     height: 220px;
   }
@@ -95,13 +91,9 @@ const ContentSection = styled.div`
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
   min-height: 250px;
-  text-align: left;
-  width: 100%;
 
   ${({ theme }) => theme.media.tablet} {
-    /* 태블릿에서 이미지는 작고 글만 옆으로 너무 길어지는 것 방지 */
     max-width: 100%;
   }
 
@@ -116,11 +108,9 @@ const Header = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  width: 100%;
 
   ${({ theme }) => theme.media.smallMobile} {
     flex-direction: column;
-    align-items: flex-start;
     gap: 10px;
   }
 
@@ -150,8 +140,6 @@ const RatingRow = styled.div`
   margin-bottom: 10px;
   color: ${({ theme }) => theme.colors.stars};
   font-size: ${({ theme }) => theme.fontSize.sm};
-  display: flex;
-  align-items: center;
 `;
 
 const UserId = styled.span`
@@ -167,11 +155,6 @@ const ReviewTitle = styled.h3`
   color: ${({ theme }) => theme.colors.textMain};
 `;
 
-const ContentContainer = styled.div`
-  max-width: 650px;
-  margin-bottom: 10px;
-`;
-
 const ContentText = styled.p`
   font-size: ${({ theme }) => theme.fontSize.xs};
   color: ${({ theme }) => theme.colors.gray600};
@@ -180,7 +163,6 @@ const ContentText = styled.p`
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  height: 2.8em;
 `;
 
 const MoreButton = styled.button`
@@ -199,8 +181,6 @@ const MoreButton = styled.button`
 const BottomSection = styled.div`
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
-  width: 100%;
   margin-top: auto;
   gap: 20px;
 
@@ -224,7 +204,6 @@ const SubImages = styled.div`
 
   ${({ theme }) => theme.media.mobile} {
     width: 100%;
-    /* 모바일에서 서브 이미지들이 가로를 균등하게 점유 */
     & > div {
       flex: 1;
     }
@@ -236,7 +215,6 @@ const SubImgWrapper = styled.div`
   flex: 1;
   width: 120px;
   aspect-ratio: 1.4 / 1;
-
   cursor: pointer;
   overflow: hidden;
   border-radius: ${({ theme }) => theme.radius.sm};
@@ -246,7 +224,7 @@ const SubImgWrapper = styled.div`
     filter: brightness(0.7);
   }
 
-  &:hover span {
+  &:hover .zoom-label {
     opacity: 1;
     visibility: visible;
   }
@@ -263,71 +241,86 @@ const InfoGroup = styled.div`
   color: ${({ theme }) => theme.colors.textSub};
   display: flex;
   flex-direction: column;
-  padding-bottom: 2px;
-  flex-shrink: 0;
 `;
 
-// --- Component Logic ---
-
 export default function ReviewItem({ review, onOpenModal }) {
-  const [count, setCount] = useState(review.helpCount || 0);
+  // review가 null일 경우에도 Hook 호출 순서를 유지하기 위해 안전 객체 사용
+  const safeReview = review ?? {};
+
+  // 초기값 설정 시 review가 undefined여도 에러 방지
+  const [count, setCount] = useState(safeReview.helpCount ?? 0);
+
+  // images 접근 시 undefined 방어
+  const images = safeReview.images ?? [];
+  const imageCount = images.length;
+
+  // 모달 열기 핸들러 (review 없을 경우 실행 방지)
+  const handleOpenModal = useCallback(() => {
+    if (!review) return;
+    onOpenModal(review);
+  }, [onOpenModal, review]);
+
+  // 도움돼요 버튼 (이벤트 버블링 방지 + 함수형 업데이트)
+  const handleLike = useCallback((e) => {
+    e.stopPropagation();
+    setCount((prev) => prev + 1);
+  }, []);
+
+  // 단순 연산은 useMemo 대신 직접 계산 (불필요한 최적화 제거)
+  const ratingStars = "★".repeat(review?.rating ?? 5);
+
+  // review 없으면 렌더링하지 않음
   if (!review) return null;
 
   return (
     <Card>
-      {/* 메인 이미지 클릭 시 확대 */}
-      <ImageSection onClick={() => onOpenModal(review)}>
-        <MainImg src={review.images?.[0]} alt="리뷰 메인" />
-        <ZoomLabel>확대하기 →</ZoomLabel>
+      <ImageSection onClick={handleOpenModal}>
+        <MainImg src={images[0]} alt={review.title || review.productName} />
+        <ZoomLabel>확대하기</ZoomLabel>
       </ImageSection>
 
       <ContentSection>
         <Header>
           <ProductName>{review.productName}</ProductName>
-          <Button
-            size="small"
-            variant="outline"
-            onClick={(e) => {
-              e.stopPropagation();
-              setCount(count + 1);
-            }}
-          >
+
+          <Button size="small" variant="outline" onClick={handleLike}>
             도움돼요 {count}
           </Button>
         </Header>
 
         <RatingRow>
-          {"★".repeat(review.rating || 5)}
+          {ratingStars}
           <UserId>{review.userId}</UserId>
         </RatingRow>
 
         <ReviewTitle>{review.title}</ReviewTitle>
-        <ContentContainer>
+
+        <div>
           <ContentText>{review.content}</ContentText>
-          <MoreButton onClick={() => onOpenModal(review)}>[더보기]</MoreButton>
-        </ContentContainer>
+          <MoreButton onClick={handleOpenModal}>[더보기]</MoreButton>
+        </div>
 
         <BottomSection>
           <SubImages>
-            {review.images?.slice(1, 5).map((img, idx) => (
-              <SubImgWrapper key={idx} onClick={() => onOpenModal(review)}>
-                <MainImg src={img} alt={`서브-${idx}`} />
-                {/* 5장 이상일 때 더보기 표시 로직 추가 기능 */}
-                {idx === 3 && review.images.length > 5 && (
-                  <div className="more-overlay">
-                    +{review.images.length - 5}
-                  </div>
+            {images.slice(1, 5).map((img, idx) => (
+              <SubImgWrapper key={`${img}-${idx}`} onClick={handleOpenModal}>
+                <MainImg
+                  src={img}
+                  alt={`${review.productName} 리뷰 이미지 ${idx + 1}`}
+                />
+
+                {idx === 3 && imageCount > 5 && (
+                  <div className="more-overlay">+{imageCount - 5}</div>
                 )}
-                <ZoomLabel style={{ fontSize: "16px", padding: "4px 8px" }}>
-                  확대하기
-                </ZoomLabel>
+
+                <ZoomLabel>확대</ZoomLabel>
               </SubImgWrapper>
             ))}
           </SubImages>
 
           <InfoGroup>
-            <span>작성일: {review.date}</span>
-            <span>옵션: {review.option}</span>
+            <div>작성일: {review.date}</div>
+            <div>옵션: {review.option}</div>
           </InfoGroup>
         </BottomSection>
       </ContentSection>
