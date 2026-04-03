@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import styled from "@emotion/styled";
 import { Section, SectionTitle } from "../styles/SectionStyle";
 import { getHotdeals } from "../api/main";
+import { useNavigate } from "react-router-dom";
 
 // 이미지 영역
 const HotDealImage = styled.div`
@@ -88,6 +89,7 @@ const HotDealButton = styled.button`
 // 상품명 없어서 대체 문구 사용
 export default function HotdealSection() {
   const [hotdeals, setHotdeals] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchHotdeals = async () => {
@@ -116,7 +118,11 @@ export default function HotdealSection() {
                 <HotDealTitle>{item.name || "Glow Your Moment"}</HotDealTitle>
               </HotDealCenter>
 
-              <HotDealButton>보러가기 →</HotDealButton>
+              <HotDealButton
+                onClick={() => navigate(`/products/${item.productId}`)}
+              >
+                보러가기 →
+              </HotDealButton>
             </HotDealOverlay>
           </HotDealImage>
         ))}
