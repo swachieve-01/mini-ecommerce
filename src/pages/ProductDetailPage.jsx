@@ -154,6 +154,7 @@ export default function ProductDetailPage() {
       return;
     }
 
+    console.log("현제 상품 데이터 : ", product);
     addToCart({
       id: product.id,
       name: product.name,
@@ -162,6 +163,7 @@ export default function ProductDetailPage() {
       image: selectedImage || thumbImages[0] || "",
       option: "기본 옵션",
       quantity,
+      category: product.categoryId,
     });
 
     showToast(`${product.name} ${quantity}개가 장바구니에 담겼습니다! 🛒`);
