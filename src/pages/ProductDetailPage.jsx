@@ -33,6 +33,10 @@ export default function ProductDetailPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [id]);
+
+  useEffect(() => {
     const fetchProduct = async () => {
       try {
         setLoading(true);
