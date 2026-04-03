@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useCartStore } from "../stores/useCartStore";
 import CartItem from "../components/product/CartItem";
 import { Button } from "../components/ui/Button";
+import { useEffect } from "react";
 
 const CartPageContainer = styled.div`
   width: 100%;
@@ -170,6 +171,9 @@ export default function CartPage() {
     .filter((item) => item.checked)
     .reduce((sum, item) => sum + item.price * item.quantity, 0);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   return (
     <CartPageContainer>
       <CartPageHeaer>
