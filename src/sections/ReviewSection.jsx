@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import styled from "@emotion/styled";
 import { Section, SectionTitle } from "../styles/SectionStyle";
 import { getReviews } from "../api/main";
+import { useNavigate } from "react-router-dom";
 
 // 리뷰 카드 정렬
 export const ReviewCardArea = styled.div`
@@ -113,6 +114,7 @@ const ReviewWrapper = styled(Section)`
 
 export default function ReviewSection() {
   const [reviews, setReviews] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchReviews = async () => {
@@ -132,7 +134,11 @@ export default function ReviewSection() {
       <SectionTitle>상품 후기</SectionTitle>
       <ReviewCardArea>
         {reviews.map((item) => (
-          <ReviewCard key={item.id}>
+          <ReviewCard
+            key={item.id}
+            onClick={() => navigate(`/reviews?productId=${item.productId}`)}
+            style={{ cursor: "pointer" }}
+          >
             <ReviewHeader>
               <RatingStars>★★★★★</RatingStars>
               {item.isBest && <ReviewBadge>BEST</ReviewBadge>}

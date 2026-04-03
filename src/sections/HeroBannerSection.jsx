@@ -3,6 +3,8 @@ import { heroBannerMeta } from "../data/banners";
 import { getMainBanner } from "../api/Banner";
 import { BannerImage, BannerWrapper } from "../styles/BannerStyle";
 import styled from "@emotion/styled";
+import { useNavigate } from "react-router-dom";
+import { useLoadingStore } from "../stores/useLoadingStore";
 
 // 텍스트 박스
 const TextBox = styled.div`
@@ -146,6 +148,8 @@ const RightIcon = () => (
 export default function HeroSection() {
   const [banners, setBanners] = useState([]);
   const [current, setCurrent] = useState(0);
+  const startLoading = useLoadingStore((state) => state.startLoading);
+  const stopLoading = useLoadingStore((state) => state.stopLoading);
 
   // pc버전 밀어서
   const [isDragging, setIsDragging] = useState(false);
@@ -154,14 +158,20 @@ export default function HeroSection() {
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
 
+  const navigate = useNavigate();
+
   // 데이터 가져오기
   useEffect(() => {
     const fetchData = async () => {
       try {
+        startLoading();
+
         const data = await getMainBanner();
         setBanners(data);
       } catch (e) {
         console.error(e);
+      } finally {
+        stopLoading();
       }
     };
     fetchData();
@@ -252,6 +262,12 @@ export default function HeroSection() {
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
+      onClick={() => {
+        if (!meta.hasButton) {
+          navigate(`/products/${banner.productId}`);
+        }
+      }}
+      style={{ cursor: !meta.hasButton ? "pointer" : "default" }}
     >
       <BannerImage src={banner.src} />
 
@@ -260,7 +276,13 @@ export default function HeroSection() {
         <SubText isWhiteText={meta.isWhiteText}>{meta.sub}</SubText>
 
         {meta.hasButton && (
-          <BannerButton isWhite={meta.isWhiteButton}>
+          <BannerButton
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate(`/products/${banner.productId}`);
+            }}
+            isWhite={meta.isWhiteButton}
+          >
             지금 보러가기
           </BannerButton>
         )}
