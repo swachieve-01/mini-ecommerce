@@ -10,6 +10,7 @@ import SignupPage from "../pages/SignupPage";
 import ProductListPage from "../pages/ProductListPage";
 import ProductDetailPage from "../pages/ProductDetailPage";
 import ReviewPage from "../pages/ReviewPage";
+import SteamListPage from "../pages/SteamListPage";
 
 // protected pages
 import CartPage from "../pages/CartPage";
@@ -31,6 +32,8 @@ export default function AppRouter() {
         <Route path="/products" element={<ProductListPage />} />
         <Route path="/products/:id" element={<ProductDetailPage />} />
         <Route path="/reviews" element={<ReviewPage />} />
+        {/* 찜리스트 */}
+        <Route path="/Steamlist" element={<SteamListPage />} />
       </Route>
 
       {/* 로그인 필요한 페이지 */}

@@ -277,13 +277,14 @@ const InfoGroup = styled.div`
 
 // --- Component Logic ---
 
-export default function ReviewItem({ review }) {
+export default function ReviewItem({ review, onOpenModal }) {
   const [count, setCount] = useState(review.helpCount || 0);
   if (!review) return null;
 
   return (
     <Card>
-      <ImageSection>
+      {/* 메인 이미지 클릭 시 확대 */}
+      <ImageSection onClick={() => onOpenModal(review)}>
         <MainImg src={review.images?.[0]} alt="리뷰 메인" />
         <ZoomLabel>확대하기 →</ZoomLabel>
       </ImageSection>
@@ -311,14 +312,20 @@ export default function ReviewItem({ review }) {
         <ReviewTitle>{review.title}</ReviewTitle>
         <ContentContainer>
           <ContentText>{review.content}</ContentText>
-          <MoreButton>[더보기]</MoreButton>
+          <MoreButton onClick={() => onOpenModal(review)}>[더보기]</MoreButton>
         </ContentContainer>
 
         <BottomSection>
           <SubImages>
-            {review.images?.slice(1, 4).map((img, idx) => (
-              <SubImgWrapper key={idx}>
-                <MainImg src={img} alt="서브" />
+            {review.images?.slice(1, 5).map((img, idx) => (
+              <SubImgWrapper key={idx} onClick={() => onOpenModal(review)}>
+                <MainImg src={img} alt={`서브-${idx}`} />
+                {/* 5장 이상일 때 더보기 표시 로직 추가 기능 */}
+                {idx === 3 && review.images.length > 5 && (
+                  <div className="more-overlay">
+                    +{review.images.length - 5}
+                  </div>
+                )}
                 <ZoomLabel style={{ fontSize: "11px", padding: "4px 8px" }}>
                   확대하기
                 </ZoomLabel>

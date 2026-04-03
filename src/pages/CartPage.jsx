@@ -1,21 +1,23 @@
 import React from "react";
 import styled from "@emotion/styled";
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
 import { useNavigate } from "react-router-dom";
 import { useCartStore } from "../stores/useCartStore";
-
+import CartItem from "../components/product/CartItem";
 import { Button } from "../components/ui/Button";
 
 const CartPageContainer = styled.div`
   width: 100%;
   max-width: 1440px;
+  margin: 0 auto;
   padding: 56px 80px 0 80px;
+  display: flex;
+  flex-direction: column;
 `;
 
 const CartPageHeaer = styled.div`
   display: flex;
   flex-direction: column;
+
   align-items: start;
   gap: ${({ theme }) => theme.spacing.lg};
   padding-left: 17px;
@@ -42,10 +44,12 @@ const CartD = styled.p`
 
 const CartMainContainer = styled.div`
   width: 100%;
-  height: 1400px;
+  min-height: 800px;
   border: 1px solid ${({ theme }) => theme.colors.borderFocus};
-  margin-top: 64px;
+  margin-top: 67px;
   background-color: ${({ theme }) => theme.colors.bgSoft};
+  display: flex;
+  flex-direction: column;
 `;
 
 const CartHeader = styled.div`
@@ -58,6 +62,7 @@ const CartHeader = styled.div`
   box-sizing: border-box;
   box-shadow: ${({ theme }) => theme.shadow.lg};
   padding: 16px 58px 16px 51px;
+  background-color: #fff;
 `;
 
 const CheckBox = styled.div`
@@ -105,12 +110,13 @@ const CartViewComtainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100%;
+  flex: 1;
 `;
 
 const CartBox = styled.div`
   display: flex;
   flex-direction: column;
+  align-items: center;
 `;
 
 const CartMainTitle = styled.h2`
@@ -127,11 +133,42 @@ const CartMainMemo = styled.p`
   margin-top: 18px;
 `;
 
+const CartFooter = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding: 40px 58px;
+  gap: 24px;
+  background-color: #fff;
+  border-top: 1px solid ${({ theme }) => theme.colors.border};
+`;
+
+const TotalPriceBox = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  font-size: 24px;
+  font-weight: 700;
+
+  span.label {
+    font-size: 18px;
+    font-weight: 400;
+    color: #666;
+  }
+`;
+
 export default function CartPage() {
-  const navigate = useNavigate(); // 버튼 이동을 위해 필요
+  const navigate = useNavigate();
   const cart = useCartStore((state) => state.cart);
-  const updateQuantity = useCartStore((state) => state.updateQuantity);
   const removeFromCart = useCartStore((state) => state.removeFromCart);
+  const toggleAllCheck = useCartStore((state) => state.toggleAllCheck);
+  const removeSelected = useCartStore((state) => state.removeSelected);
+
+  const isAllChecked = cart.length > 0 && cart.every((item) => item.checked);
+
+  const totalPrice = cart
+    .filter((item) => item.checked)
+    .reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   return (
     <CartPageContainer>
@@ -144,7 +181,12 @@ export default function CartPage() {
       <CartMainContainer>
         <CartHeader>
           <CheckBox>
-            <StyledCheckbox type="checkbox" id="all-select" />
+            <StyledCheckbox
+              type="checkbox"
+              id="all-select"
+              checked={isAllChecked}
+              onChange={() => toggleAllCheck(isAllChecked)}
+            />
             <StyleCheckText htmlFor="all-select">전체선택</StyleCheckText>
           </CheckBox>
 
@@ -154,31 +196,66 @@ export default function CartPage() {
               height="38px"
               variant="outline"
               textColor="black"
-              fontSize="lg"
+              onClick={removeSelected}
             >
               선택삭제
             </Button>
           </DelBox>
         </CartHeader>
 
-        <CartViewComtainer>
-          <CartBox>
-            <CartMainTitle>장바구니가 비었습니다</CartMainTitle>
-            <CartMainMemo>원하시는 상품을 장바구니에 담아보세요</CartMainMemo>
+        {cart.length > 0 ? (
+          /* ✅ 상품이 있을 때: 리스트 + 푸터 섹션 */
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              width: "100%",
+              flex: 1,
+            }}
+          >
+            <div style={{ flex: 1, backgroundColor: "#fff" }}>
+              {cart.map((item) => (
+                <CartItem key={item.id} item={item} onRemove={removeFromCart} />
+              ))}
+            </div>
 
-            {/* 3. 기존 ViewProductButton 대신 공통 Button 사용 */}
-            <Button
-              width="280px"
-              height="48px"
-              radius="sm"
-              fontSize="xl"
-              style={{ marginTop: "20px" }}
-              onClick={() => navigate("/products")}
-            >
-              상품 보러가기 →
-            </Button>
-          </CartBox>
-        </CartViewComtainer>
+            {/* ✅ 하단 합계 영역 추가 */}
+            <CartFooter>
+              <TotalPriceBox>
+                <span className="label">총 상품금액</span>
+                <span className="price">{totalPrice.toLocaleString()}원</span>
+              </TotalPriceBox>
+              <Button
+                width="280px"
+                height="56px"
+                fontSize="xl"
+                radius="sm"
+                onClick={() => navigate("/order")}
+                disabled={totalPrice === 0}
+              >
+                주문하기
+              </Button>
+            </CartFooter>
+          </div>
+        ) : (
+          /* ✅ 상품이 없을 때 */
+          <CartViewComtainer>
+            <CartBox>
+              <CartMainTitle>장바구니가 비었습니다</CartMainTitle>
+              <CartMainMemo>원하시는 상품을 장바구니에 담아보세요</CartMainMemo>
+              <Button
+                width="280px"
+                height="48px"
+                radius="sm"
+                fontSize="xl"
+                style={{ marginTop: "20px" }}
+                onClick={() => navigate("/products")}
+              >
+                상품 보러가기 →
+              </Button>
+            </CartBox>
+          </CartViewComtainer>
+        )}
       </CartMainContainer>
     </CartPageContainer>
   );

@@ -5,25 +5,19 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { getProductDetail } from "../api/product";
 import { useAuthStore } from "../stores/useAuthStore";
 import { useCartStore } from "../stores/useCartStore";
+import useToastStore from "../stores/useToastStore";
 import Modal from "../components/ui/Modal";
 import { Button } from "../components/ui/Button";
 import theme from "../styles/theme";
 
 function toImageArray(value) {
-  if (!value) return [];
-
-  if (Array.isArray(value)) {
-    return value.filter(Boolean);
-  }
-
-  if (typeof value === "string") {
-    return [value];
-  }
-
+  if (Array.isArray(value)) return value.filter(Boolean);
+  if (value) return [value];
   return [];
 }
 
 export default function ProductDetailPage() {
+  const showToast = useToastStore((state) => state.showToast);
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
@@ -35,7 +29,6 @@ export default function ProductDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [selectedImage, setSelectedImage] = useState("");
-  const [selectedOption, setSelectedOption] = useState("기본 옵션");
   const [quantity, setQuantity] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -46,28 +39,18 @@ export default function ProductDetailPage() {
         setError("");
 
         const result = await getProductDetail(id);
-        const data = result?.data ?? null;
+        const data = result.data;
 
-        if (!result?.success || !data) {
-          throw new Error(
-            result?.message || "상품 정보를 불러오지 못했습니다.",
-          );
+        if (!result.success || !data) {
+          throw new Error(result.message || "상품 정보를 불러오지 못했습니다.");
         }
 
         setProduct(data);
 
         const firstImage =
-          data.thumbnails?.[0] ||
-          data.images?.[0] ||
-          data.thumbnailUrls?.[0] ||
-          data.imageUrl ||
-          data.thumbnail ||
-          data.detailImage ||
-          data.descriptionImage ||
-          "";
+          data.thumbnails?.[0] || data.imageUrl || data.detailImage || "";
 
         setSelectedImage(firstImage);
-        setSelectedOption(data.options?.[0] || "기본 옵션");
       } catch (err) {
         setError(err.message || "오류가 발생했습니다.");
       } finally {
@@ -98,12 +81,7 @@ export default function ProductDetailPage() {
 
     const candidates = [
       ...toImageArray(product.thumbnails),
-      ...toImageArray(product.images),
-      ...toImageArray(product.thumbnailUrls),
-      ...toImageArray(product.subImages),
-      ...toImageArray(product.galleryImages),
       ...toImageArray(product.imageUrl),
-      ...toImageArray(product.thumbnail),
     ];
 
     return [...new Set(candidates)];
@@ -112,15 +90,7 @@ export default function ProductDetailPage() {
   const detailImages = useMemo(() => {
     if (!product) return [];
 
-    const candidates = [
-      ...toImageArray(product.detailImages),
-      ...toImageArray(product.detailImageUrls),
-      ...toImageArray(product.descriptionImages),
-      ...toImageArray(product.detailImage),
-      ...toImageArray(product.descriptionImage),
-    ];
-
-    return [...new Set(candidates)];
+    return [...new Set(toImageArray(product.detailImage))];
   }, [product]);
 
   const salePrice = product?.discountPrice ?? product?.price ?? 0;
@@ -184,33 +154,39 @@ export default function ProductDetailPage() {
       return;
     }
 
+    console.log("현제 상품 데이터 : ", product);
     addToCart({
       id: product.id,
       name: product.name,
       price: salePrice,
       originPrice,
-      image: selectedImage,
-      option: selectedOption,
+      image: selectedImage || thumbImages[0] || "",
+      option: "기본 옵션",
       quantity,
+      category: product.categoryId,
     });
 
-    navigate("/cart");
+    showToast(`${product.name} ${quantity}개가 장바구니에 담겼습니다! 🛒`);
   };
 
   if (loading) {
-    return <div css={messageStyle}>로딩 중...</div>;
+    return <div css={productDetailMessageStyle}>로딩 중...</div>;
   }
 
   if (error || !product) {
-    return <div css={messageStyle}>{error || "상품 정보가 없습니다."}</div>;
+    return (
+      <div css={productDetailMessageStyle}>
+        {error || "상품 정보가 없습니다."}
+      </div>
+    );
   }
 
   return (
     <>
-      <div css={pageWrap}>
-        <div css={sheet}>
+      <div css={productDetailPageWrap}>
+        <div css={productDetailSheet}>
           <section css={topSection}>
-            <div css={leftArea}>
+            <div css={productDetailLeftArea}>
               <div css={mainImageStage}>
                 {thumbImages.length > 1 && (
                   <button
@@ -278,20 +254,20 @@ export default function ProductDetailPage() {
               </div>
             </div>
 
-            <div css={rightArea}>
+            <div css={productDetailRightArea}>
               <h1 css={titleText}>{product.name}</h1>
 
               <div
                 css={ratingRow}
                 onClick={() => navigate(`/reviews?productId=${product.id}`)}
-                style={{ cursor: "pointer" }}
               >
                 <span css={stars}>★★★★★</span>
-                <span css={count}>
+                <span css={productDetailReviewCount}>
                   {rating}
                   {reviewCount > 0 ? ` (${reviewCount})` : ""}
                 </span>
               </div>
+
               <div css={priceArea}>
                 <div css={priceRow}>
                   <span css={salePriceText}>
@@ -310,26 +286,22 @@ export default function ProductDetailPage() {
                 </div>
               </div>
 
+              {product.description ? (
+                <p css={descriptionText}>{product.description}</p>
+              ) : null}
+
               <div css={infoList}>
                 <div css={infoLine}>
-                  <span css={dot} />
+                  <span css={productDetailInfoDot} />
                   <span>
-                    {product.deliveryInfo || (
-                      <>
-                        배송정보, 무료배송 <strong>(당일 배송 가능)</strong>
-                      </>
-                    )}
+                    배송정보, 무료배송 <strong>(당일 배송 가능)</strong>
                   </span>
                 </div>
 
                 <div css={infoLine}>
-                  <span css={dot} />
+                  <span css={productDetailInfoDot} />
                   <span>
-                    {product.pointInfo || (
-                      <>
-                        적립금, 혜택 <strong>(0.4%)</strong>
-                      </>
-                    )}
+                    적립금, 혜택 <strong>(0.4%)</strong>
                   </span>
                 </div>
               </div>
@@ -338,37 +310,17 @@ export default function ProductDetailPage() {
                 <div css={guideTitle}>배송안내</div>
 
                 <ul css={guideList}>
-                  {product.benefits?.length ? (
-                    product.benefits.map((benefit, index) => (
-                      <li key={`${benefit}-${index}`}>{benefit}</li>
-                    ))
-                  ) : (
-                    <>
-                      <li>오후 3시 이전, 당일 배송</li>
-                      <li>평균 배송기간 1~2일 소요</li>
-                      <li>해당 서비스 가능 지역에 한함, 외 별도 추가비용</li>
-                    </>
-                  )}
+                  <li>오후 3시 이전, 당일 배송</li>
+                  <li>평균 배송기간 1~2일 소요</li>
+                  <li>해당 서비스 가능 지역에 한함, 외 별도 추가비용</li>
                 </ul>
               </div>
 
               <div css={optionSection}>
                 <p css={optionLabel}>옵션 선택</p>
 
-                <select
-                  css={selectBox}
-                  value={selectedOption}
-                  onChange={(e) => setSelectedOption(e.target.value)}
-                >
-                  {product.options?.length ? (
-                    product.options.map((opt, i) => (
-                      <option key={`${opt}-${i}`} value={opt}>
-                        {opt}
-                      </option>
-                    ))
-                  ) : (
-                    <option value="기본 옵션">기본 옵션</option>
-                  )}
+                <select css={selectBox} value="기본 옵션" disabled>
+                  <option value="기본 옵션">기본 옵션</option>
                 </select>
 
                 <div css={cartActionRow}>
@@ -388,13 +340,10 @@ export default function ProductDetailPage() {
                       onChange={(e) => {
                         const value = e.target.value;
 
-                        // 1. 빈값이면 무시 (입력 중 허용)
                         if (value === "") return;
 
-                        // 2. 숫자로 변환
                         const nextValue = Number(value);
 
-                        // 3. 최소값 방어
                         if (nextValue < 1) {
                           setQuantity(1);
                           return;
@@ -403,6 +352,7 @@ export default function ProductDetailPage() {
                         setQuantity(nextValue);
                       }}
                     />
+
                     <button
                       type="button"
                       onClick={handleIncreaseQuantity}
@@ -411,6 +361,7 @@ export default function ProductDetailPage() {
                       +
                     </button>
                   </div>
+
                   <div css={cartButtonWrap}>
                     <Button
                       width="100%"
@@ -480,7 +431,7 @@ export default function ProductDetailPage() {
 
 /* ================= 스타일 ================= */
 
-const pageWrap = css`
+const productDetailPageWrap = css`
   background: ${theme.colors.gray100};
   min-height: 100vh;
   padding: 100px 0 40px;
@@ -498,7 +449,7 @@ const pageWrap = css`
   }
 `;
 
-const sheet = css`
+const productDetailSheet = css`
   width: min(1440px, calc(100% - 48px));
   margin: 0 auto;
   padding: 54px 0 20px;
@@ -547,7 +498,7 @@ const topSection = css`
   }
 `;
 
-const leftArea = css`
+const productDetailLeftArea = css`
   flex: 1 1 0;
   min-width: 0;
   max-width: 657px;
@@ -704,7 +655,7 @@ const thumbImage = css`
   display: block;
 `;
 
-const rightArea = css`
+const productDetailRightArea = css`
   flex: 0 1 390px;
   min-width: 320px;
   max-width: 390px;
@@ -749,6 +700,7 @@ const ratingRow = css`
   gap: 8px;
   margin-bottom: 18px;
   flex-wrap: wrap;
+  cursor: pointer;
 `;
 
 const stars = css`
@@ -756,7 +708,7 @@ const stars = css`
   font-size: 14px;
 `;
 
-const count = css`
+const productDetailReviewCount = css`
   color: ${theme.colors.textSub};
   font-size: 13px;
   font-weight: ${theme.fontWeight.medium};
@@ -810,6 +762,14 @@ const discountBadge = css`
   justify-content: center;
 `;
 
+const descriptionText = css`
+  margin: 0 0 20px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: ${theme.colors.textSub};
+  word-break: keep-all;
+`;
+
 const infoList = css`
   display: flex;
   flex-direction: column;
@@ -832,7 +792,7 @@ const infoLine = css`
   }
 `;
 
-const dot = css`
+const productDetailInfoDot = css`
   width: 12px;
   height: 12px;
   border-radius: 50%;
@@ -908,6 +868,12 @@ const selectBox = css`
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
+
+  &:disabled {
+    background-color: #f8f8f8;
+    color: #999;
+    cursor: not-allowed;
+  }
 `;
 
 const cartActionRow = css`
@@ -977,6 +943,7 @@ const quantityRow = css`
     }
   }
 `;
+
 const cartButtonWrap = css`
   flex: 1;
   height: 56px;
@@ -1025,7 +992,7 @@ const emptyDetailBox = css`
   }
 `;
 
-const messageStyle = css`
+const productDetailMessageStyle = css`
   text-align: center;
   padding: 100px 20px;
   font-size: 20px;

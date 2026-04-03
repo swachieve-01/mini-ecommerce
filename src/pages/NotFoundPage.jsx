@@ -12,25 +12,25 @@ export default function NotFoundPage() {
   };
 
   return (
-    <Page>
-      <Background src={bg404} alt="" />
+    <NotFoundPageWrapper>
+      <NotFoundBackgroundImage src={bg404} alt="" />
 
-      <Overlay>
-        <Content>
+      <NotFoundOverlay>
+        <NotFoundContent>
           {/* 상단 영역 */}
-          <TopGroup>
-            <LeafIcon src={iconLeaf} alt="나뭇잎 아이콘" />
-            <ErrorCode>404</ErrorCode>
-            <Title>페이지를 찾을 수 없습니다.</Title>
-          </TopGroup>
+          <NotFoundTopGroup>
+            <NotFoundLeafIcon src={iconLeaf} alt="나뭇잎 아이콘" />
+            <NotFoundErrorCode>404</NotFoundErrorCode>
+            <NotFoundTitle>페이지를 찾을 수 없습니다.</NotFoundTitle>
+          </NotFoundTopGroup>
 
           {/* 하단 영역 */}
-          <BottomGroup>
-            <Description>
+          <NotFoundBottomGroup>
+            <NotFoundDescription>
               죄송합니다. 요청하신 페이지를 찾을 수 없습니다.
               <br />
               입력하신 주소가 올바른지 다시 한 번 확인해 주세요.
-            </Description>
+            </NotFoundDescription>
 
             <Button
               width="288px"
@@ -43,15 +43,15 @@ export default function NotFoundPage() {
             >
               홈으로 돌아가기 {">"}
             </Button>
-          </BottomGroup>
-        </Content>
-      </Overlay>
-    </Page>
+          </NotFoundBottomGroup>
+        </NotFoundContent>
+      </NotFoundOverlay>
+    </NotFoundPageWrapper>
   );
 }
 
 /* 전체 페이지 */
-const Page = styled.main`
+const NotFoundPageWrapper = styled.main`
   position: relative;
   width: 100%;
   min-height: 100dvh;
@@ -59,7 +59,7 @@ const Page = styled.main`
 `;
 
 /* 배경 이미지 */
-const Background = styled.img`
+const NotFoundBackgroundImage = styled.img`
   position: absolute;
   inset: 0;
   width: 100%;
@@ -68,7 +68,7 @@ const Background = styled.img`
 `;
 
 /* 오버레이 */
-const Overlay = styled.div`
+const NotFoundOverlay = styled.div`
   position: relative;
   z-index: 1;
   display: flex;
@@ -81,7 +81,7 @@ const Overlay = styled.div`
 `;
 
 /* 전체 콘텐츠 */
-const Content = styled.section`
+const NotFoundContent = styled.section`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -89,7 +89,7 @@ const Content = styled.section`
 `;
 
 /* 상단 그룹 */
-const TopGroup = styled.div`
+const NotFoundTopGroup = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -97,7 +97,7 @@ const TopGroup = styled.div`
 `;
 
 /* 하단 그룹 */
-const BottomGroup = styled.div`
+const NotFoundBottomGroup = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -106,14 +106,14 @@ const BottomGroup = styled.div`
 `;
 
 /* 아이콘 */
-const LeafIcon = styled.img`
+const NotFoundLeafIcon = styled.img`
   width: 56px;
   height: 56px;
   object-fit: contain;
 `;
 
 /* 404 숫자 */
-const ErrorCode = styled.h1`
+const NotFoundErrorCode = styled.h1`
   margin: 0;
   color: ${({ theme }) => theme.colors.primary};
   font-size: 100px;
@@ -122,7 +122,7 @@ const ErrorCode = styled.h1`
 `;
 
 /* 제목 */
-const Title = styled.h2`
+const NotFoundTitle = styled.h2`
   margin: 0;
   color: ${({ theme }) => theme.colors.primary};
   font-size: 26px;
@@ -131,7 +131,7 @@ const Title = styled.h2`
 `;
 
 /* 설명 */
-const Description = styled.p`
+const NotFoundDescription = styled.p`
   margin: 0;
   color: ${({ theme }) => theme.colors.primary};
   font-size: 26px;

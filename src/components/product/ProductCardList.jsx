@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import styled from "@emotion/styled";
 import BadgeStyle from "../ui/BadgeStyle";
+import { useWishStore } from "../../stores/WishlisStore";
 
 // 상품 정렬
 const ProductGrid = styled.div`
@@ -206,14 +207,9 @@ const ProductWishButton = styled.button`
 `;
 
 export default function ProductCardList({ data, itemWidth, align, mb }) {
-  const [likedItems, setLikedItems] = useState({});
+  const { wishList, toggleWish } = useWishStore();
 
-  const toggleLike = (id) => {
-    setLikedItems((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
-  };
+  const isWished = (id) => wishList.some((item) => item.id === id);
 
   return (
     <ProductGrid itemWidth={itemWidth}>
@@ -282,9 +278,9 @@ export default function ProductCardList({ data, itemWidth, align, mb }) {
             <ProductWishButton
               onClick={(e) => {
                 e.stopPropagation();
-                toggleLike(item.id);
+                toggleWish(item);
               }}
-              className={likedItems[item.id] ? "active" : ""}
+              className={isWished(item.id) ? "active" : ""}
             >
               <svg viewBox="0 0 24 24" fill="none">
                 <path
