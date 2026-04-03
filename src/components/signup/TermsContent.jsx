@@ -18,7 +18,7 @@ function TermsContent({ termId }) {
 export default TermsContent;
 
 const ContentBox = styled.div`
-  width: 460px;
+  width: 100%;
   height: 435px;
   padding: ${({ theme }) => theme.spacing.lg};
   border: ${({ theme }) => theme.border.thick};

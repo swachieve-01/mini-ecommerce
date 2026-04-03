@@ -3,7 +3,26 @@ import { css } from "@emotion/react";
 import styled from "@emotion/styled";
 import theme from "../../styles/theme";
 import { useCartStore } from "../../stores/useCartStore";
-// 전체 아이템 줄 (연한 회색 배경)
+
+const getCategoryDesc = (id) => {
+  switch (id) {
+    case "skin":
+      return "피부를 촉촉하게 유지해주는 스킨케어";
+    case "cleanser":
+      return "노폐물을 부드럽게 제거하는 클렌징";
+    case "makeup":
+      return "자연스럽고 생기있는 메이크업";
+    case "hairbody":
+      return "바디와 모발을 건강하게 케어";
+    case "perfume":
+      return "은은하게 지속되는 향기";
+    case "beautytool":
+      return "뷰티 케어를 도와주는 도구";
+    default:
+      return "";
+  }
+};
+
 const ItemContainer = styled.div`
   display: flex;
   align-items: center;
@@ -170,7 +189,7 @@ export default function CartItem({ item, onRemove }) {
 
       <ProductInfo>
         <ProductName>{item.name}</ProductName>
-        <ProductDesc>{item.description || "상품 상세 설명"}</ProductDesc>
+        <ProductDesc>{getCategoryDesc(item.category)}</ProductDesc>
       </ProductInfo>
 
       {/* ✅ 수량 조절 버튼으로 변경 */}

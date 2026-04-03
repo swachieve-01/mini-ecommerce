@@ -20,10 +20,11 @@ const Overlay = styled.div`
 const ModalContainer = styled.div`
   position: relative;
   background-color: ${({ theme }) => theme.colors.bg};
-  width: ${({ imageMode }) => (imageMode ? "auto" : "440px")};
+  width: ${({ imageMode }) => (imageMode ? "auto" : "460px")};
   max-width: ${({ imageMode }) => (imageMode ? "min(90vw, 980px)" : "90vw")};
   max-height: ${({ imageMode }) => (imageMode ? "90vh" : "80vh")};
-  border-radius: ${({ imageMode }) => (imageMode ? "0" : "10px")};
+  /* border-radius: ${({ imageMode }) => (imageMode ? "0" : "10px")}; */
+  border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 

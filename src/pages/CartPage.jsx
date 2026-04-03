@@ -4,15 +4,13 @@ import { useNavigate } from "react-router-dom";
 import { useCartStore } from "../stores/useCartStore";
 import CartItem from "../components/product/CartItem";
 import { Button } from "../components/ui/Button";
+import { useEffect } from "react";
 
 const CartPageContainer = styled.div`
   width: 100%;
   max-width: 1440px;
-  /* 아래 margin: 0 auto; 를 추가하여 1440px 내에서 중앙 정렬합니다. */
   margin: 0 auto;
   padding: 56px 80px 0 80px;
-
-  /* 만약 내부 요소들이 여전히 왼쪽 정렬이라면 아래 속성도 도움이 됩니다. */
   display: flex;
   flex-direction: column;
 `;
@@ -113,7 +111,7 @@ const CartViewComtainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  flex: 1; /* 부모 container 안에서 중앙 배치를 위해 추가 */
+  flex: 1;
 `;
 
 const CartBox = styled.div`
@@ -173,6 +171,9 @@ export default function CartPage() {
     .filter((item) => item.checked)
     .reduce((sum, item) => sum + item.price * item.quantity, 0);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   return (
     <CartPageContainer>
       <CartPageHeaer>
