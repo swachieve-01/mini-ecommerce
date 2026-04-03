@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import styled from "@emotion/styled";
 import BadgeStyle from "../ui/BadgeStyle";
 import { useWishStore } from "../../stores/WishlisStore";
+import { useCartStore } from "../../stores/useCartStore";
+import { useToast } from "../feedback/ProductToast";
+import { useNavigate } from "react-router-dom";
 
 // 상품 정렬
 const ProductGrid = styled.div`
@@ -47,7 +50,7 @@ const ProductCardImageBox = styled.div`
   border-radius: ${({ theme }) => theme.radius.md};
   margin-bottom: 4px;
 
-  &:hover:not(:has(button:hover)) .imgOverlay {
+  &:hover .imgOverlay {
     opacity: 1;
   }
 
@@ -139,6 +142,8 @@ const OverlayContent = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+
+  pointer-events: auto;
 `;
 
 const ProductCartButton = styled.button`
@@ -208,13 +213,23 @@ const ProductWishButton = styled.button`
 
 export default function ProductCardList({ data, itemWidth, align, mb }) {
   const { wishList, toggleWish } = useWishStore();
-
+  const addCart = useCartStore((state) => state.addToCart);
+  const cart = useCartStore((state) => state.cart);
+  const isInCart = (id) => cart.some((item) => item.id === id);
   const isWished = (id) => wishList.some((item) => item.id === id);
+  const { trigger, ToastUI } = useToast();
+  const navigate = useNavigate();
 
   return (
     <ProductGrid itemWidth={itemWidth}>
       {data?.map((item) => (
-        <ProductCard key={item.id} align={align} mb={mb}>
+        <ProductCard
+          key={item.id}
+          align={align}
+          mb={mb}
+          onClick={() => navigate(`/products/${item.id}`)}
+          style={{ cursor: "pointer" }}
+        >
           <ProductCardImageBox>
             <ProductImage
               src={item.imageUrl || item.thumbnails?.[0]}
@@ -230,7 +245,22 @@ export default function ProductCardList({ data, itemWidth, align, mb }) {
                 <ProductCartButton
                   onClick={(e) => {
                     e.stopPropagation();
-                    console.log("버튼 클릭");
+
+                    if (isInCart(item.id)) {
+                      trigger("이미 장바구니에 있습니다");
+                      return;
+                    }
+
+                    addCart({
+                      id: item.id,
+                      name: item.name,
+                      price: item.discountPrice || item.price,
+                      image: item.imageUrl || item.thumbnails?.[0],
+                      quantity: 1,
+                      checked: true,
+                    });
+
+                    trigger("장바구니에 담았습니다");
                   }}
                 >
                   <svg viewBox="0 0 24 24" fill="none">
@@ -310,7 +340,13 @@ export default function ProductCardList({ data, itemWidth, align, mb }) {
             )}
           </PriceBox>
 
-          <ProductCardRating>
+          <ProductCardRating
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate("/reviews");
+            }}
+            style={{ cursor: "pointer" }}
+          >
             <span>
               {"★".repeat(Math.round(item.rating))}
               {"☆".repeat(5 - Math.round(item.rating))}
@@ -325,6 +361,7 @@ export default function ProductCardList({ data, itemWidth, align, mb }) {
           </ProductBadgeBox>
         </ProductCard>
       ))}
+      <ToastUI />
     </ProductGrid>
   );
 }
