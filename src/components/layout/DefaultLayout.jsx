@@ -4,10 +4,14 @@ import { Outlet } from "react-router-dom";
 import Header from "./Header";
 import Footer from "./Footer";
 import BottomNav from "../Mobile/BottomNav";
+import Loading from "../ui/Loading";
+import ScrollTop from "../../stores/ScrollTop";
 
 export default function DefaultLayout() {
   return (
     <LayoutContainer>
+      <ScrollTop />
+      <Loading full />
       <Header />
       <Main>
         <Outlet />
