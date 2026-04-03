@@ -57,6 +57,7 @@ const Wrapper = styled.nav`
   max-width: 1200px;
   margin: 0 auto;
 
+  margin: 50px 0 80px 0;
   display: flex;
   justify-content: center;
   align-items: center;

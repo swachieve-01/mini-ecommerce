@@ -352,7 +352,7 @@ const WishlisTextBox = styled.div`
 const WishlistButtonRow = styled.div`
   display: flex;
   gap: 8px;
-  margin-top: auto;
+  margin-top: 15px;
 
   @media (max-width: 600px) {
     margin-top: 8px;

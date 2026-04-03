@@ -7,31 +7,24 @@ import styled from "@emotion/styled";
 
 const Card = styled.div`
   width: 100%;
-  height: auto;
   display: flex;
-  flex-direction: row;
-  padding: 30px 20px;
-  background: ${({ theme }) => theme.colors.bg};
-  border-bottom: ${({ theme }) => theme.border.thin};
-  box-sizing: border-box;
-  gap: 40px;
-  align-items: flex-start;
-  transition: transform ${({ theme }) => theme.transition.fast};
+  gap: 24px;
+  padding: 24px;
+  margin-top: 15px;
+  border-radius: 16px;
+  background: #fff;
+  border: 1px solid ${({ theme }) => theme.colors.gray200};
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+
+  transition: all 0.2s ease;
 
   &:hover {
     transform: translateY(-4px);
-    border-color: ${({ theme }) => theme.colors.gray800};
-  }
-
-  ${({ theme }) => theme.media.tablet} {
-    justify-content: flex-start;
-    gap: 20px;
-    padding: 25px 15px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
   }
 
   ${({ theme }) => theme.media.mobile} {
     flex-direction: column;
-    align-items: stretch;
     gap: 16px;
   }
 `;
@@ -123,7 +116,6 @@ const Header = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 12px;
   width: 100%;
 
   ${({ theme }) => theme.media.smallMobile} {
@@ -155,21 +147,21 @@ const ProductName = styled.span`
 `;
 
 const RatingRow = styled.div`
-  margin-bottom: 12px;
+  margin-bottom: 10px;
   color: ${({ theme }) => theme.colors.stars};
-  font-size: ${({ theme }) => theme.fontSize.md};
+  font-size: ${({ theme }) => theme.fontSize.sm};
   display: flex;
   align-items: center;
 `;
 
 const UserId = styled.span`
-  margin-left: 10px;
+  margin-left: 8px;
   color: ${({ theme }) => theme.colors.textSub};
-  font-size: ${({ theme }) => theme.fontSize.sm};
+  font-size: ${({ theme }) => theme.fontSize.xs};
 `;
 
 const ReviewTitle = styled.h3`
-  font-size: ${({ theme }) => theme.fontSize.md};
+  font-size: ${({ theme }) => theme.fontSize.sm};
   font-weight: ${({ theme }) => theme.fontWeight.bold};
   margin-bottom: 8px;
   color: ${({ theme }) => theme.colors.textMain};
@@ -181,7 +173,7 @@ const ContentContainer = styled.div`
 `;
 
 const ContentText = styled.p`
-  font-size: ${({ theme }) => theme.fontSize.sm};
+  font-size: ${({ theme }) => theme.fontSize.xs};
   color: ${({ theme }) => theme.colors.gray600};
   line-height: 1.4;
   display: -webkit-box;
@@ -326,7 +318,7 @@ export default function ReviewItem({ review, onOpenModal }) {
                     +{review.images.length - 5}
                   </div>
                 )}
-                <ZoomLabel style={{ fontSize: "11px", padding: "4px 8px" }}>
+                <ZoomLabel style={{ fontSize: "16px", padding: "4px 8px" }}>
                   확대하기
                 </ZoomLabel>
               </SubImgWrapper>
