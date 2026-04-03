@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import styled from "@emotion/styled";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "../components/ui/Button";
 import Modal from "../components/ui/Modal";
-import { termsData } from "../data/termsData";
 import logoImage from "../assets/images/푸터 로고.png";
+import TermsContent from "../components/signup/TermsContent";
 
 export default function SignUpPage() {
   const navigate = useNavigate();
@@ -109,8 +109,7 @@ export default function SignUpPage() {
 
   /* 모달 열기 */
   const openModal = (termId) => {
-    const foundTerm = termsData.find((term) => term.id === termId);
-    setSelectedTerm(foundTerm || null);
+    setSelectedTerm(termId);
     setIsModalOpen(true);
   };
 
@@ -125,12 +124,12 @@ export default function SignUpPage() {
     if (selectedTerm) {
       setReadTerms((prev) => ({
         ...prev,
-        [selectedTerm.id]: true,
+        [selectedTerm]: true,
       }));
 
       setTerms((prev) => ({
         ...prev,
-        [selectedTerm.id]: true,
+        [selectedTerm]: true,
       }));
     }
 
@@ -356,7 +355,7 @@ export default function SignUpPage() {
             </>
           }
         >
-          <TermsContentBox>{selectedTerm?.content}</TermsContentBox>
+          <TermsContent termId={selectedTerm} />
         </Modal>
       </Inner>
     </Page>
@@ -659,17 +658,6 @@ const ViewButton = styled.button`
 /* 가입 버튼 영역 */
 const ButtonRow = styled.div`
   margin-top: 26px;
-`;
-
-/* 모달 내용 */
-const TermsContentBox = styled.div`
-  width: 100%;
-  box-sizing: border-box;
-  white-space: pre-line;
-  word-break: keep-all;
-  overflow-wrap: break-word;
-  line-height: 1.7;
-  color: ${({ theme }) => theme.colors.gray800};
 `;
 
 /* 모달 하단 버튼 공통 */
