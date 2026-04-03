@@ -23,7 +23,8 @@ const ModalContainer = styled.div`
   width: ${({ imageMode }) => (imageMode ? "auto" : "440px")};
   max-width: ${({ imageMode }) => (imageMode ? "min(90vw, 980px)" : "90vw")};
   max-height: ${({ imageMode }) => (imageMode ? "90vh" : "80vh")};
-  border-radius: ${({ imageMode }) => (imageMode ? "0" : "10px")};
+  /* border-radius: ${({ imageMode }) => (imageMode ? "0" : "10px")}; */
+  border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 
