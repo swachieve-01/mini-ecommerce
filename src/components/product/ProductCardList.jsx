@@ -5,6 +5,7 @@ import { useWishStore } from "../../stores/WishlisStore";
 import { useCartStore } from "../../stores/useCartStore";
 import { useToast } from "../feedback/ProductToast";
 import { useNavigate } from "react-router-dom";
+import useAuthStore from "../../stores/useAuthStore";
 
 // 상품 정렬
 const ProductGrid = styled.div`
@@ -219,6 +220,7 @@ export default function ProductCardList({ data, itemWidth, align, mb }) {
   const isWished = (id) => wishList.some((item) => item.id === id);
   const { trigger, ToastUI } = useToast();
   const navigate = useNavigate();
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
   return (
     <ProductGrid itemWidth={itemWidth}>
@@ -256,11 +258,16 @@ export default function ProductCardList({ data, itemWidth, align, mb }) {
                       name: item.name,
                       price: item.discountPrice || item.price,
                       image: item.imageUrl || item.thumbnails?.[0],
+                      category: item.categoryId,
                       quantity: 1,
                       checked: true,
                     });
 
-                    trigger("장바구니에 담았습니다");
+                    if (isAuthenticated) {
+                      trigger(`${item.name} 장바구니에 저장되었습니다.`);
+                    } else {
+                      trigger("장바구니에 담겼습니다. 로그인하면 저장됩니다.");
+                    }
                   }}
                 >
                   <svg viewBox="0 0 24 24" fill="none">
