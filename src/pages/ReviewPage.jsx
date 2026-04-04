@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import styled from "@emotion/styled";
 import { Section } from "../styles/SectionStyle";
 import Pagination from "../components/ui/Pagination";
@@ -7,9 +7,7 @@ import ReviewItem from "../components/review/ReviewItem.jsx";
 import reviewDatas from "../data/reviewDatas";
 import Modal from "../components/ui/Modal.jsx";
 
-/* =========================
-   레이아웃
-========================= */
+// 레이아웃
 const PageContainer = styled(Section)`
   width: 100%;
   display: flex;
@@ -90,24 +88,6 @@ const ReviewList = styled.div`
   }
 `;
 
-/* =========================
-   모달
-========================= */
-// const ModalImageWrapper = styled.div`
-//   position: relative;
-//   width: 100%;
-//   background: #f9f9f9;
-//   display: flex;
-//   justify-content: center;
-//   align-items: center;
-// `;
-
-// const ModalImage = styled.img`
-//   max-width: 100%;
-//   max-height: 60vh;
-//   object-fit: contain;
-// `;
-
 const ArrowButton = styled.button`
   width: 44px;
   height: 44px;
@@ -136,24 +116,6 @@ const ArrowButton = styled.button`
 
   ${({ direction }) => (direction === "left" ? "left: 12px;" : "right: 12px;")}
 `;
-
-// const DetailInfoBox = styled.div`
-//   margin-top: 20px;
-//   padding: 25px;
-//   background: #fff;
-//   border-radius: 12px;
-// `;
-
-// const SectionBlock = styled.div`
-//   border-top: 1px solid #eee;
-//   padding: 15px 0;
-
-//   &:first-of-type {
-//     border-top: none;
-//   }
-// `;
-//
-// ================  추가 스타일 ============================
 
 const ReviewModalCard = styled.div`
   background: #fff;
@@ -243,55 +205,78 @@ const StarIcon = ({ filled = true }) => (
    컴포넌트
 ========================= */
 export default function ReviewPage() {
+  // 현재 패이지
   const [currentPage, setCurrentPage] = useState(1);
+
+  // 선택된 리뷰(모달에 표시)
   const [selectedReview, setSelectedReview] = useState(null);
+
+  // 모달 열림 여부
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // 현재 보고 있는 이미지 index
   const [currentImgIdx, setCurrentImgIdx] = useState(0);
 
-  const itemsPerPage = 5;
-  const totalPages = Math.ceil(reviewDatas.length / itemsPerPage);
+  // 페이지당 보여줄 리뷰 개수 (매직 넘버 방지)
+  const ITEMS_PER_PAGE = 5;
 
-  const currentReviews = reviewDatas.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage,
+  // 전체 페이지 수 계산 (데이터 길이 기반)
+  // 최소 1페이지 유지 (데이터 없을 경우 대비)
+  const totalPages = useMemo(
+    () => Math.max(1, Math.ceil(reviewDatas.length / ITEMS_PER_PAGE)),
+    [],
   );
 
-  const openModal = (review) => {
+  // 현재 페이지에 해당하는 리뷰 리스트
+  // 페이지 변경 시에만 재계산
+  const currentReviews = useMemo(() => {
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    return reviewDatas.slice(start, start + ITEMS_PER_PAGE);
+  }, [currentPage]);
+
+  // 선택된 리뷰의 이미지 개수 (optional chaining으로 안전하게 처리)
+  const imageLength = selectedReview?.images?.length ?? 0;
+
+  // 리뷰 클릭 시 모달 열기 + 이미지 index 초기화
+  const openModal = useCallback((review) => {
     setSelectedReview(review);
     setIsModalOpen(true);
     setCurrentImgIdx(0);
-  };
+  }, []);
 
-  const closeModal = () => {
+  // 모달 닫기
+  const closeModal = useCallback(() => {
     setSelectedReview(null);
     setIsModalOpen(false);
-  };
+  }, []);
 
+  // 다음 이미지 (마지막에서 다시 처음으로 순환)
   const nextImg = useCallback(() => {
-    if (!selectedReview) return;
-    setCurrentImgIdx((prev) => (prev + 1) % selectedReview.images.length);
-  }, [selectedReview]);
+    if (!imageLength) return;
+    setCurrentImgIdx((prev) => (prev + 1) % imageLength);
+  }, [imageLength]);
 
+  // 이전 이미지 (첫 이미지에서 마지막으로 순환)
   const prevImg = useCallback(() => {
-    if (!selectedReview) return;
-    setCurrentImgIdx(
-      (prev) =>
-        (prev - 1 + selectedReview.images.length) %
-        selectedReview.images.length,
-    );
-  }, [selectedReview]);
+    if (!imageLength) return;
+    setCurrentImgIdx((prev) => (prev - 1 + imageLength) % imageLength);
+  }, [imageLength]);
 
   useEffect(() => {
+    if (!isModalOpen) return;
+
+    // 모달 키보드 인식
     const handleKeyDown = (e) => {
-      if (!isModalOpen) return;
       if (e.key === "ArrowLeft") prevImg();
       else if (e.key === "ArrowRight") nextImg();
       else if (e.key === "Escape") closeModal();
     };
 
     window.addEventListener("keydown", handleKeyDown);
+
+    // cleanup: 모달 닫히거나 컴포넌트 unmount 시 이벤트 제거
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isModalOpen, prevImg, nextImg]);
+  }, [isModalOpen, prevImg, nextImg, closeModal]);
 
   return (
     <PageContainer>
@@ -321,10 +306,12 @@ export default function ReviewPage() {
         {selectedReview && (
           <ReviewModalCard>
             <ReviewImageBox>
-              <img src={selectedReview.images?.[currentImgIdx]} />
+              <img
+                src={selectedReview.images?.[currentImgIdx]}
+                alt={selectedReview.title || "리뷰 이미지"}
+              />
 
-              {/* 화살표 유지 */}
-              {selectedReview.images?.length > 1 && (
+              {imageLength > 1 && (
                 <>
                   <ArrowButton direction="left" onClick={prevImg}>
                     &#10094;
