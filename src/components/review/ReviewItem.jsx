@@ -113,22 +113,65 @@ const Header = styled.div`
     flex-direction: column;
     gap: 10px;
   }
+`;
 
-  button {
-    span {
-      opacity: 1;
-      visibility: visible;
-      color: inherit;
+const HelpfulButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 6px 12px;
+  border-radius: 999px;
+
+  font-size: 13px;
+  font-weight: 500;
+
+  color: ${({ theme }) => theme.colors.textSub};
+
+  background: #f5f7f4;
+  border: 1px solid #e3e8e1;
+
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  span {
+    font-size: 12px;
+    opacity: 0.8;
+  }
+
+  svg {
+    transition: all 0.2s ease;
+  }
+
+  &:hover {
+    background: #eef2ec;
+    transform: translateY(-1px);
+
+    svg {
+      stroke: #8fa77e;
+      transform: scale(1.1);
     }
+  }
 
-    color: ${({ theme }) => theme.colors.textMain};
-    border: ${({ theme }) => theme.border.thin};
-    background-color: transparent;
-    cursor: pointer;
-    width: 90px;
-    height: 30px;
+  &:active {
+    transform: scale(0.95);
   }
 `;
+
+const HeartIcon = ({ active }) => (
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill={active ? "#8FA77E" : "none"}
+    stroke="#8FA77E"
+    strokeWidth="1.8"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M12 21s-6.5-4.35-9-8.5C1.5 8.5 3.5 5 7 5c2 0 3.5 1 5 2.5C13.5 6 15 5 17 5c3.5 0 5.5 3.5 4 7.5C18.5 16.65 12 21 12 21z" />
+  </svg>
+);
 
 const ProductName = styled.span`
   font-size: ${({ theme }) => theme.fontSize.lg};
@@ -244,6 +287,8 @@ const InfoGroup = styled.div`
 `;
 
 export default function ReviewItem({ review, onOpenModal }) {
+<<<<<<< HEAD
+=======
   // review가 null일 경우에도 Hook 호출 순서를 유지하기 위해 안전 객체 사용
   const safeReview = review ?? {};
 
@@ -270,7 +315,15 @@ export default function ReviewItem({ review, onOpenModal }) {
   const ratingStars = "★".repeat(review?.rating ?? 5);
 
   // review 없으면 렌더링하지 않음
+>>>>>>> bc9d8cf7dee0dd0dda71f031e43415e0315d9bf3
   if (!review) return null;
+
+  const [count, setCount] = useState(review.helpCount || 0);
+
+  const handleLike = (e) => {
+    e.stopPropagation();
+    setCount((prev) => prev + 1);
+  };
 
   return (
     <Card>
@@ -282,14 +335,26 @@ export default function ReviewItem({ review, onOpenModal }) {
       <ContentSection>
         <Header>
           <ProductName>{review.productName}</ProductName>
+<<<<<<< HEAD
+=======
 
           <Button size="small" variant="outline" onClick={handleLike}>
             도움돼요 {count}
           </Button>
         </Header>
+>>>>>>> bc9d8cf7dee0dd0dda71f031e43415e0315d9bf3
 
+          <HelpfulButton onClick={handleLike}>
+            <HeartIcon active={true} />
+            <span>{count}</span>
+          </HelpfulButton>
+        </Header>
         <RatingRow>
+<<<<<<< HEAD
+          {"★".repeat(Number(review.rating) || 5)}
+=======
           {ratingStars}
+>>>>>>> bc9d8cf7dee0dd0dda71f031e43415e0315d9bf3
           <UserId>{review.userId}</UserId>
         </RatingRow>
 

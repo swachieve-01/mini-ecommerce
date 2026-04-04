@@ -14,7 +14,8 @@ const ToastContainer = styled.div`
   justify-content: center;
   padding: 12px 30px;
   border-radius: 8px;
-  background-color: ${(props) => (props.type === "error" ? "#FF4D4F" : "#333")};
+  background-color: ${(props) =>
+    props.type === "error" ? "#FF4D4F" : "rgba(143,167,126,0.9)"};
   color: white;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   transition: all 0.6s ease;

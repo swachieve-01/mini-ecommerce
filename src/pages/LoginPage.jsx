@@ -204,7 +204,7 @@ const LoginLogoImage = styled.img`
 const LoginDescriptionText = styled.p`
   margin: 1px 0 0;
   color: ${({ theme }) => theme.colors.primary};
-  font-size: ${({ theme }) => theme.fontSize.md};
+  font-size: ${({ theme }) => theme.fontSize.sm};
   font-weight: ${({ theme }) => theme.fontWeight.medium};
   line-height: 1.4;
   text-align: center;
@@ -215,9 +215,10 @@ const LoginCard = styled.section`
   width: 100%;
   padding: 56px 34px;
   border-radius: ${({ theme }) => theme.radius.lg || "10px"};
-  background-color: rgba(251, 251, 251, 0.66);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  background-color: #fafaf8;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.08);
   box-sizing: border-box;
+  border: 1px solid #eeeeee;
 
   @media (max-width: 1024px) {
     padding: 48px 28px;
