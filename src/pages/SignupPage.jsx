@@ -156,7 +156,7 @@ export default function SignUpPage() {
     if (!canSubmit) return;
 
     console.log("회원가입 완료", values);
-    alert("회원가입이 완료되었습니다.");
+    alert("회원가입이 완료되었습니다.\n로그인 페이지로 이동합니다.");
     navigate("/login", {
       state: { from },
       replace: true,
