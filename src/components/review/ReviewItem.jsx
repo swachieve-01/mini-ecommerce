@@ -287,38 +287,16 @@ const InfoGroup = styled.div`
 `;
 
 export default function ReviewItem({ review, onOpenModal }) {
-<<<<<<< HEAD
-=======
-  // review가 null일 경우에도 Hook 호출 순서를 유지하기 위해 안전 객체 사용
-  const safeReview = review ?? {};
+  const [count, setCount] = useState(review?.helpCount || 0);
 
-  // 초기값 설정 시 review가 undefined여도 에러 방지
-  const [count, setCount] = useState(safeReview.helpCount ?? 0);
-
-  // images 접근 시 undefined 방어
-  const images = safeReview.images ?? [];
+  if (!review) return null;
+  const images = review.images || [];
   const imageCount = images.length;
 
-  // 모달 열기 핸들러 (review 없을 경우 실행 방지)
-  const handleOpenModal = useCallback(() => {
-    if (!review) return;
-    onOpenModal(review);
-  }, [onOpenModal, review]);
-
-  // 도움돼요 버튼 (이벤트 버블링 방지 + 함수형 업데이트)
-  const handleLike = useCallback((e) => {
-    e.stopPropagation();
-    setCount((prev) => prev + 1);
-  }, []);
-
-  // 단순 연산은 useMemo 대신 직접 계산 (불필요한 최적화 제거)
-  const ratingStars = "★".repeat(review?.rating ?? 5);
-
-  // review 없으면 렌더링하지 않음
->>>>>>> bc9d8cf7dee0dd0dda71f031e43415e0315d9bf3
-  if (!review) return null;
-
-  const [count, setCount] = useState(review.helpCount || 0);
+  const handleOpenModal = (e) => {
+    e?.stopPropagation();
+    onOpenModal?.(review);
+  };
 
   const handleLike = (e) => {
     e.stopPropagation();
@@ -335,26 +313,15 @@ export default function ReviewItem({ review, onOpenModal }) {
       <ContentSection>
         <Header>
           <ProductName>{review.productName}</ProductName>
-<<<<<<< HEAD
-=======
-
-          <Button size="small" variant="outline" onClick={handleLike}>
-            도움돼요 {count}
-          </Button>
-        </Header>
->>>>>>> bc9d8cf7dee0dd0dda71f031e43415e0315d9bf3
 
           <HelpfulButton onClick={handleLike}>
             <HeartIcon active={true} />
             <span>{count}</span>
           </HelpfulButton>
         </Header>
+
         <RatingRow>
-<<<<<<< HEAD
           {"★".repeat(Number(review.rating) || 5)}
-=======
-          {ratingStars}
->>>>>>> bc9d8cf7dee0dd0dda71f031e43415e0315d9bf3
           <UserId>{review.userId}</UserId>
         </RatingRow>
 
@@ -374,9 +341,7 @@ export default function ReviewItem({ review, onOpenModal }) {
                   alt={`${review.productName} 리뷰 이미지 ${idx + 1}`}
                 />
 
-                {idx === 3 && imageCount > 5 && (
-                  <div className="more-overlay">+{imageCount - 5}</div>
-                )}
+                {idx === 3 && imageCount > 5 && <div>+{imageCount - 5}</div>}
 
                 <ZoomLabel>확대</ZoomLabel>
               </SubImgWrapper>
