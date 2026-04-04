@@ -10,7 +10,7 @@ const useToastStore = create((set) => ({
 
     setTimeout(() => {
       set({ isVisible: false });
-    }, 600);
+    }, 2000);
   },
 }));
 
