@@ -1,16 +1,192 @@
-# React + Vite
+# 🛍️ NatureGlow - Beauty E-commerce
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 📌 프로젝트 소개
+NatureGlow는 React와 Vite를 기반으로 제작한 뷰티 이커머스 웹 애플리케이션입니다.  
+실제 쇼핑몰과 유사한 구조를 목표로, 상품 리스트부터 상세 페이지, 필터 기능까지 구현했습니다.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🔗 Demo
+👉 배포 주소 입력 예정
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 🚀 프로젝트 특징
 
-## Expanding the ESLint configuration
+- 실제 이커머스 구조를 기반으로 한 페이지 설계
+- 컴포넌트 기반 아키텍처로 유지보수성 향상
+- 카테고리 및 라우팅 구조를 통한 확장성 고려
+- 사용자 경험을 고려한 UI/UX 설계
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+
+## ✨ 주요 기능
+
+- 🔐 회원가입 / 로그인 페이지
+- 🏠 메인 페이지
+- 🗂️ 카테고리 목록 페이지
+- 📄 상품 상세 페이지
+- 🛒 장바구니 페이지
+- ⚠️ 404 페이지 처리
+- 📱 반응형 레이아웃
+
+---
+
+## 🛠️ 기술 스택
+
+- React
+- Vite
+- React Router
+- Emotion (Styled Components)
+- JSON Server
+
+---
+
+## 📁 폴더 구조
+src/
+├── api // API 통신 및 데이터 로직
+├── components // 재사용 가능한 UI 컴포넌트
+├── pages // 페이지 단위 구성
+├── router // 라우팅 및 경로 관리
+└── stores // 전역 상태 관리
+
+---
+
+## 🤝 협업 방식
+
+- Git을 활용한 브랜치 전략 (main / dev / feature)
+- Pull Request 기반 코드 리뷰 진행
+- 역할 분담을 통한 효율적인 작업 진행
+- 이슈 및 커뮤니케이션을 통한 협업 관리
+
+---
+
+## ⚠️ 트러블 슈팅
+
+이번 프로젝트를 진행하며 단순한 문제 해결을 넘어서,  
+**구조 설계를 통해 문제 자체를 줄이는 것이 중요하다**는 점을 깨달았습니다.  
+
+문제가 발생했을 때 단순 수정이 아닌,  
+**근본적인 원인(Root Cause)을 해결하는 방식으로 접근**했습니다.
+
+---
+
+### 1. DOM 구조 충돌 문제
+
+- **문제**  
+  코드 병합 과정에서 콘솔 에러 발생
+
+- **원인**  
+  `<a>` 태그가 중첩된 구조로 인해 브라우저가 DOM을 정상적으로 해석하지 못함
+
+- **해결**  
+  - 구조를 `ul > li` 기반으로 변경  
+  - 컴포넌트 구조 재정리  
+
+- **결과**  
+  콘솔 에러 제거 및 DOM 구조 정상화
+
+---
+
+### 2. API 구조 불일치 문제
+
+- **문제**  
+  API 호출 방식 및 응답 구조가 통일되지 않아 데이터 처리 오류 발생
+
+- **원인**  
+  - API 호출 방식이 각기 다름  
+  - 응답 데이터의 key 값 및 구조 불일치  
+
+- **해결**  
+  - API 호출을 `apiClient`로 통일  
+  - 기능별로 API 모듈 분리  
+  - 데이터 정규화 및 타입 통일  
+  - 다양한 응답 구조에 대응하는 방어 코드 추가  
+
+- **결과**  
+  API 구조가 달라도 안정적으로 동작하며,  
+  다양한 환경에 유연하게 대응 가능한 구조로 개선
+
+---
+
+### 3. 로그인 상태 유지 문제
+
+- **문제**  
+  새로고침 시 로그인 상태가 유지되지 않음
+
+- **원인**  
+  `localStorage`에는 값이 존재하지만,  
+  Zustand 상태와 동기화되지 않음  
+
+- **해결**  
+  - 로그인 시 Zustand 상태 함께 업데이트  
+  - `persist`를 적용하여 상태 저장  
+
+- **결과**  
+  새로고침 이후에도 로그인 상태 유지 → 사용자 경험 개선
+
+---
+
+### 4. 404 페이지 및 레이아웃 구조 문제
+
+- **문제**  
+  404 페이지에서도 Header가 표시되며,  
+  전체 화면을 덮지 못하는 레이아웃 문제 발생  
+
+- **원인**  
+  - Header가 전역 렌더링됨  
+  - `#root`가 레이아웃 역할까지 담당  
+
+- **해결**  
+  - Header를 `DefaultLayout` 내부로 이동  
+  - 레이아웃 구조를 분리하여 역할 명확화  
+  - 404 페이지를 Layout 바깥으로 분리  
+
+- **결과**  
+  - 404 페이지가 전체 화면 정상 표시  
+  - 일반 페이지와 구조 명확히 분리  
+
+---
+
+## 💡 배운 점
+
+이번 프로젝트를 통해 단순한 문제 해결을 넘어,  
+**구조 설계가 문제 발생 자체를 줄이는 데 중요한 역할을 한다는 점**을 깨달았습니다.
+
+특히 문제 발생 시 빠른 수정에 집중하기보다,  
+원인을 분석하고 구조를 개선하는 방식이  
+더 안정적이고 확장 가능한 결과를 만든다는 것을 경험했습니다.
+
+또한,
+- 컴포넌트 구조 설계의 중요성  
+- API 데이터 흐름과 정규화 필요성  
+- 상태 관리와 UI 흐름의 연결  
+
+을 직접 경험하며 개발 전반에 대한 이해도를 높일 수 있었습니다.
+
+---
+
+## 📝 회고
+
+이번 프로젝트를 통해 이커머스 서비스의 구조와 흐름을 직접 구현해보며,  
+단순한 기능 구현을 넘어 개발 전반에 대한 이해를 높일 수 있었습니다.
+
+특히 팀 프로젝트를 진행하면서  
+**팀워크의 중요성과 소통 및 협업의 경험**이 프로젝트 완성도에 큰 영향을 준다는 것을 느꼈습니다.  
+
+또한 역할을 분담했음에도 예상치 못한 이슈들이 발생하면서,  
+단순히 각자의 작업을 나누는 것만으로는 한계가 있다는 점을 경험했고,  
+문제가 발생했을 때는 빠른 수정뿐만 아니라  
+팀원 간의 공유와 협업을 통해 함께 해결하는 과정이 중요하다는 것을 배웠습니다.
+
+이번 프로젝트에서 가장 크게 느낀 점은  
+**구조와 흐름의 중요성**이었습니다.  
+
+단순히 기능을 구현하는 것이 아니라,  
+컴포넌트 구조와 데이터 흐름을 어떻게 설계하느냐에 따라  
+문제의 발생 여부와 해결 방식이 달라진다는 것을 직접 경험할 수 있었습니다.
+
+이번 경험을 통해  
+단순 구현을 넘어 **협업과 흐름을 이해하는 개발 방식의 중요성**을 깨달았으며,  
+앞으로는 초기 설계 단계부터 구조를 더 깊이 고민하고  
+보다 적극적인 참여를 통해 완성도 높은 프로젝트를 만들어가고자 합니다.
