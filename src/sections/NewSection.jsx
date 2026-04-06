@@ -3,6 +3,7 @@ import { Section, SectionTitle } from "../styles/SectionStyle";
 import { BannerImage, BannerWrapper } from "../styles/BannerStyle";
 import { getNewBanner } from "../api/Banner";
 import styled from "@emotion/styled";
+import { useNavigate } from "react-router-dom";
 
 // 신제품 영역
 const NewTextBox = styled.div`
@@ -30,6 +31,7 @@ const NewTitle = styled.h2`
   margin-bottom: 20px;
 
   @media (max-width: 768px) {
+    line-height: 1.4;
     white-space: pre-line;
   }
 `;
@@ -43,12 +45,19 @@ const NewSubText = styled.p`
 
 export default function NewSection() {
   const [banner, setBanner] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const data = await getNewBanner();
-        setBanner(data[0]);
+
+        const normalized = data.map((item) => ({
+          ...item,
+          id: item.productsId || item.productId || item.id,
+        }));
+
+        setBanner(normalized[0]);
       } catch (e) {
         console.error(e);
       }
@@ -62,7 +71,11 @@ export default function NewSection() {
   return (
     <Section>
       <SectionTitle>신제품</SectionTitle>
-      <BannerWrapper height="400px">
+      <BannerWrapper
+        height="400px"
+        onClick={() => navigate(`/products/${banner.id}`)}
+        style={{ cursor: "pointer" }}
+      >
         <BannerImage src={banner.imageUrl} />
         <NewTextBox>
           <NewTitle>{"순하게 씻어내는\n그린티 클렌징"}</NewTitle>

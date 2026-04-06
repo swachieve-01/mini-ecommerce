@@ -217,6 +217,7 @@ const LeftInfo = styled.div`
   display: none;
 
   @media (max-width: 768px) {
+    margin-left: 8px;
     display: block;
   }
 `;
@@ -232,6 +233,7 @@ const RightControls = styled.div`
   }
 
   @media (max-width: 768px) {
+    margin-right: 8px;
     justify-content: flex-end;
   }
 `;
@@ -359,7 +361,7 @@ export default function CategoryHeader({
                     { key: "skin", name: "스킨케어" },
                     { key: "makeup", name: "메이크업" },
                     { key: "cleanser", name: "클렌저" },
-                    { key: "hairbody", name: "바디케어" },
+                    { key: "hairbody", name: "바디/헤어" },
                     { key: "perfume", name: "향수" },
                     { key: "beautytool", name: "뷰티툴" },
                   ].map((item) => (
