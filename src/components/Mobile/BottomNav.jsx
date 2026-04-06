@@ -10,10 +10,8 @@ const BottomNavWrapper = styled.nav`
 
   width: 100%;
   height: 60px;
-
   background: #fff;
   border-top: 1px solid #eee;
-
   display: flex;
   justify-content: space-around;
   align-items: center;
