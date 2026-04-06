@@ -29,7 +29,7 @@ const BottomNavItem = styled(NavLink)`
   color: #777;
   text-decoration: none;
 
-  padding: 10px 30px;
+  padding: 10px 5px;
   display: flex;
   flex-direction: column;
   align-items: center;
