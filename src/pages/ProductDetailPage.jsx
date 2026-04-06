@@ -1,5 +1,3 @@
-/** @jsxImportSource @emotion/react */
-import { css } from "@emotion/react";
 import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { getProductDetail } from "../api/product";
@@ -10,7 +8,530 @@ import Modal from "../components/ui/Modal";
 import { Button } from "../components/ui/Button";
 import theme from "../styles/theme";
 import { useLoadingStore } from "../stores/useLoadingStore";
-import productDetailList from "../data/productDetails";
+import { useWishStore } from "../stores/WishlisStore";
+import styled from "@emotion/styled";
+
+// 페이지 전체 배경 영역 (회색 배경 + 전체 패딩)
+const ProductDetailPageWrap = styled.div`
+  background: ${theme.colors.gray100};
+  min-height: 100vh;
+  padding: 100px 0 40px;
+
+  @media (max-width: 1280px) {
+    padding: 80px 0 32px;
+  }
+
+  ${theme.media.tablet} {
+    padding: 64px 0 28px;
+  }
+
+  ${theme.media.mobile} {
+    padding: 24px 0 20px;
+  }
+`;
+
+// 가운데 흰색 컨텐츠 박스
+const ProductDetailSheet = styled.div`
+  width: min(1440px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 54px 0 20px;
+  border: ${theme.border.thin};
+  background: ${theme.colors.bg};
+
+  @media (max-width: 1280px) {
+    width: calc(100% - 32px);
+    padding: 40px 0 20px;
+  }
+
+  ${theme.media.tablet} {
+    width: calc(100% - 24px);
+    padding: 32px 0 20px;
+  }
+
+  ${theme.media.mobile} {
+    width: calc(100% - 16px);
+    padding: 24px 0 20px;
+    border: none;
+  }
+`;
+
+//  상단 메인 레이아웃 (좌: 이미지 / 우: 상품정보)
+const TopSection = styled.section`
+  width: min(1240px, calc(100% - 96px));
+  margin: 0 auto;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 96px;
+
+  @media (max-width: 1280px) {
+    width: calc(100% - 48px);
+    gap: 40px;
+  }
+
+  ${theme.media.tablet} {
+    width: calc(100% - 32px);
+    gap: 28px;
+  }
+
+  ${theme.media.mobile} {
+    width: calc(100% - 24px);
+    flex-direction: column;
+    gap: 20px;
+  }
+`;
+
+// 왼쪽 이미지 전체 영역
+const ProductDetailLeftArea = styled.div`
+  flex: 0 0 680px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  ${theme.media.mobile} {
+    width: 100%;
+    max-width: none;
+  }
+`;
+
+// 메인 이미지 + 좌우 버튼 감싸는 영역
+const MainImageStage = styled.div`
+  position: relative;
+  width: 100%;
+  /* margin-bottom: 12px; */
+`;
+
+// 메인 이미지 박스 (hover 확대 효과 있음)
+const MainImageBox = styled.div`
+  width: 100%;
+  aspect-ratio: 657 / 744;
+  background: ${theme.colors.gray100};
+  overflow: hidden;
+  cursor: zoom-in;
+  transition: box-shadow 0.2s ease;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.28s ease;
+  }
+
+  &:hover {
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+  }
+
+  &:hover img {
+    transform: scale(1.02);
+  }
+`;
+
+// 실제 메인 이미지
+const MainImage = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+`;
+
+//  이미지 없을 때 표시
+const EmptyImage = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: ${theme.colors.textSub};
+  background: ${theme.colors.gray100};
+`;
+
+// 이미지 좌우 이동 버튼 공통
+const ImageNavButton = styled.button`
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 56px;
+  border: none;
+  background: transparent;
+  color: #8f8f8f;
+  font-size: 44px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    color: ${theme.colors.primaryDark};
+  }
+`;
+
+const ImageNavButtonLeft = styled(ImageNavButton)`
+  left: -52px;
+`;
+
+const ImageNavButtonRight = styled(ImageNavButton)`
+  right: -52px;
+`;
+
+// 썸네일 전체 영역
+const ThumbArea = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+`;
+
+// 썸네일 리스트 묶음
+const ThumbRow = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+`;
+
+// 개별 썸네일 버튼 선택 시
+const ThumbButton = styled.button`
+  width: 60px;
+  height: 60px;
+  padding: 0;
+  margin-bottom: 55px;
+  border: ${({ active }) =>
+    active ? `2px solid ${theme.colors.primary}` : "1px solid #ddd"};
+  background: ${theme.colors.bg};
+  cursor: pointer;
+  overflow: hidden;
+`;
+
+// 썸네일 이미지
+const ThumbImage = styled.img`
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+`;
+
+// 오른쪽 상품 정보 전체 영역
+const ProductDetailRightArea = styled.div`
+  flex: 0 0 420px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+`;
+
+// 상품명
+const TitleText = styled.h2`
+  margin: 15px 0 0;
+  font-size: 24px;
+  font-weight: ${theme.fontWeight.bold};
+`;
+
+// 별점 + 리뷰수 영역
+const RatingRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -10px;
+    width: 100%;
+    height: 2px;
+    background: #eee;
+  }
+`;
+
+// 별 색상
+const Stars = styled.span`
+  color: ${theme.colors.stars};
+`;
+
+// 리뷰 개수 텍스트
+const ProductDetailReviewCount = styled.span`
+  color: ${theme.colors.textSub};
+`;
+
+// 가격 영역 전체
+const PriceArea = styled.div`
+  /* padding: 16px 0; */
+`;
+
+// 가격 한 줄 (할인가 + 원가 + 할인율)
+const PriceRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+`;
+
+//  할인된 가격
+const SalePriceText = styled.span`
+  font-size: 30px;
+  font-weight: 700;
+  color: #e60023;
+`;
+
+//  원래 가격 (취소선)
+const OriginPriceText = styled.span`
+  font-size: 14px;
+  color: #aaa;
+  text-decoration: line-through;
+`;
+
+//  할인 퍼센트 배지
+const DiscountBadge = styled.span`
+  background: #8fa77e;
+  color: white;
+  font-size: 12px;
+  padding: 2px 18px;
+  border-radius: 12px;
+`;
+
+// 상품 설명
+const DescriptionText = styled.p`
+  font-size: 12px;
+`;
+
+// 배송/혜택 정보 전체
+const InfoList = styled.div`
+  position: relative;
+  margin: 15px 0 35px 0;
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -20px;
+    width: 100%;
+    height: 2px;
+    background: #eee;
+  }
+`;
+
+// 정보 한 줄
+const InfoLine = styled.div`
+  font-size: 14px;
+  font-weight: 600;
+`;
+
+// 앞에 붙는 점 표시
+const ProductDetailInfoDot = styled.span`
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #555;
+  margin-right: 15px;
+`;
+
+// 배송 안내 박스
+const GuideBox = styled.div`
+  padding: 8px;
+  background: #f5f5f5;
+  border: 1px solid #ddd;
+`;
+
+// 배송 안내 제목
+const GuideTitle = styled.div`
+  padding: 10px 14px;
+  font-weight: 600;
+  border-bottom: 1px solid #ddd;
+`;
+
+// 배송 안내 리스트
+const GuideList = styled.ul`
+  padding: 0 10px;
+  font-size: 13px;
+  position: relative;
+  color: #666;
+
+  li + li {
+    margin-top: 6px;
+  }
+  margin: 15px 0 35px 0;
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -70px;
+    width: 100%;
+    height: 2px;
+    background: #eee;
+  }
+`;
+
+// 옵션 전체 영역
+const OptionSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+`;
+
+//  옵션 라벨
+const OptionLabel = styled.p`
+  font-weight: 600;
+  margin-top: 20px;
+`;
+
+//  옵션 선택 셀렉트 박스
+const SelectBox = styled.select`
+  height: 50px;
+  border-radius: 4px;
+  padding: 8px;
+`;
+
+//  버튼 영역 (찜 + 장바구니)
+const CartActionRow = styled.div`
+  margin-top: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+`;
+
+// 장바구니
+const CartButton = styled.button`
+  flex: 1;
+  height: 48px;
+  border-radius: 8px;
+  border: none;
+  background: #8fa77e;
+  color: #fff;
+  font-weight: 600;
+  font-size: 15px;
+
+  cursor: pointer;
+
+  &:hover {
+    background: #7a916a;
+  }
+
+  &:active {
+    background: #6c825d;
+  }
+`;
+
+// 수량 조절 박스
+const QuantityRow = styled.div`
+  display: flex;
+  align-items: center;
+  width: fit-content;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  overflow: hidden;
+`;
+
+const QuantityInput = styled.input`
+  width: 48px;
+  height: 36px;
+  border: none;
+  text-align: center;
+  font-size: 14px;
+
+  outline: none;
+
+  /* number 화살표 제거 */
+  -moz-appearance: textfield;
+
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+`;
+
+// 찜 버튼 (하트 버튼)
+const WishButton = styled.button`
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  border: 1px solid #eee;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  svg {
+    width: 25px;
+    height: 25px;
+  }
+  svg path {
+    stroke: #8fa77e;
+    fill: ${({ active }) => (active ? "#8fa77e" : "none")};
+  }
+`;
+
+// 수량 버튼
+const QuantityButton = styled.button`
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: #f7f7f7;
+  font-size: 16px;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background: #eee;
+  }
+
+  &:active {
+    background: #e5e5e5;
+  }
+`;
+
+//  상세 이미지 영역
+const DetailSection = styled.section`
+  width: 100%;
+  height: 100%;
+`;
+
+//  상세 이미지
+const FullDetailImage = styled.img`
+  width: 100%;
+  height: 100%;
+`;
+
+//  상세 이미지 없을 때
+const EmptyDetailBox = styled.div`
+  text-align: center;
+`;
+
+// 모달 이미지 영역
+const ModalImageWrap = styled.div`
+  display: flex;
+  justify-content: center;
+`;
+
+//  모달 이미지
+const ModalImage = styled.img`
+  width: 100%;
+  max-width: 600px;
+`;
+
+//  모달 좌우 버튼 공통
+const ModalNavButton = styled.button`
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+`;
+
+// 모달 왼쪽 버튼
+const ModalNavButtonLeft = styled(ModalNavButton)`
+  left: 12px;
+`;
+
+//  모달 오른쪽 버튼
+const ModalNavButtonRight = styled(ModalNavButton)`
+  right: 12px;
+`;
 
 function toImageArray(value) {
   if (Array.isArray(value)) return value.filter(Boolean);
@@ -34,6 +555,9 @@ export default function ProductDetailPage() {
   const [selectedImage, setSelectedImage] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const { wishList, toggleWish } = useWishStore();
+  const isWished = wishList.some((item) => item.id === product?.id);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -154,56 +678,48 @@ export default function ProductDetailPage() {
   };
 
   const handleAddToCart = () => {
-    if (!isAuthenticated) {
-      navigate("/login", {
-        state: { from: location.pathname },
-      });
-      return;
-    }
+    if (!product) return;
 
-    console.log("현제 상품 데이터 : ", product);
+    // 무조건 담기
     addToCart({
       id: product.id,
       name: product.name,
       price: salePrice,
       originPrice,
-      image: selectedImage || thumbImages[0] || "",
+      image: selectedImage || thumbImages?.[0] || "",
       option: "기본 옵션",
       quantity,
-      category: product.categoryId,
+      category: product.categoryId || product.category || null,
     });
 
-    showToast(`${product.name} ${quantity}개가 장바구니에 담겼습니다! 🛒`);
+    // 로그인 여부에 따라 토스트만 다르게
+
+    if (isAuthenticated) {
+      showToast(`${product.name} ${quantity}개가 장바구니에 저장되었습니다.`);
+    } else {
+      showToast("장바구니에 담겼습니다. 로그인하면 저장됩니다.");
+    }
   };
 
-  if (error || !product) {
-    return (
-      <div css={productDetailMessageStyle}>
-        {error || "상품 정보가 없습니다."}
-      </div>
-    );
-  }
-
+  if (!product) return null;
   return (
     <>
-      <div css={productDetailPageWrap}>
-        <div css={productDetailSheet}>
-          <section css={topSection}>
-            <div css={productDetailLeftArea}>
-              <div css={mainImageStage}>
+      <ProductDetailPageWrap>
+        <ProductDetailSheet>
+          <TopSection>
+            <ProductDetailLeftArea>
+              <MainImageStage>
                 {thumbImages.length > 1 && (
-                  <button
+                  <ImageNavButtonLeft
                     type="button"
-                    css={imageNavButton("left")}
                     onClick={handlePrevThumbnail}
                     aria-label="이전 이미지 보기"
                   >
                     ‹
-                  </button>
+                  </ImageNavButtonLeft>
                 )}
 
-                <div
-                  css={mainImageBox}
+                <MainImageBox
                   onClick={openModal}
                   role="button"
                   tabIndex={0}
@@ -215,888 +731,213 @@ export default function ProductDetailPage() {
                   aria-label="상품 이미지 크게 보기"
                 >
                   {selectedImage ? (
-                    <img
-                      src={selectedImage}
-                      alt={product.name}
-                      css={mainImage}
-                    />
+                    <MainImage src={selectedImage} alt={product.name} />
                   ) : (
-                    <div css={emptyImage}>이미지가 없습니다.</div>
+                    <EmptyImage>이미지가 없습니다.</EmptyImage>
                   )}
-                </div>
+                </MainImageBox>
 
                 {thumbImages.length > 1 && (
-                  <button
+                  <ImageNavButtonRight
                     type="button"
-                    css={imageNavButton("right")}
                     onClick={handleNextThumbnail}
                     aria-label="다음 이미지 보기"
                   >
                     ›
-                  </button>
+                  </ImageNavButtonRight>
                 )}
-              </div>
+              </MainImageStage>
 
-              <div css={thumbArea}>
-                <div css={thumbRow}>
+              <ThumbArea>
+                <ThumbRow>
                   {thumbImages.map((image, index) => (
-                    <button
+                    <ThumbButton
                       key={`${image}-${index}`}
                       type="button"
-                      css={thumbButton(selectedImage === image)}
+                      active={selectedImage === image}
                       onClick={() => setSelectedImage(image)}
                     >
-                      <img
+                      <ThumbImage
                         src={image}
                         alt={`${product.name} 썸네일 ${index + 1}`}
-                        css={thumbImage}
                       />
-                    </button>
+                    </ThumbButton>
                   ))}
-                </div>
-              </div>
-            </div>
+                </ThumbRow>
+              </ThumbArea>
+            </ProductDetailLeftArea>
 
-            <div css={productDetailRightArea}>
-              <h1 css={titleText}>{product.name}</h1>
+            <ProductDetailRightArea>
+              <TitleText>{product?.name}</TitleText>
+              {product?.description ? (
+                <DescriptionText>{product.description}</DescriptionText>
+              ) : null}
 
-              <div
-                css={ratingRow}
+              <RatingRow
                 onClick={() => navigate(`/reviews?productId=${product.id}`)}
               >
-                <span css={stars}>★★★★★</span>
-                <span css={productDetailReviewCount}>
+                <Stars>★★★★★</Stars>
+                <ProductDetailReviewCount>
                   {rating}
                   {reviewCount > 0 ? ` (${reviewCount})` : ""}
-                </span>
-              </div>
+                </ProductDetailReviewCount>
+              </RatingRow>
 
-              <div css={priceArea}>
-                <div css={priceRow}>
-                  <span css={salePriceText}>
-                    {salePrice.toLocaleString()}원
-                  </span>
+              <PriceArea>
+                <PriceRow>
+                  <SalePriceText>{salePrice.toLocaleString()}원</SalePriceText>
 
                   {originPrice > salePrice && (
-                    <span css={originPriceText}>
+                    <OriginPriceText>
                       {originPrice.toLocaleString()}원
-                    </span>
+                    </OriginPriceText>
                   )}
 
                   {discountPercent > 0 && (
-                    <span css={discountBadge}>{discountPercent}%</span>
+                    <DiscountBadge>{discountPercent}%</DiscountBadge>
                   )}
-                </div>
-              </div>
+                </PriceRow>
+              </PriceArea>
 
-              {product.description ? (
-                <p css={descriptionText}>{product.description}</p>
-              ) : null}
-
-              <div css={infoList}>
-                <div css={infoLine}>
-                  <span css={productDetailInfoDot} />
+              <InfoList>
+                <InfoLine>
+                  <ProductDetailInfoDot />
                   <span>
                     배송정보, 무료배송 <strong>(당일 배송 가능)</strong>
                   </span>
-                </div>
+                </InfoLine>
 
-                <div css={infoLine}>
-                  <span css={productDetailInfoDot} />
+                <InfoLine>
+                  <ProductDetailInfoDot />
                   <span>
                     적립금, 혜택 <strong>(0.4%)</strong>
                   </span>
-                </div>
-              </div>
+                </InfoLine>
+              </InfoList>
 
-              <div css={guideBox}>
-                <div css={guideTitle}>배송안내</div>
+              <GuideBox>
+                <GuideTitle>배송안내</GuideTitle>
 
-                <ul css={guideList}>
+                <GuideList>
                   <li>오후 3시 이전, 당일 배송</li>
                   <li>평균 배송기간 1~2일 소요</li>
                   <li>해당 서비스 가능 지역에 한함, 외 별도 추가비용</li>
-                </ul>
-              </div>
+                </GuideList>
+              </GuideBox>
 
-              <div css={optionSection}>
-                <p css={optionLabel}>옵션 선택</p>
+              <OptionSection>
+                <OptionLabel>옵션 선택</OptionLabel>
 
-                <select css={selectBox} value="기본 옵션" disabled>
+                <SelectBox value="기본 옵션" disabled>
                   <option value="기본 옵션">기본 옵션</option>
-                </select>
+                </SelectBox>
 
-                <div css={cartActionRow}>
-                  <div css={quantityRow}>
-                    <button
-                      type="button"
-                      onClick={handleDecreaseQuantity}
-                      aria-label="수량 감소"
-                    >
-                      -
-                    </button>
+                {/* 수량  */}
+                <QuantityRow>
+                  <QuantityButton
+                    type="button"
+                    onClick={handleDecreaseQuantity}
+                    aria-label="수량 감소"
+                  >
+                    -
+                  </QuantityButton>
 
-                    <input
-                      type="number"
-                      min="1"
-                      value={quantity}
-                      onChange={(e) => {
-                        const value = e.target.value;
+                  <QuantityInput
+                    type="number"
+                    min="1"
+                    value={quantity}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (value === "") return;
 
-                        if (value === "") return;
+                      const nextValue = Number(value);
 
-                        const nextValue = Number(value);
+                      if (nextValue < 1) {
+                        setQuantity(1);
+                        return;
+                      }
 
-                        if (nextValue < 1) {
-                          setQuantity(1);
-                          return;
-                        }
+                      setQuantity(nextValue);
+                    }}
+                  />
 
-                        setQuantity(nextValue);
-                      }}
-                    />
+                  <QuantityButton
+                    type="button"
+                    onClick={handleIncreaseQuantity}
+                    aria-label="수량 증가"
+                  >
+                    +
+                  </QuantityButton>
+                </QuantityRow>
 
-                    <button
-                      type="button"
-                      onClick={handleIncreaseQuantity}
-                      aria-label="수량 증가"
-                    >
-                      +
-                    </button>
-                  </div>
+                {/*  버튼  */}
+                <CartActionRow>
+                  <WishButton
+                    active={isWished}
+                    onClick={() =>
+                      toggleWish({
+                        id: product.id,
+                        name: product.name,
+                        price: salePrice,
+                        imageUrl:
+                          selectedImage ||
+                          product.imageUrl ||
+                          product.thumbnails?.[0] ||
+                          "",
+                      })
+                    }
+                  >
+                    <svg viewBox="0 0 24 24">
+                      <path
+                        d="M12 21s-6.5-4.35-9-8.5C1.5 8.5 3.5 5 7 5c2 0 3.5 1 5 2.5C13.5 6 15 5 17 5c3.5 0 5.5 3.5 4 7.5-2.5 4.15-9 8.5-9 8.5z"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.8"
+                      />
+                    </svg>
+                  </WishButton>
 
-                  <div css={cartButtonWrap}>
-                    <Button
-                      width="100%"
-                      height="100%"
-                      bgColor="primary"
-                      textColor="white"
-                      fontSize="lg"
-                      fontWeight="medium"
-                      radius="sm"
-                      onClick={handleAddToCart}
-                    >
-                      장바구니 담기
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
+                  <CartButton onClick={handleAddToCart}>
+                    장바구니 담기
+                  </CartButton>
+                </CartActionRow>
+              </OptionSection>
+            </ProductDetailRightArea>
+          </TopSection>
 
-          <section css={detailSection}>
+          <DetailSection>
             {detailImages.length > 0 ? (
-              detailImages.map((img, i) => {
-                const baseIndex = product.id - 1;
-                const currentCopy = productDetailList[baseIndex + i + 1]?.[0];
-
-                return (
-                  <div key={`${img}-${i}`} css={detailImageContainer}>
-                    <img
-                      src={img}
-                      alt={`${product.name} 상세 이미지 ${i + 1}`}
-                      css={fullDetailImage}
-                    />
-
-                    {currentCopy && (
-                      <div css={copyOverlayStyle}>
-                        <h2 css={copyTitleStyle}>{currentCopy.title}</h2>
-                        <p css={copyDescStyle}>{currentCopy.desc}</p>
-                      </div>
-                    )}
-                  </div>
-                );
-              })
+              detailImages.map((img, i) => (
+                <FullDetailImage
+                  key={`${img}-${i}`}
+                  src={img}
+                  alt={`${product.name} 상세 이미지 ${i + 1}`}
+                />
+              ))
             ) : (
-              <div css={emptyDetailBox}>상세 이미지가 없습니다.</div>
+              <EmptyDetailBox>상세 이미지가 없습니다.</EmptyDetailBox>
             )}
-          </section>
-        </div>
-      </div>
+          </DetailSection>
+        </ProductDetailSheet>
+      </ProductDetailPageWrap>
 
       <Modal isOpen={isModalOpen} onClose={closeModal} title="" imageMode>
-        <div css={modalImageWrap}>
+        <ModalImageWrap>
           {thumbImages.length > 1 && (
-            <button
-              type="button"
-              css={modalNavButton("left")}
-              onClick={handlePrevThumbnail}
-              aria-label="이전 이미지 보기"
-            >
+            <ModalNavButtonLeft type="button" onClick={handlePrevThumbnail}>
               ‹
-            </button>
+            </ModalNavButtonLeft>
           )}
 
-          <img src={selectedImage} alt={product.name} css={modalImage} />
+          <ModalImage src={selectedImage} alt={product.name} />
 
           {thumbImages.length > 1 && (
-            <button
-              type="button"
-              css={modalNavButton("right")}
-              onClick={handleNextThumbnail}
-              aria-label="다음 이미지 보기"
-            >
+            <ModalNavButtonRight type="button" onClick={handleNextThumbnail}>
               ›
-            </button>
+            </ModalNavButtonRight>
           )}
-        </div>
+        </ModalImageWrap>
       </Modal>
     </>
   );
 }
-
-/* ================= 스타일 ================= */
-
-const productDetailPageWrap = css`
-  background: ${theme.colors.gray100};
-  min-height: 100vh;
-  padding: 100px 0 40px;
-
-  @media (max-width: 1280px) {
-    padding: 80px 0 32px;
-  }
-
-  ${theme.media.tablet} {
-    padding: 64px 0 28px;
-  }
-
-  ${theme.media.mobile} {
-    padding: 24px 0 20px;
-  }
-`;
-
-const productDetailSheet = css`
-  width: min(1440px, calc(100% - 48px));
-  margin: 0 auto;
-  padding: 54px 0 20px;
-  border: ${theme.border.thin};
-  background: ${theme.colors.bg};
-
-  @media (max-width: 1280px) {
-    width: calc(100% - 32px);
-    padding: 40px 0 20px;
-  }
-
-  ${theme.media.tablet} {
-    width: calc(100% - 24px);
-    padding: 32px 0 20px;
-  }
-
-  ${theme.media.mobile} {
-    width: calc(100% - 16px);
-    padding: 24px 0 20px;
-    border: none;
-  }
-`;
-
-const topSection = css`
-  width: min(1240px, calc(100% - 96px));
-  margin: 0 auto;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  gap: 96px;
-
-  @media (max-width: 1280px) {
-    width: calc(100% - 48px);
-    gap: 40px;
-  }
-
-  ${theme.media.tablet} {
-    width: calc(100% - 32px);
-    gap: 28px;
-  }
-
-  ${theme.media.mobile} {
-    width: calc(100% - 24px);
-    flex-direction: column;
-    gap: 20px;
-  }
-`;
-
-const productDetailLeftArea = css`
-  flex: 1 1 0;
-  min-width: 0;
-  max-width: 657px;
-
-  ${theme.media.mobile} {
-    width: 100%;
-    max-width: none;
-  }
-`;
-
-const mainImageStage = css`
-  position: relative;
-  width: 100%;
-  margin-bottom: 12px;
-`;
-
-const mainImageBox = css`
-  width: 100%;
-  aspect-ratio: 657 / 744;
-  background: ${theme.colors.gray100};
-  overflow: hidden;
-  cursor: zoom-in;
-  transition: box-shadow 0.2s ease;
-
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-    transition: transform 0.28s ease;
-  }
-
-  &:hover {
-    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
-  }
-
-  &:hover img {
-    transform: scale(1.02);
-  }
-`;
-
-const mainImage = css`
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-`;
-
-const emptyImage = css`
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: ${theme.colors.textSub};
-  background: ${theme.colors.gray100};
-`;
-
-const imageNavButton = (position = "right") => css`
-  position: absolute;
-  top: 50%;
-  ${position}: -52px;
-  transform: translateY(-50%);
-  width: 28px;
-  height: 56px;
-  border: none;
-  background: transparent;
-  color: #8f8f8f;
-  font-size: 44px;
-  line-height: 1;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  transition:
-    color 0.2s ease,
-    transform 0.2s ease;
-
-  &:hover {
-    color: ${theme.colors.primaryDark};
-    transform: translateY(-50%) scale(1.05);
-  }
-
-  @media (max-width: 1280px) {
-    ${position}: -32px;
-    font-size: 36px;
-  }
-
-  ${theme.media.tablet} {
-    ${position}: 8px;
-    width: 28px;
-    height: 48px;
-    font-size: 30px;
-    background: rgba(255, 255, 255, 0.72);
-    border-radius: ${theme.radius.pill};
-  }
-
-  ${theme.media.mobile} {
-    ${position}: 10px;
-    width: 22px;
-    height: 42px;
-    font-size: 28px;
-    background: rgba(255, 255, 255, 0.72);
-    border-radius: ${theme.radius.pill};
-  }
-`;
-
-const thumbArea = css`
-  display: flex;
-  align-items: center;
-  gap: 18px;
-`;
-
-const thumbRow = css`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-`;
-
-const thumbButton = (active) => css`
-  width: 60px;
-  height: 60px;
-  padding: 0;
-  border: ${active ? `2px solid ${theme.colors.primary}` : "1px solid #ddd"};
-  background: ${theme.colors.bg};
-  cursor: pointer;
-  overflow: hidden;
-  flex-shrink: 0;
-  transition:
-    transform 0.2s ease,
-    border-color 0.2s ease;
-
-  &:hover {
-    transform: translateY(-1px);
-    border-color: ${theme.colors.primary};
-  }
-
-  ${theme.media.tablet} {
-    width: 52px;
-    height: 52px;
-  }
-
-  ${theme.media.mobile} {
-    width: 48px;
-    height: 48px;
-  }
-`;
-
-const thumbImage = css`
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-`;
-
-const productDetailRightArea = css`
-  flex: 0 1 390px;
-  min-width: 320px;
-  max-width: 390px;
-  display: flex;
-  flex-direction: column;
-  padding-top: 42px;
-
-  @media (max-width: 1280px) {
-    min-width: 300px;
-    padding-top: 16px;
-  }
-
-  ${theme.media.mobile} {
-    width: 100%;
-    min-width: 0;
-    max-width: none;
-    padding-top: 0;
-  }
-`;
-
-const titleText = css`
-  margin: 0 0 7px;
-  font-size: 24px;
-  line-height: 1.25;
-  font-weight: ${theme.fontWeight.bold};
-  color: ${theme.colors.textMain};
-  word-break: keep-all;
-
-  @media (max-width: 1280px) {
-    font-size: 22px;
-  }
-
-  ${theme.media.mobile} {
-    font-size: 20px;
-    margin-bottom: 5px;
-  }
-`;
-
-const ratingRow = css`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 18px;
-  flex-wrap: wrap;
-  cursor: pointer;
-`;
-
-const stars = css`
-  color: ${theme.colors.stars};
-  font-size: 14px;
-`;
-
-const productDetailReviewCount = css`
-  color: ${theme.colors.textSub};
-  font-size: 13px;
-  font-weight: ${theme.fontWeight.medium};
-`;
-
-const priceArea = css`
-  padding-bottom: 24px;
-  margin-bottom: 24px;
-  border-bottom: 1px solid ${theme.colors.gray200};
-`;
-
-const priceRow = css`
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-`;
-
-const salePriceText = css`
-  font-size: 28px;
-  line-height: 1;
-  font-weight: ${theme.fontWeight.bold};
-  color: ${theme.colors.sale};
-
-  @media (max-width: 1280px) {
-    font-size: 26px;
-  }
-
-  ${theme.media.mobile} {
-    font-size: 24px;
-  }
-`;
-
-const originPriceText = css`
-  font-size: 14px;
-  color: ${theme.colors.textSub};
-  text-decoration: line-through;
-`;
-
-const discountBadge = css`
-  min-width: 60px;
-  height: 20px;
-  padding: 0 10px;
-  border-radius: 18px;
-  background: ${theme.colors.primary};
-  color: ${theme.colors.white};
-  font-size: 14px;
-  font-weight: ${theme.fontWeight.bold};
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-const descriptionText = css`
-  margin: 0 0 20px;
-  font-size: 14px;
-  line-height: 1.7;
-  color: ${theme.colors.textSub};
-  word-break: keep-all;
-`;
-
-const infoList = css`
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  margin-bottom: 26px;
-  padding-bottom: 22px;
-  border-bottom: 1px solid ${theme.colors.gray200};
-`;
-
-const infoLine = css`
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 12px;
-  line-height: 1.55;
-  color: ${theme.colors.textMain};
-
-  strong {
-    color: ${theme.colors.textSub};
-  }
-`;
-
-const productDetailInfoDot = css`
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: #555;
-  flex-shrink: 0;
-`;
-
-const guideBox = css`
-  width: 100%;
-  background: #f5f5f5;
-  border: 1px solid #ddd;
-  margin-bottom: 24px;
-  min-height: 146px;
-
-  ${theme.media.mobile} {
-    min-height: auto;
-  }
-`;
-
-const guideTitle = css`
-  padding: 12px 14px;
-  font-size: 14px;
-  font-weight: ${theme.fontWeight.bold};
-  border-bottom: 1px solid #ddd;
-  color: ${theme.colors.textMain};
-`;
-
-const guideList = css`
-  margin: 0;
-  padding: 18px 18px 18px 32px;
-  font-size: 12px;
-  line-height: 1.9;
-  color: #777;
-
-  li + li {
-    margin-top: 8px;
-  }
-
-  ${theme.media.mobile} {
-    padding: 16px 16px 16px 28px;
-  }
-`;
-
-const optionSection = css`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  padding-top: 22px;
-  border-top: 1px solid ${theme.colors.gray200};
-`;
-
-const optionLabel = css`
-  margin: 0;
-  font-size: 14px;
-  font-weight: ${theme.fontWeight.bold};
-  color: ${theme.colors.textMain};
-`;
-
-const selectBox = css`
-  width: 100%;
-  height: 45px;
-  padding: 0 48px 0 14px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 14px;
-  color: #666;
-  background-color: ${theme.colors.bg};
-  background-image: url("data:image/svg+xml,%3Csvg width='14' height='9' viewBox='0 0 14 9' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L7 7.5L13 1.5' stroke='%23888888' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 18px center;
-  background-size: 14px 9px;
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-
-  &:disabled {
-    background-color: #f8f8f8;
-    color: #999;
-    cursor: not-allowed;
-  }
-`;
-
-const cartActionRow = css`
-  display: flex;
-  align-items: stretch;
-  gap: 12px;
-  width: 100%;
-  margin-top: 10px;
-
-  ${theme.media.mobile} {
-    gap: 8px;
-  }
-`;
-
-const quantityRow = css`
-  width: 96px;
-  height: 56px;
-  display: flex;
-  border: 1px solid #ccc;
-  background: ${theme.colors.bg};
-  flex-shrink: 0;
-
-  button {
-    width: 32px;
-    height: 100%;
-    border: none;
-    background: ${theme.colors.bg};
-    cursor: pointer;
-    font-size: 20px;
-  }
-
-  input {
-    width: 32px;
-    height: 100%;
-    border: none;
-    border-left: 1px solid #ccc;
-    border-right: 1px solid #ccc;
-    text-align: center;
-    font-size: 18px;
-    font-weight: ${theme.fontWeight.bold};
-    color: ${theme.colors.textMain};
-    background: ${theme.colors.bg};
-    outline: none;
-    padding: 0;
-  }
-
-  input::-webkit-outer-spin-button,
-  input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
-
-  input[type="number"] {
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: textfield;
-  }
-
-  ${theme.media.mobile} {
-    width: 84px;
-    height: 42px;
-
-    button,
-    input {
-      width: 28px;
-      font-size: 16px;
-    }
-  }
-`;
-
-const cartButtonWrap = css`
-  flex: 1;
-  height: 56px;
-  min-width: 0;
-
-  ${theme.media.mobile} {
-    height: 42px;
-  }
-`;
-
-const detailSection = css`
-  width: min(1019px, calc(100% - 48px));
-  margin: 24px auto 0;
-  text-align: center;
-
-  ${theme.media.tablet} {
-    width: calc(100% - 32px);
-  }
-
-  ${theme.media.mobile} {
-    width: calc(100% - 24px);
-    margin-top: 16px;
-  }
-`;
-
-const emptyDetailBox = css`
-  width: 100%;
-  min-height: 420px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: ${theme.colors.bg};
-  color: ${theme.colors.textSub};
-  font-size: ${theme.fontSize.lg};
-
-  ${theme.media.mobile} {
-    min-height: 260px;
-    font-size: ${theme.fontSize.base};
-  }
-`;
-
-const productDetailMessageStyle = css`
-  text-align: center;
-  padding: 100px 20px;
-  font-size: 20px;
-  color: ${theme.colors.textSub};
-`;
-
-const modalImageWrap = css`
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-const modalImage = css`
-  max-width: min(90vw, 980px);
-  max-height: 90vh;
-  display: block;
-  object-fit: contain;
-  background: ${theme.colors.bg};
-`;
-
-const modalNavButton = (position = "right") => css`
-  position: absolute;
-  top: 50%;
-  ${position}: 12px;
-  transform: translateY(-50%);
-  width: 34px;
-  height: 56px;
-  border: none;
-  background: rgba(0, 0, 0, 0.35);
-  color: ${theme.colors.white};
-  font-size: 40px;
-  line-height: 1;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: ${theme.radius.pill};
-
-  &:hover {
-    background: rgba(0, 0, 0, 0.5);
-  }
-
-  ${theme.media.mobile} {
-    width: 28px;
-    height: 44px;
-    font-size: 28px;
-  }
-`;
-
-const detailImageContainer = css`
-  position: relative;
-  width: 100%;
-  margin-bottom: 20px;
-  overflow: hidden;
-`;
-
-const fullDetailImage = css`
-  width: 100%;
-  display: block;
-  max-width: 1019px;
-  margin: 0 auto 20px;
-`;
-
-const copyOverlayStyle = css`
-  position: absolute;
-  top: 10%;
-  left: 6%;
-
-  color: white;
-  z-index: 2;
-
-  max-width: 60%;
-
-  /* 가독성 */
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
-`;
-
-const copyTitleStyle = css`
-  font-size: 40px;
-  font-weight: 700;
-  margin-bottom: 10px;
-  line-height: 1.3;
-
-  @media (max-width: 768px) {
-    font-size: 20px;
-  }
-`;
-
-const copyDescStyle = css`
-  font-size: 24px;
-  opacity: 0.95;
-  line-height: 1.5;
-
-  @media (max-width: 768px) {
-    font-size: 14px;
-  }
-`;

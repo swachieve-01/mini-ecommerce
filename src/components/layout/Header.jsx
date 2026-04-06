@@ -33,6 +33,9 @@ const HeaderTop = styled.div`
   align-items: center;
   justify-content: space-between;
   /* border-bottom: 1px solid #222; */
+  @media (max-width: 768px) {
+    padding: 35px 30px;
+  }
 `;
 
 const HeaderLogo = styled(NavLink)`
@@ -43,34 +46,30 @@ const HeaderLogo = styled(NavLink)`
   gap: 8px;
 
   @media (max-width: 768px) {
-    display: none;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-55%, -40%);
+    display: block;
+    z-index: 2;
+  }
+
+  @media (max-width: 480px) {
+    transform: translate(-50%, -45%);
   }
 `;
 
 const HeaderLogoImage = styled.img`
   height: 120px;
-  margin-top: 10px;
+  transition: height 0.25s ease;
   object-fit: contain;
-  transition: all 0.3s ease;
 
   @media (max-width: 1480px) {
     height: 90px;
   }
 
-  @media (max-width: 1280px) {
-    height: 70px;
-  }
-
   @media (max-width: 1024px) {
-    height: 50px;
-  }
-
-  @media (max-width: 900px) {
-    height: 45px;
-  }
-
-  @media (max-width: 768px) {
-    display: none;
+    height: 60px;
   }
 `;
 
@@ -93,14 +92,12 @@ const SearchBox = styled.div`
   box-sizing: border-box;
   overflow: hidden;
 
-  transition: all 0.3s ease;
+  transition: width 0.3s ease;
 
-  @media (max-width: 900px) {
-    width: 30%;
-  }
-
-  @media (max-width: 768px) {
-    width: 220px;
+  &#desktop-search {
+    @media (max-width: 768px) {
+      display: none;
+    }
   }
 
   input {
@@ -121,14 +118,27 @@ const SearchBox = styled.div`
   }
 `;
 
+const MobileTopSection = styled.div`
+  display: none;
+  padding: 12px 16px;
+  background: #fff;
+
+  @media (max-width: 768px) {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+`;
+
 const CartIcon = styled.svg``;
 
 const UserMenu = styled.nav`
   display: flex;
   align-items: center;
   gap: 24px;
-  transition: all 0.3s ease;
-  /* margin-left: auto; */
+
+  margin-left: auto;
+  z-index: 2;
 
   @media (max-width: 1080px) {
     gap: 16px;
@@ -141,67 +151,39 @@ const UserMenu = styled.nav`
   a {
     display: flex;
     align-items: center;
-    gap: 6px;
+    justify-content: center;
 
-    position: relative;
+    gap: 6px;
+    min-width: 40px;
+
     color: ${({ theme }) => theme.colors.primaryDark};
     font-size: ${({ theme }) => theme.fontSize.lg};
     white-space: nowrap;
-    transition: all 0.25s ease;
+  }
 
-    @media (max-width: 1280px) {
-      gap: 4px;
+  a:not(.cart) {
+    @media (max-width: 1600px) {
+      display: none;
     }
+  }
 
-    @media (max-width: 900px) {
-      gap: 2px;
+  .divider {
+    @media (max-width: 1600px) {
+      display: none;
     }
+  }
+
+  a.cart {
+    display: flex;
   }
 
   span {
-    display: inline-block;
-    white-space: nowrap;
-    overflow: hidden;
-    transition: all 0.3s ease;
-
-    font-size: ${({ theme }) => theme.fontSize.lg};
-
-    @media (max-width: 1600px) {
-      transform: scaleX(0);
-      width: 0;
-      margin: 0;
-    }
-  }
-
-  a.cart span {
-    @media (max-width: 1600px) {
-      transform: scaleX(1);
-      width: auto;
-      margin: 0;
-    }
-
-    @media (max-width: 1280px) {
-      transform: scale(0.95);
-    }
-
-    @media (max-width: 1080px) {
-      transform: scale(0.9);
-    }
-
-    @media (max-width: 768px) {
-      transform: scale(0.85);
-    }
-
-    @media (max-width: 480px) {
-      transform: scale(0.8);
-    }
+    pointer-events: none;
   }
 
   svg {
     width: 20px;
     height: 20px;
-    position: relative;
-    top: 1px;
 
     @media (max-width: 768px) {
       width: 18px;
@@ -246,6 +228,10 @@ const HeaderMainNav = styled.nav`
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
   border-bottom: 1px solid #e5e5e5;
   background: #fff;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
 `;
 
 const MainCategory = styled.ul`
@@ -407,11 +393,22 @@ export default function Header() {
     <HeaderWrap>
       <HeaderInner>
         <HeaderTop>
+          {/* 햄버거 버튼 (모바일) */}
+          <MenuButton onClick={() => setMenuOpen(true)}>
+            <MenuIcon />
+          </MenuButton>
+
+          {menuOpen && window.innerWidth <= 768 && (
+            <MobileCategoryMenu
+              open={menuOpen}
+              onClose={() => setMenuOpen(false)}
+            />
+          )}
           <HeaderLogo to="/">
             <HeaderLogoImage src={logo} alt="Nature Glow 로고" />
           </HeaderLogo>
 
-          <SearchBox>
+          <SearchBox id="desktop-search">
             <form
               style={{
                 display: "flex",
@@ -442,18 +439,6 @@ export default function Header() {
             </form>
           </SearchBox>
 
-          {/* 햄버거 버튼 (모바일) */}
-          <MenuButton onClick={() => setMenuOpen(true)}>
-            <MenuIcon />
-          </MenuButton>
-
-          {menuOpen && window.innerWidth <= 768 && (
-            <MobileCategoryMenu
-              open={menuOpen}
-              onClose={() => setMenuOpen(false)}
-            />
-          )}
-
           <UserMenu>
             <NavLink to="/steamlist">
               <span>찜리스트</span>
@@ -467,17 +452,18 @@ export default function Header() {
               <span>구매후기</span>
             </NavLink>
 
-            <CartLink to="/cart" className="cart">
-              <span>장바구니</span>
-              {cartCount > 0 && <CartBadge>{cartCount}</CartBadge>}
-            </CartLink>
             {isAuthenticated ? (
               <>
-                <NavDivider>|</NavDivider>
-
-                <span onClick={logout} style={{ cursor: "pointer" }}>
+                <NavLink
+                  to="/"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    logout();
+                    navigate("/");
+                  }}
+                >
                   로그아웃
-                </span>
+                </NavLink>
               </>
             ) : (
               <>
@@ -490,6 +476,12 @@ export default function Header() {
                 </NavLink>
               </>
             )}
+
+            <NavDivider className="divider">|</NavDivider>
+            <CartLink to="/cart" className="cart">
+              <span>장바구니</span>
+              {cartCount > 0 && <CartBadge>{cartCount}</CartBadge>}
+            </CartLink>
           </UserMenu>
         </HeaderTop>
 
@@ -518,6 +510,45 @@ export default function Header() {
               })}
             </MainCategory>
           </HeaderMainNav>
+          {/* 모바일 검색창 */}
+          <MobileTopSection>
+            <SearchBox
+              style={{
+                position: "static",
+                transform: "none",
+                width: "100%",
+              }}
+            >
+              <form
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  width: "100%",
+                }}
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleSearch();
+                }}
+              >
+                <input
+                  type="text"
+                  value={keyword}
+                  onChange={(e) => setKeyword(e.target.value)}
+                />
+                <button type="button" onClick={handleSearch}>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
+                  </svg>
+                </button>
+              </form>
+            </SearchBox>
+          </MobileTopSection>
 
           <SubNavWrap className={hoveredCategory ? "open" : ""}>
             {hoveredCategory && (
