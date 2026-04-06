@@ -39,6 +39,16 @@ const CategoryItem = styled.img`
   height: 100%;
   object-fit: cover;
   transition: transform 0.2s ease;
+  cursor: pointer;
+
+  border: ${({ active }) =>
+    active ? "3px solid #8FA77E" : "1px solid transparent"};
+
+  opacity: ${({ active }) => (active ? 0.7 : 1)};
+
+  &:active {
+    transform: scale(0.92);
+  }
 `;
 
 const CategoryList = styled.div`
@@ -57,6 +67,7 @@ const CategoryName = styled.p`
 export default function CategorySection() {
   const [categories, setCategories] = useState([]);
   const navigate = useNavigate();
+  const [selectedId, setSelectedId] = useState(null);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -84,8 +95,16 @@ export default function CategorySection() {
       {categories.map((item) => {
         const id = item.categoryId;
         return (
-          <CategoryImage key={id} onClick={() => handleClick(id)}>
-            <CategoryItem src={item.imageUrl} alt={item.name} />
+          <CategoryImage key={id}>
+            <CategoryItem
+              src={item.imageUrl}
+              alt={item.name}
+              active={selectedId === id}
+              onClick={() => {
+                setSelectedId(id);
+                handleClick(id);
+              }}
+            />
             <CategoryName>{item.name}</CategoryName>
           </CategoryImage>
         );

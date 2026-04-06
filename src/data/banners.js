@@ -34,6 +34,7 @@ export const eventBannerMeta = {
     position: { top: "50%", right: "10%" },
     align: "left",
     isWhiteText: true,
+    category: "/category/skin",
   },
   2: {
     title: "신규 회원 혜택",
@@ -41,5 +42,6 @@ export const eventBannerMeta = {
     position: { top: "50%", left: "10%" },
     align: "right",
     isWhiteText: false,
+    category: "/signup",
   },
 };

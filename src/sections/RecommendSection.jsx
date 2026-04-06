@@ -9,8 +9,14 @@ export default function RecommendSection() {
   useEffect(() => {
     const fetchRecommend = async () => {
       try {
-        const data = await getRecommend();
-        setProducts(data);
+        const result = await getRecommend();
+        const list = result.data || result;
+        const normalizedData = list.map((item) => ({
+          ...item,
+          id: item.productId || item.id,
+        }));
+
+        setProducts(normalizedData);
       } catch (error) {
         console.error(error);
       }

@@ -120,7 +120,7 @@ const StyleCheckText = styled.label`
   cursor: pointer;
   transition: all 0.2s ease;
 
-  /* 🔥 기본 상태 (은은한 그린) */
+  /*  기본 상태 (은은한 그린) */
   color: #4f6a4e;
   background: rgba(143, 167, 126, 0.08);
   border: 1px solid rgba(143, 167, 126, 0.25);
