@@ -13,9 +13,9 @@ const BottomNavWrapper = styled.nav`
   background: #fff;
   border-top: 1px solid #eee;
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   align-items: center;
-
+  padding: 0 35px 0 25px;
   z-index: 1000;
 
   @media (min-width: 768px) {
@@ -29,7 +29,7 @@ const BottomNavItem = styled(NavLink)`
   color: #777;
   text-decoration: none;
 
-  padding: 10px 5px;
+  padding: 10px 0px;
   display: flex;
   flex-direction: column;
   align-items: center;

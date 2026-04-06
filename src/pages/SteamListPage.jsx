@@ -82,15 +82,16 @@ const WishlistSummaryCard = styled.div`
   text-align: center;
 
   @media (max-width: 600px) {
-    width: 420px;
+    width: 100%;
     padding: 10px;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 600;
     color: #4f6a4e;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
+    box-sizing: border-box;
   }
 `;
 
@@ -101,7 +102,8 @@ const WishlistSummaryCount = styled.div`
   margin: 6px 0;
 
   @media (max-width: 600px) {
-    font-size: 18px;
+    margin-left: 12px;
+    font-size: 16px;
   }
 `;
 
@@ -115,8 +117,8 @@ const WishlistSummaryButton = styled.button`
   cursor: pointer;
 
   @media (max-width: 600px) {
-    max-width: 150px;
-    font-size: 15px;
+    max-width: 120px;
+    font-size: 12px;
     padding: 6px;
     margin-left: 24px;
     display: flex;
