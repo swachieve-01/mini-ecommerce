@@ -4,19 +4,57 @@ import styled from "@emotion/styled";
 
 export const SortDropdownWrapper = styled.div`
   position: relative;
-  width: 160px;
+  width: 100%;
+  max-width: 100px;
+
+  @media (max-width: 600px) {
+    min-width: 100px;
+  }
 `;
 
+// 정렬 (베스트/무로배송 등) 버튼
 export const SortDropdownSelected = styled.div`
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  cursor: pointer;
-  background: #fff;
-  position: relative;
+  height: 46px;
+  padding: 0 12px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 6px;
+  border: 1px solid #dcdcdc;
+  border-radius: 8px;
+  background: #fff;
+
+  font-size: 13px;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  @media (max-width: 600px) {
+    height: 40px;
+    padding: 0 12px;
+
+    border: 1px solid #dcdcdc;
+    border-radius: 8px;
+    background: #fff;
+
+    font-size: 13px;
+    color: #333;
+  }
+
+  &:hover {
+    border-color: #8fa77e;
+    background: #f8faf7;
+  }
+
+  &:active {
+    transform: scale(0.97);
+  }
+
+  ${({ open }) =>
+    open &&
+    `
+    border-color: #8FA77E;
+    background: #f3f7f3;
+  `}
 `;
 
 export const SortDropdownList = styled.ul`
@@ -28,7 +66,7 @@ export const SortDropdownList = styled.ul`
   border: 1px solid #ddd;
   background: #fff;
   border-top: none;
-  border-radius: 0 0 6px 6px;
+  border-radius: 8px;
   overflow: hidden;
   z-index: 10;
 
@@ -38,13 +76,24 @@ export const SortDropdownList = styled.ul`
 `;
 
 export const SortDropdownItem = styled.li`
-  padding: 10px;
+  padding: 12px 16px;
+  font-size: 14px;
   cursor: pointer;
 
+  transition: all 0.15s ease;
+
   &:hover {
-    background-color: #8fa77e;
-    color: #fff;
+    background-color: #f3f7f3;
+    color: #333;
   }
+
+  ${({ active }) =>
+    active &&
+    `
+    background-color: #8FA77E;
+    color: #fff;#030303
+    font-weight: 500;
+  `}
 `;
 
 export const SortDropdownBar = styled.div`

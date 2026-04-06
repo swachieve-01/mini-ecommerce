@@ -62,7 +62,7 @@ export default function BottomNav() {
           <rect x="14" y="14" width="7" height="7" rx="1" />
         </svg>
       </BottomNavItem>
-      <BottomNavItem to="/wishlist">
+      <BottomNavItem to="/steamlist">
         <svg
           width="24"
           height="24"

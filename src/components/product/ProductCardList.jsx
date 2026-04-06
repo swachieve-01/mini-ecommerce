@@ -22,8 +22,11 @@ const ProductGrid = styled.div`
     grid-template-columns: repeat(2, 330px);
   }
 
+  /* 모바일에서만 줄이기 */
   @media (max-width: 768px) {
-    grid-template-columns: repeat(1, 330px);
+    grid-template-columns: repeat(2, 1fr); /* 여기만 % */
+    gap: 12px;
+    padding: 0 16px;
   }
 `;
 
