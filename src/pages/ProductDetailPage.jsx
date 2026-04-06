@@ -208,7 +208,8 @@ const ThumbButton = styled.button`
 // 썸네일 이미지
 const ThumbImage = styled.img`
   width: 100%;
-  height: 100%;
+  height: auto;
+  display: block;
   object-fit: cover;
 `;
 

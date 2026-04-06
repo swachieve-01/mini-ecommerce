@@ -215,6 +215,7 @@ export default function ProductsListPage() {
         open={open}
         setOpen={setOpen}
         sortOptions={sortOptions}
+        totalCount={sortedData.length}
       />
 
       {/* 여기만 변경 확인바람 */}
