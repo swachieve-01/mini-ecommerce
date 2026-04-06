@@ -36,8 +36,8 @@ export const categoryData = [
   },
   {
     id: 4,
-    name: "헤어·바디 케어",
-    path: "/category/care",
+    name: "헤어·바디",
+    path: "/category/hairbody",
     subCategories: [
       { name: "샴푸", path: "/category/care/shampoo" },
       { name: "트리트먼트", path: "/category/care/treatment" },
