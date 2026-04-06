@@ -278,6 +278,10 @@ export default function ReviewPage() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isModalOpen, prevImg, nextImg, closeModal]);
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [currentPage]);
+
   return (
     <PageContainer>
       <ReviewSubHeader>

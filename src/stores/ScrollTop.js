@@ -10,5 +10,9 @@ export default function ScrollTop() {
     document.documentElement.scrollTop = 0;
   }, [pathname]);
 
+  useEffect(() => {
+    window.history.scrollRestoration = "manual";
+  }, []);
+
   return null;
 }
