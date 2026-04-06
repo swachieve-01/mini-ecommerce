@@ -10,6 +10,7 @@ import theme from "../styles/theme";
 import { useLoadingStore } from "../stores/useLoadingStore";
 import { useWishStore } from "../stores/WishlisStore";
 import styled from "@emotion/styled";
+import productDetailList from "../data/productDetails";
 
 // 페이지 전체 배경 영역 (회색 배경 + 전체 패딩)
 const ProductDetailPageWrap = styled.div`
@@ -535,6 +536,31 @@ const ModalNavButtonRight = styled(ModalNavButton)`
   right: 12px;
 `;
 
+const DetailImageContainer = styled.div`
+  position: relative;
+  width: 100%;
+`;
+
+const CopyOverlay = styled.div`
+  position: absolute;
+  top: 12%;
+  left: 6%;
+  color: #fff;
+  z-index: 2;
+
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+`;
+
+const CopyTitle = styled.h3`
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 8px;
+`;
+
+const CopyDesc = styled.p`
+  font-size: 16px;
+`;
+
 function toImageArray(value) {
   if (Array.isArray(value)) return value.filter(Boolean);
   if (value) return [value];
@@ -913,13 +939,25 @@ export default function ProductDetailPage() {
 
           <DetailSection>
             {detailImages.length > 0 ? (
-              detailImages.map((img, i) => (
-                <FullDetailImage
-                  key={`${img}-${i}`}
-                  src={img}
-                  alt={`${product.name} 상세 이미지 ${i + 1}`}
-                />
-              ))
+              detailImages.map((img, i) => {
+                const currentCopy = productDetailList[Number(id)]?.[i];
+
+                return (
+                  <DetailImageContainer key={`${img}-${i}`}>
+                    <FullDetailImage
+                      src={img}
+                      alt={`${product.name} 상세 이미지 ${i + 1}`}
+                    />
+
+                    {currentCopy && (
+                      <CopyOverlay>
+                        <CopyTitle>{currentCopy.title}</CopyTitle>
+                        <CopyDesc>{currentCopy.desc}</CopyDesc>
+                      </CopyOverlay>
+                    )}
+                  </DetailImageContainer>
+                );
+              })
             ) : (
               <EmptyDetailBox>상세 이미지가 없습니다.</EmptyDetailBox>
             )}
