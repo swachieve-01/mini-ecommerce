@@ -16,6 +16,8 @@ const TextBox = styled.div`
   text-align: ${({ align }) => align || "center"};
   z-index: 2;
 
+  width: min(500px, 90%);
+
   @media (max-width: 768px) {
     width: 90%;
     left: 50%;
@@ -121,6 +123,39 @@ const BannerDot = styled.div`
   cursor: pointer;
 `;
 
+const HeroBannerWrapper = styled(BannerWrapper)`
+  position: relative;
+  overflow: hidden;
+
+  cursor: pointer;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+
+    background: linear-gradient(
+      to right,
+      rgba(0, 0, 0, 0.15),
+      transparent 20%,
+      transparent 80%,
+      rgba(0, 0, 0, 0.15)
+    );
+
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+  }
+
+  &:hover::after {
+    opacity: 1;
+  }
+
+  &:active::after {
+    opacity: 1;
+  }
+`;
+
 const LeftIcon = () => (
   <svg viewBox="0 0 24 24" fill="none">
     <path
@@ -150,6 +185,7 @@ export default function HeroSection() {
   const [current, setCurrent] = useState(0);
   const startLoading = useLoadingStore((state) => state.startLoading);
   const stopLoading = useLoadingStore((state) => state.stopLoading);
+  const [isSwiping, setIsSwiping] = useState(false);
 
   // pc버전 밀어서
   const [isDragging, setIsDragging] = useState(false);
@@ -202,6 +238,7 @@ export default function HeroSection() {
   // 모바일버전
   const handleTouchStart = (e) => {
     setTouchStart(e.targetTouches[0].clientX);
+    setIsSwiping(false);
   };
 
   const handleTouchMove = (e) => {
@@ -213,15 +250,17 @@ export default function HeroSection() {
 
     const distance = touchStart - touchEnd;
 
-    if (distance > 50) {
-      // 왼쪽으로 밀면 다음
-      nextSlide();
+    if (Math.abs(distance) > 10) {
+      setIsSwiping(true);
+    } else {
+      setIsSwiping(false);
     }
 
-    if (distance < -50) {
-      // 오른쪽으로 밀면 이전
-      prevSlide();
-    }
+    // 슬라이드 이동
+    if (distance > 50) nextSlide();
+    if (distance < -50) prevSlide();
+
+    setTimeout(() => setIsSwiping(false), 50);
   };
 
   // pc버전
@@ -251,7 +290,7 @@ export default function HeroSection() {
   const meta = heroBannerMeta[current + 1] || {};
 
   return (
-    <BannerWrapper
+    <HeroBannerWrapper
       height="clamp(300px, 50vw, 600px)"
       // 모바일
       onTouchStart={handleTouchStart}
@@ -263,6 +302,7 @@ export default function HeroSection() {
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
       onClick={() => {
+        if (isSwiping) return;
         if (!meta.hasButton) {
           navigate(`/products/${banner.productId}`);
         }
@@ -289,11 +329,21 @@ export default function HeroSection() {
       </TextBox>
 
       {/* 화살표 */}
-      <BannerLeftArrow onClick={prevSlide}>
+      <BannerLeftArrow
+        onClick={(e) => {
+          e.stopPropagation();
+          prevSlide();
+        }}
+      >
         <LeftIcon />
       </BannerLeftArrow>
 
-      <BannerRightArrow onClick={nextSlide}>
+      <BannerRightArrow
+        onClick={(e) => {
+          e.stopPropagation();
+          prevSlide();
+        }}
+      >
         <RightIcon />
       </BannerRightArrow>
 
@@ -307,6 +357,6 @@ export default function HeroSection() {
           />
         ))}
       </IndicatorWrapper>
-    </BannerWrapper>
+    </HeroBannerWrapper>
   );
 }

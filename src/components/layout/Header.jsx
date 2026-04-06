@@ -514,7 +514,7 @@ export default function Header() {
                   strokeLinejoin="round"
                 />
               </svg>
-              <span>구매리뷰</span>
+              <span>고객리뷰</span>
             </HeaderIcon>
 
             {isAuthenticated ? (

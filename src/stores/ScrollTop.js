@@ -1,14 +1,16 @@
 import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigationType } from "react-router-dom";
 
 export default function ScrollTop() {
   const { pathname } = useLocation();
+  const navType = useNavigationType();
 
   useEffect(() => {
-    console.log("path:", pathname);
-    window.scrollTo(0, 0);
-    document.documentElement.scrollTop = 0;
-  }, [pathname]);
+    if (navType === "PUSH") {
+      window.scrollTo(0, 0);
+      document.documentElement.scrollTop = 0;
+    }
+  }, [pathname, navType]);
 
   useEffect(() => {
     window.history.scrollRestoration = "manual";
