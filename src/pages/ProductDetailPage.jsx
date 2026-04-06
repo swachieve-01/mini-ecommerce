@@ -251,11 +251,13 @@ const RatingRow = styled.div`
 // 별 색상
 const Stars = styled.span`
   color: ${theme.colors.stars};
+  cursor: pointer;
 `;
 
 // 리뷰 개수 텍스트
 const ProductDetailReviewCount = styled.span`
   color: ${theme.colors.textSub};
+  cursor: pointer;
 `;
 
 // 가격 영역 전체
@@ -773,11 +775,15 @@ export default function ProductDetailPage() {
                 <DescriptionText>{product.description}</DescriptionText>
               ) : null}
 
-              <RatingRow
-                onClick={() => navigate(`/reviews?productId=${product.id}`)}
-              >
-                <Stars>★★★★★</Stars>
-                <ProductDetailReviewCount>
+              <RatingRow>
+                <Stars
+                  onClick={() => navigate(`/reviews?productId=${product.id}`)}
+                >
+                  ★★★★★
+                </Stars>
+                <ProductDetailReviewCount
+                  onClick={() => navigate(`/reviews?productId=${product.id}`)}
+                >
                   {rating}
                   {reviewCount > 0 ? ` (${reviewCount})` : ""}
                 </ProductDetailReviewCount>

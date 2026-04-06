@@ -100,6 +100,17 @@ const SearchBox = styled.div`
     }
   }
 
+  @media (max-width: 1200px) {
+    width: 35%;
+  }
+
+  @media (max-width: 900px) {
+    width: 30%;
+  }
+
+  @media (max-width: 768px) {
+    width: 10%;
+  }
   input {
     flex: 1;
     min-width: 0;
@@ -126,11 +137,10 @@ const MobileTopSection = styled.div`
   @media (max-width: 768px) {
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 8px;
   }
 `;
-
-const CartIcon = styled.svg``;
 
 const UserMenu = styled.nav`
   display: flex;
@@ -138,14 +148,19 @@ const UserMenu = styled.nav`
   gap: 24px;
 
   margin-left: auto;
-  z-index: 2;
+  z-index: 3;
 
   @media (max-width: 1080px) {
-    gap: 16px;
+    gap: 10px;
+  }
+
+  @media (max-width: 800px) {
+    /* margin-left: 15px; */
+    gap: 8px;
   }
 
   @media (max-width: 768px) {
-    gap: 12px;
+    gap: 6px;
   }
 
   a {
@@ -161,18 +176,25 @@ const UserMenu = styled.nav`
     white-space: nowrap;
   }
 
-  a:not(.cart) {
-    @media (max-width: 1600px) {
-      display: none;
-    }
-  }
-
   .divider {
     @media (max-width: 1600px) {
       display: none;
     }
   }
 
+  span {
+    pointer-events: none;
+
+    @media (max-width: 1470px) {
+      display: none;
+    }
+  }
+
+  a:not(.cart) {
+    @media (max-width: 768px) {
+      display: none;
+    }
+  }
   a.cart {
     display: flex;
   }
@@ -329,16 +351,45 @@ const MenuButton = styled.button`
   }
 `;
 
+const NavDivider = styled.span`
+  color: #ccc;
+  margin: 0 8px;
+`;
+
+const HeaderIcon = styled(NavLink)`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+
+  cursor: pointer;
+  position: relative;
+  min-width: 33px;
+
+  svg {
+    width: 33px;
+    height: 33px;
+
+    transition: all 0.2s ease;
+
+    @media (max-width: 1200px) {
+      width: 28px;
+      height: 28px;
+    }
+
+    @media (max-width: 768px) {
+      width: 38px;
+      height: 38px;
+    }
+  }
+`;
+
 const MenuIcon = () => (
   <svg width="24" height="24" fill="none">
     <path d="M4 6H20M4 12H20M4 18H20" stroke="currentColor" strokeWidth="2" />
   </svg>
 );
-
-const NavDivider = styled.span`
-  color: #ccc;
-  margin: 0 8px;
-`;
 
 export default function Header() {
   const [hoveredCategory, setHoveredCategory] = useState(null);
@@ -440,17 +491,31 @@ export default function Header() {
           </SearchBox>
 
           <UserMenu>
-            <NavLink to="/steamlist">
+            <HeaderIcon to="/steamlist">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M12 21s-7-4.5-9.5-8C1 9 3.5 5 7.5 5c2.2 0 3.7 1.2 4.5 2.4C12.8 6.2 14.3 5 16.5 5 20.5 5 23 9 21.5 13c-2.5 3.5-9.5 8-9.5 8z"
+                  stroke="currentColor"
+                  strokeWidth="1.2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
               <span>찜리스트</span>
-            </NavLink>
+            </HeaderIcon>
 
-            <NavLink to="/orders">
-              <span>Error</span>
-            </NavLink>
-
-            <NavLink to="/reviews">
-              <span>구매후기</span>
-            </NavLink>
+            <HeaderIcon to="/reviews">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M4 5h16v10H9l-5 4V5z"
+                  stroke="currentColor"
+                  strokeWidth="1.2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              <span>구매리뷰</span>
+            </HeaderIcon>
 
             {isAuthenticated ? (
               <>
@@ -467,21 +532,84 @@ export default function Header() {
               </>
             ) : (
               <>
-                <NavLink to="/signup">
-                  <span>회원가입</span>
-                </NavLink>
+                <HeaderIcon to="/signup">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+                    <path
+                      d="M4 3h10v18H4z"
+                      stroke="currentColor"
+                      strokeWidth="1.2"
+                      strokeLinejoin="round"
+                      color="#6C825D"
+                    />
+                    <path
+                      d="M14 12h6M17 9l3 3-3 3"
+                      stroke="currentColor"
+                      strokeWidth="1.2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      color="#6C825D"
+                    />
+                  </svg>
 
-                <NavLink to="/login">
+                  <span>회원가입</span>
+                </HeaderIcon>
+
+                <HeaderIcon to="/login">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+                    <circle
+                      cx="12"
+                      cy="8"
+                      r="3.5"
+                      stroke="currentColor"
+                      strokeWidth="1.2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      color="#6C825D"
+                    />
+                    <path
+                      d="M4 19c0-3.5 3.5-5.5 8-5.5s8 2 8 5.5"
+                      stroke="currentColor"
+                      strokeWidth="1.2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      color="#6C825D"
+                    />
+                  </svg>
+
                   <span>로그인</span>
-                </NavLink>
+                </HeaderIcon>
               </>
             )}
 
             <NavDivider className="divider">|</NavDivider>
-            <CartLink to="/cart" className="cart">
+
+            <HeaderIcon to="/cart" className="cart">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M4 6H6L7.5 14H17.5L19 9H7"
+                  stroke="currentColor"
+                  strokeWidth="1.2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <circle
+                  cx="9"
+                  cy="18"
+                  r="1.5"
+                  stroke="currentColor"
+                  strokeWidth="1.2"
+                />
+                <circle
+                  cx="17"
+                  cy="18"
+                  r="1.5"
+                  stroke="currentColor"
+                  strokeWidth="1.2"
+                />
+              </svg>
               <span>장바구니</span>
               {cartCount > 0 && <CartBadge>{cartCount}</CartBadge>}
-            </CartLink>
+            </HeaderIcon>
           </UserMenu>
         </HeaderTop>
 
