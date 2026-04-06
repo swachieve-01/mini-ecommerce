@@ -6,6 +6,7 @@ import logoImage from "../assets/images/푸터 로고.png";
 import { useAuthStore } from "../stores/useAuthStore";
 import { LoginInput } from "../components/ui/Input";
 import { Button } from "../components/ui/Button";
+import { CustomCheckbox, HiddenCheckbox } from "../pages/SignupPage";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -120,11 +121,12 @@ export default function LoginPage() {
             {/* 아이디 저장 */}
             <LoginOptionRow>
               <RememberIdLabel>
-                <RememberIdCheckbox
+                <HiddenCheckbox
                   type="checkbox"
                   checked={isRememberId}
                   onChange={handleRememberIdChange}
                 />
+                <CustomCheckbox checked={isRememberId} />
                 <RememberIdText>아이디 저장</RememberIdText>
               </RememberIdLabel>
             </LoginOptionRow>
@@ -276,15 +278,6 @@ const RememberIdLabel = styled.label`
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  cursor: pointer;
-`;
-
-/* 체크박스 */
-const RememberIdCheckbox = styled.input`
-  width: 18px;
-  height: 18px;
-  margin: 0;
-  accent-color: ${({ theme }) => theme.colors.primary};
   cursor: pointer;
 `;
 

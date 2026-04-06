@@ -572,12 +572,12 @@ const AllCheck = styled.div`
 `;
 
 /* 숨김 체크 */
-const HiddenCheckbox = styled.input`
+export const HiddenCheckbox = styled.input`
   display: none;
 `;
 
 /* 커스텀 체크 */
-const CustomCheckbox = styled.span`
+export const CustomCheckbox = styled.span`
   width: 18px;
   height: 18px;
   box-sizing: border-box;
