@@ -33,6 +33,9 @@ const HeaderTop = styled.div`
   align-items: center;
   justify-content: space-between;
   /* border-bottom: 1px solid #222; */
+  @media (max-width: 768px) {
+    padding: 35px 30px;
+  }
 `;
 
 const HeaderLogo = styled(NavLink)`
@@ -43,34 +46,30 @@ const HeaderLogo = styled(NavLink)`
   gap: 8px;
 
   @media (max-width: 768px) {
-    display: none;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-55%, -40%);
+    display: block;
+    z-index: 2;
+  }
+
+  @media (max-width: 480px) {
+    transform: translate(-50%, -45%);
   }
 `;
 
 const HeaderLogoImage = styled.img`
   height: 120px;
-  margin-top: 10px;
+  transition: height 0.25s ease;
   object-fit: contain;
-  transition: all 0.3s ease;
 
   @media (max-width: 1480px) {
     height: 90px;
   }
 
-  @media (max-width: 1280px) {
-    height: 70px;
-  }
-
   @media (max-width: 1024px) {
-    height: 50px;
-  }
-
-  @media (max-width: 900px) {
-    height: 45px;
-  }
-
-  @media (max-width: 768px) {
-    display: none;
+    height: 60px;
   }
 `;
 
@@ -93,16 +92,25 @@ const SearchBox = styled.div`
   box-sizing: border-box;
   overflow: hidden;
 
-  transition: all 0.3s ease;
+  transition: width 0.3s ease;
+
+  &#desktop-search {
+    @media (max-width: 768px) {
+      display: none;
+    }
+  }
+
+  @media (max-width: 1200px) {
+    width: 35%;
+  }
 
   @media (max-width: 900px) {
     width: 30%;
   }
 
   @media (max-width: 768px) {
-    width: 220px;
+    width: 10%;
   }
-
   input {
     flex: 1;
     min-width: 0;
@@ -121,87 +129,83 @@ const SearchBox = styled.div`
   }
 `;
 
-const CartIcon = styled.svg``;
+const MobileTopSection = styled.div`
+  display: none;
+  padding: 12px 16px;
+  background: #fff;
+
+  @media (max-width: 768px) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+`;
 
 const UserMenu = styled.nav`
   display: flex;
   align-items: center;
   gap: 24px;
-  transition: all 0.3s ease;
-  /* margin-left: auto; */
+
+  margin-left: auto;
+  z-index: 3;
 
   @media (max-width: 1080px) {
-    gap: 16px;
+    gap: 10px;
+  }
+
+  @media (max-width: 800px) {
+    /* margin-left: 15px; */
+    gap: 8px;
   }
 
   @media (max-width: 768px) {
-    gap: 12px;
+    gap: 6px;
   }
 
   a {
     display: flex;
     align-items: center;
-    gap: 6px;
+    justify-content: center;
 
-    position: relative;
+    gap: 6px;
+    min-width: 40px;
+
     color: ${({ theme }) => theme.colors.primaryDark};
     font-size: ${({ theme }) => theme.fontSize.lg};
     white-space: nowrap;
-    transition: all 0.25s ease;
+  }
 
-    @media (max-width: 1280px) {
-      gap: 4px;
-    }
-
-    @media (max-width: 900px) {
-      gap: 2px;
+  .divider {
+    @media (max-width: 1600px) {
+      display: none;
     }
   }
 
   span {
-    display: inline-block;
-    white-space: nowrap;
-    overflow: hidden;
-    transition: all 0.3s ease;
+    pointer-events: none;
 
-    font-size: ${({ theme }) => theme.fontSize.lg};
-
-    @media (max-width: 1600px) {
-      transform: scaleX(0);
-      width: 0;
-      margin: 0;
+    @media (max-width: 1470px) {
+      display: none;
     }
   }
 
-  a.cart span {
-    @media (max-width: 1600px) {
-      transform: scaleX(1);
-      width: auto;
-      margin: 0;
-    }
-
-    @media (max-width: 1280px) {
-      transform: scale(0.95);
-    }
-
-    @media (max-width: 1080px) {
-      transform: scale(0.9);
-    }
-
+  a:not(.cart) {
     @media (max-width: 768px) {
-      transform: scale(0.85);
+      display: none;
     }
+  }
+  a.cart {
+    display: flex;
+  }
 
-    @media (max-width: 480px) {
-      transform: scale(0.8);
-    }
+  span {
+    pointer-events: none;
   }
 
   svg {
     width: 20px;
     height: 20px;
-    position: relative;
-    top: 1px;
 
     @media (max-width: 768px) {
       width: 18px;
@@ -246,6 +250,10 @@ const HeaderMainNav = styled.nav`
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
   border-bottom: 1px solid #e5e5e5;
   background: #fff;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
 `;
 
 const MainCategory = styled.ul`
@@ -343,16 +351,45 @@ const MenuButton = styled.button`
   }
 `;
 
+const NavDivider = styled.span`
+  color: #ccc;
+  margin: 0 8px;
+`;
+
+const HeaderIcon = styled(NavLink)`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+
+  position: relative;
+  min-width: 33px;
+  cursor: pointer;
+
+  svg {
+    width: 33px;
+    height: 33px;
+
+    transition: all 0.2s ease;
+
+    @media (max-width: 1200px) {
+      width: 28px;
+      height: 28px;
+    }
+
+    @media (max-width: 768px) {
+      width: 38px;
+      height: 38px;
+    }
+  }
+`;
+
 const MenuIcon = () => (
   <svg width="24" height="24" fill="none">
     <path d="M4 6H20M4 12H20M4 18H20" stroke="currentColor" strokeWidth="2" />
   </svg>
 );
-
-const NavDivider = styled.span`
-  color: #ccc;
-  margin: 0 8px;
-`;
 
 export default function Header() {
   const [hoveredCategory, setHoveredCategory] = useState(null);
@@ -407,11 +444,22 @@ export default function Header() {
     <HeaderWrap>
       <HeaderInner>
         <HeaderTop>
+          {/* 햄버거 버튼 (모바일) */}
+          <MenuButton onClick={() => setMenuOpen(true)}>
+            <MenuIcon />
+          </MenuButton>
+
+          {menuOpen && window.innerWidth <= 768 && (
+            <MobileCategoryMenu
+              open={menuOpen}
+              onClose={() => setMenuOpen(false)}
+            />
+          )}
           <HeaderLogo to="/">
             <HeaderLogoImage src={logo} alt="Nature Glow 로고" />
           </HeaderLogo>
 
-          <SearchBox>
+          <SearchBox id="desktop-search">
             <form
               style={{
                 display: "flex",
@@ -442,54 +490,144 @@ export default function Header() {
             </form>
           </SearchBox>
 
-          {/* 햄버거 버튼 (모바일) */}
-          <MenuButton onClick={() => setMenuOpen(true)}>
-            <MenuIcon />
-          </MenuButton>
-
-          {menuOpen && window.innerWidth <= 768 && (
-            <MobileCategoryMenu
-              open={menuOpen}
-              onClose={() => setMenuOpen(false)}
-            />
-          )}
-
           <UserMenu>
-            <NavLink to="/steamlist">
+            <HeaderIcon to="/steamlist">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M12 21s-7-4.5-9.5-8C1 9 3.5 5 7.5 5c2.2 0 3.7 1.2 4.5 2.4C12.8 6.2 14.3 5 16.5 5 20.5 5 23 9 21.5 13c-2.5 3.5-9.5 8-9.5 8z"
+                  stroke="currentColor"
+                  strokeWidth="1.2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
               <span>찜리스트</span>
-            </NavLink>
+            </HeaderIcon>
 
-            <NavLink to="/orders">
-              <span>Error</span>
-            </NavLink>
+            <HeaderIcon to="/reviews">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M4 5h16v10H9l-5 4V5z"
+                  stroke="currentColor"
+                  strokeWidth="1.2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              <span>구매리뷰</span>
+            </HeaderIcon>
 
-            <NavLink to="/reviews">
-              <span>구매후기</span>
-            </NavLink>
-
-            <CartLink to="/cart" className="cart">
-              <span>장바구니</span>
-              {cartCount > 0 && <CartBadge>{cartCount}</CartBadge>}
-            </CartLink>
             {isAuthenticated ? (
               <>
-                <NavDivider>|</NavDivider>
-
-                <span onClick={logout} style={{ cursor: "pointer" }}>
-                  로그아웃
-                </span>
+                <HeaderIcon
+                  to="/"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    logout();
+                    navigate("/");
+                  }}
+                >
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <path
+                      d="M12 2v10"
+                      stroke="currentColor"
+                      strokeWidth="1.2"
+                      strokeLinecap="round"
+                      color="#6C825D"
+                    />
+                    <path
+                      d="M6.2 6.2a8 8 0 1011.6 0"
+                      stroke="currentColor"
+                      strokeWidth="1.2"
+                      strokeLinecap="round"
+                      color="#6C825D"
+                    />
+                  </svg>
+                  <span>로그아웃</span>
+                </HeaderIcon>
               </>
             ) : (
               <>
-                <NavLink to="/signup">
-                  <span>회원가입</span>
-                </NavLink>
+                <HeaderIcon to="/signup">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+                    <path
+                      d="M4 3h10v18H4z"
+                      stroke="currentColor"
+                      strokeWidth="1.2"
+                      strokeLinejoin="round"
+                      color="#6C825D"
+                    />
+                    <path
+                      d="M14 12h6M17 9l3 3-3 3"
+                      stroke="currentColor"
+                      strokeWidth="1.2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      color="#6C825D"
+                    />
+                  </svg>
 
-                <NavLink to="/login">
+                  <span>회원가입</span>
+                </HeaderIcon>
+
+                <HeaderIcon to="/login">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+                    <circle
+                      cx="12"
+                      cy="8"
+                      r="3.5"
+                      stroke="currentColor"
+                      strokeWidth="1.2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      color="#6C825D"
+                    />
+                    <path
+                      d="M4 19c0-3.5 3.5-5.5 8-5.5s8 2 8 5.5"
+                      stroke="currentColor"
+                      strokeWidth="1.2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      color="#6C825D"
+                    />
+                  </svg>
+
                   <span>로그인</span>
-                </NavLink>
+                </HeaderIcon>
               </>
             )}
+
+            <NavDivider className="divider">|</NavDivider>
+
+            <HeaderIcon to="/cart" className="cart">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M4 6H6L7.5 14H17.5L19 9H7"
+                  stroke="currentColor"
+                  strokeWidth="1.2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <circle
+                  cx="9"
+                  cy="18"
+                  r="1.5"
+                  stroke="currentColor"
+                  strokeWidth="1.2"
+                />
+                <circle
+                  cx="17"
+                  cy="18"
+                  r="1.5"
+                  stroke="currentColor"
+                  strokeWidth="1.2"
+                />
+              </svg>
+              <span>장바구니</span>
+              {cartCount > 0 && (
+                <CartBadge>{cartCount > 99 ? "99+" : cartCount}</CartBadge>
+              )}
+            </HeaderIcon>
           </UserMenu>
         </HeaderTop>
 
@@ -518,6 +656,45 @@ export default function Header() {
               })}
             </MainCategory>
           </HeaderMainNav>
+          {/* 모바일 검색창 */}
+          <MobileTopSection>
+            <SearchBox
+              style={{
+                position: "static",
+                transform: "none",
+                width: "100%",
+              }}
+            >
+              <form
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  width: "100%",
+                }}
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleSearch();
+                }}
+              >
+                <input
+                  type="text"
+                  value={keyword}
+                  onChange={(e) => setKeyword(e.target.value)}
+                />
+                <button type="button" onClick={handleSearch}>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
+                  </svg>
+                </button>
+              </form>
+            </SearchBox>
+          </MobileTopSection>
 
           <SubNavWrap className={hoveredCategory ? "open" : ""}>
             {hoveredCategory && (

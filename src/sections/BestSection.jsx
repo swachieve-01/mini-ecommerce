@@ -13,8 +13,14 @@ export default function BestSection() {
     const fetchData = async () => {
       try {
         startLoading();
-        const data = await getBestProducts();
-        setProducts(data);
+        const result = await getBestProducts();
+
+        const normalizedData = result.map((item) => ({
+          ...item,
+          id: item.productId || item.id,
+        }));
+
+        setProducts(normalizedData);
       } catch (error) {
         console.error(error);
       } finally {

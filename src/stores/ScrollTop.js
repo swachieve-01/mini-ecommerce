@@ -5,8 +5,14 @@ export default function ScrollTop() {
   const { pathname } = useLocation();
 
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    console.log("path:", pathname);
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
   }, [pathname]);
+
+  useEffect(() => {
+    window.history.scrollRestoration = "manual";
+  }, []);
 
   return null;
 }

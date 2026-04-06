@@ -21,10 +21,11 @@ const PageContainer = styled(Section)`
 `;
 
 const CustomSectionTitle = styled.h2`
-  font-size: ${(props) => props.theme.fontSize.displayMd};
+  font-size: ${(props) => props.theme.fontSize.xxxl};
   font-weight: ${(props) => props.theme.fontWeight.bold};
   color: ${(props) => props.theme.colors.primaryDark};
-  margin: 20px 0 30px;
+  text-align: left;
+  margin: 10px 0 20px 0;
 `;
 
 const ReviewSubHeader = styled.div`
@@ -33,6 +34,8 @@ const ReviewSubHeader = styled.div`
   margin: 0 auto 40px;
   display: flex;
   flex-direction: column;
+  gap: 6px;
+
   position: relative;
 
   &::after {
@@ -52,13 +55,13 @@ const ReviewSubHeader = styled.div`
 `;
 
 const MainNotice = styled.p`
-  font-size: ${(props) => props.theme.fontSize.xl};
-  color: #8fa77e;
+  font-size: ${(props) => props.theme.fontSize.sm};
+  color: #666;
 `;
 
 const SubNotice = styled.p`
-  font-size: ${(props) => props.theme.fontSize.sm};
-  color: ${(props) => props.theme.colors.gray500};
+  font-size: 13px;
+  color: #8aa08a;
 `;
 
 const MoreLink = styled(Link)`
@@ -143,12 +146,23 @@ const OverlayInfo = styled.div`
   .name {
     font-size: 14px;
     opacity: 0.9;
+    margin-bottom: 4px;
   }
 
   .rating {
-    margin-top: 4px;
-    font-size: 18px;
-    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .score {
+    font-size: 20px;
+    font-weight: 500;
+  }
+
+  .stars {
+    display: flex;
+    gap: 2px;
   }
 `;
 
@@ -175,6 +189,21 @@ const ReviewText = styled.p`
   color: #555;
 `;
 
+const StarIcon = ({ filled = true }) => (
+  <svg width="14" height="14" viewBox="0 0 24 24">
+    <path
+      d="M12 17.3l-5.4 3.2 1.5-6.2-4.8-4.2 6.3-.5L12 4l2.4 5.8 6.3.5-4.8 4.2 1.5 6.2z"
+      fill={filled ? "#8fa77e " : "none"}
+      stroke="#8fa77e "
+      strokeWidth="1.5"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+/* =========================
+   컴포넌트
+========================= */
 export default function ReviewPage() {
   // 현재 패이지
   const [currentPage, setCurrentPage] = useState(1);
@@ -249,6 +278,10 @@ export default function ReviewPage() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isModalOpen, prevImg, nextImg, closeModal]);
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [currentPage]);
+
   return (
     <PageContainer>
       <ReviewSubHeader>
@@ -296,7 +329,18 @@ export default function ReviewPage() {
               {/* 이미지 위 정보 */}
               <OverlayInfo>
                 <div className="name">{selectedReview.productName}</div>
-                <div className="rating">⭐ {selectedReview.rating}</div>
+
+                <div className="rating">
+                  <span className="score">
+                    {Number(selectedReview.rating).toFixed(1)}
+                  </span>
+
+                  <div className="stars">
+                    {[...Array(selectedReview.rating)].map((_, i) => (
+                      <StarIcon key={i} />
+                    ))}
+                  </div>
+                </div>
               </OverlayInfo>
             </ReviewImageBox>
 

@@ -5,7 +5,7 @@ import {
   SortDropdownSelected,
   SortDropdownWrapper,
 } from "../ui/SortButton";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { categoryList } from "../../data/categories";
 
@@ -53,6 +53,10 @@ const CategoryDesc = styled.p`
 const CategoryButtonBox = styled.div`
   display: flex;
   gap: 10px;
+
+  @media (max-width: 790px) {
+    display: none;
+  }
 `;
 
 // 개별 카테고리 버튼
@@ -62,10 +66,23 @@ const CategoryButton = styled.button`
   /* 현재 선택된 카테고리면 색 변경 */
   background-color: ${({ active }) => (active ? "#8FA77E" : "#fff")};
   color: ${({ active }) => (active ? "#fff" : "#000")};
-
   border: 1px solid #e2e2e2;
   border-radius: 6px;
   cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: #8fa77e;
+    background: #f8faf7;
+  }
+
+  &:active {
+    transform: scale(0.97);
+  }
+
+  @media (max-width: 790px) {
+    display: none;
+  }
 `;
 
 // 타이틀 + 설명 묶음
@@ -81,6 +98,17 @@ const CategoryDropdown = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+
+  @media (max-width: 768px) {
+    align-items: flex-end;
+    gap: 10px;
+  }
+`;
+
+// 드롭다운 기준점
+const MobileFilterWrapper = styled.div`
+  position: relative;
+  display: inline-block;
 `;
 
 // 드롭다운 화살표 추가
@@ -98,6 +126,124 @@ const DropdownArrowIcon = styled.span`
   }
 `;
 
+const MobileFilterBox = styled.div`
+  display: none;
+
+  @media (max-width: 790px) {
+    display: flex;
+    align-items: center;
+  }
+`;
+
+const FilterButton = styled.button`
+  border-radius: 20px;
+  padding: 8px 12px;
+  background: #fff;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid #ddd;
+  white-space: nowrap;
+  flex-shrink: 0;
+
+  @media (max-width: 790px) {
+    height: 44px;
+    border: 1px solid #dcdcdc;
+    border-radius: 8px;
+    background: #fff;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    font-size: 13px;
+    color: #333;
+
+    transition: all 0.15s ease;
+
+    &:hover {
+      border-color: #8fa77e;
+      background: #f8faf7;
+    }
+
+    &:active {
+      transform: scale(0.97);
+    }
+
+    ${({ open }) =>
+      open &&
+      `
+    border-color: #8FA77E;
+    background: #f3f7f3;
+  `}
+  }
+`;
+
+const FilterDropdown = styled.div`
+  position: absolute;
+  top: 38px;
+  left: 0;
+  width: 100%;
+  font-size: 12px;
+  white-space: nowrap;
+
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  padding: 10px;
+  z-index: 999;
+`;
+
+const FilterItem = styled.div`
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+
+  background: ${({ active }) => (active ? "#f3f7f3" : "#fff")};
+  color: ${({ active }) => (active ? "#4f6a4e" : "#000")};
+  font-weight: ${({ active }) => (active ? "600" : "400")};
+
+  &:hover {
+    background: #f3f7f3;
+  }
+`;
+
+// 왼쪾영역
+const LeftInfo = styled.div`
+  font-size: 14px;
+  color: #666;
+
+  display: none;
+
+  @media (max-width: 768px) {
+    display: block;
+  }
+`;
+
+// 오른쪽 영역
+const RightControls = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  @media (min-width: 769px) {
+    width: 100%;
+  }
+
+  @media (max-width: 768px) {
+    justify-content: flex-end;
+  }
+`;
+
+// pc버전 버튼 묶음
+const ControlRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+`;
+
 export default function CategoryHeader({
   categories = [], // API로 받아온 카테고리 목록
   category, // 현재 선택된 카테고리 (URL 기반)
@@ -106,10 +252,13 @@ export default function CategoryHeader({
   open, // 드롭다운 열림 상태
   setOpen, // 드롭다운 토글 함수
   sortOptions, // 정렬 옵션 리스트
+  totalCount, // 총 상품 갯수
 }) {
+  const [filterOpen, setFilterOpen] = useState(false);
   const navigate = useNavigate();
 
   const dropdownRef = useRef(null);
+  const filterRef = useRef(null);
 
   // 현재 선택된 정렬 옵션 찾기
   const current = sortOptions.find((opt) => opt.key === sort);
@@ -119,11 +268,25 @@ export default function CategoryHeader({
     categoryList.find((item) => item.key.toLowerCase() === category) ||
     categoryList[0];
 
-  // 드롭다운 외부 클릭 시 닫기
+  // 필터 오른쪽 외부 클릭 시 닫기
   useEffect(() => {
     function handleClickOutside(e) {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
         setOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  // 카테고리 필터 왼쪽 외부 클릭 시 닫기
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (filterRef.current && !filterRef.current.contains(e.target)) {
+        setFilterOpen(false);
       }
     }
 
@@ -143,6 +306,16 @@ export default function CategoryHeader({
     return () => window.removeEventListener("keydown", handleEsc);
   }, []);
 
+  // ESC 키 (왼쪽)
+  useEffect(() => {
+    function handleEsc(e) {
+      if (e.key === "Escape") setFilterOpen(false);
+    }
+
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, []);
+
   return (
     <CategoryHeaderBox>
       <CategoryInfo>
@@ -151,59 +324,119 @@ export default function CategoryHeader({
       </CategoryInfo>
 
       <CategoryDropdown>
-        {/* 카테고리 버튼 영역 */}
-        <CategoryButtonBox>
-          {[{ categoryId: "all", name: "전체" }, ...categories].map((item) => (
-            <CategoryButton
-              key={item.categoryId}
-              onClick={() => {
-                navigate(`/category/${item.categoryId.toLowerCase()}`);
-              }}
-              active={category === item.categoryId}
-            >
-              {item.name}
-            </CategoryButton>
-          ))}
-        </CategoryButtonBox>
+        {/*  상품 개수만 */}
+        <LeftInfo>총 {totalCount || 0}개</LeftInfo>
 
-        <SortDropdownWrapper ref={dropdownRef}>
-          <SortDropdownSelected onClick={() => setOpen((prev) => !prev)}>
-            {current?.label}
+        {/* 모바일 오른쪽: 필터 + 카테고리 + 정렬 */}
+        <RightControls>
+          {/* 필터영역 */}
+          <MobileFilterBox>
+            <MobileFilterWrapper ref={filterRef}>
+              <FilterButton onClick={() => setFilterOpen((prev) => !prev)}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M4 7H14M14 7L17 4M14 7L17 10"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M20 17H10M10 17L7 14M10 17L7 20"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+                필터
+              </FilterButton>
 
-            <DropdownArrowIcon open={open}>
-              <svg viewBox="0 0 24 24" fill="none">
-                <path
-                  d="M6 9l6 6 6-6"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </DropdownArrowIcon>
-          </SortDropdownSelected>
+              {filterOpen && (
+                <FilterDropdown>
+                  {[
+                    { key: "all", name: "전체" },
+                    { key: "skin", name: "스킨케어" },
+                    { key: "makeup", name: "메이크업" },
+                    { key: "cleanser", name: "클렌저" },
+                    { key: "hairbody", name: "바디케어" },
+                    { key: "perfume", name: "향수" },
+                    { key: "beautytool", name: "뷰티툴" },
+                  ].map((item) => (
+                    <FilterItem
+                      key={item.key}
+                      active={category === item.key}
+                      onClick={() => {
+                        navigate(`/category/${item.key}`);
+                        setFilterOpen(false);
+                      }}
+                    >
+                      {item.name}
+                    </FilterItem>
+                  ))}
+                </FilterDropdown>
+              )}
+            </MobileFilterWrapper>
+          </MobileFilterBox>
 
-          {/* 드롭다운 열렸을 때 */}
-          {open && (
-            <SortDropdownList>
-              {sortOptions.map((opt) => (
-                <SortDropdownItem
-                  key={opt.key}
-                  onClick={() => {
-                    setSort(opt.key);
-                    setOpen(false);
-                  }}
-                  style={{
-                    background: sort === opt.key ? "#8FA77E" : "#fff",
-                    color: sort === opt.key ? "#fff" : "#000",
-                  }}
-                >
-                  {opt.label}
-                </SortDropdownItem>
-              ))}
-            </SortDropdownList>
-          )}
-        </SortDropdownWrapper>
+          {/* PC 카테고리 버튼 */}
+          <ControlRow>
+            <CategoryButtonBox>
+              {[{ categoryId: "all", name: "전체" }, ...categories].map(
+                (item) => (
+                  <CategoryButton
+                    key={item.categoryId}
+                    onClick={() =>
+                      navigate(`/category/${item.categoryId.toLowerCase()}`)
+                    }
+                    active={category === item.categoryId.toLowerCase()}
+                  >
+                    {item.name}
+                  </CategoryButton>
+                ),
+              )}
+            </CategoryButtonBox>
+
+            {/* 정렬 드롭다운 */}
+            <SortDropdownWrapper ref={dropdownRef}>
+              <SortDropdownSelected onClick={() => setOpen((prev) => !prev)}>
+                {current?.label}
+
+                <DropdownArrowIcon open={open}>
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <path
+                      d="M6 9l6 6 6-6"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </DropdownArrowIcon>
+              </SortDropdownSelected>
+
+              {open && (
+                <SortDropdownList>
+                  {sortOptions.map((opt) => (
+                    <SortDropdownItem
+                      key={opt.key}
+                      onClick={() => {
+                        setSort(opt.key);
+                        setOpen(false);
+                      }}
+                      style={{
+                        background: sort === opt.key ? "#8FA77E" : "#fff",
+                        color: sort === opt.key ? "#fff" : "#000",
+                      }}
+                    >
+                      {opt.label}
+                    </SortDropdownItem>
+                  ))}
+                </SortDropdownList>
+              )}
+            </SortDropdownWrapper>
+          </ControlRow>
+        </RightControls>
       </CategoryDropdown>
     </CategoryHeaderBox>
   );

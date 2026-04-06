@@ -3,6 +3,7 @@ import styled from "@emotion/styled";
 import { Section, SectionTitle } from "../styles/SectionStyle";
 import { getEventBanner } from "../api/Banner";
 import { eventBannerMeta } from "../data/banners";
+import { useNavigate } from "react-router-dom";
 
 // 이벤트 영역
 const EvenWrapper = styled.div`
@@ -91,6 +92,7 @@ const SubText = styled.p`
 
 export default function EventSection() {
   const [banners, setBanners] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -116,7 +118,12 @@ export default function EventSection() {
           const meta = eventBannerMeta[index + 1] || {};
 
           return (
-            <EvenWrapper key={item.id} height="300px">
+            <EvenWrapper
+              key={item.id}
+              height="300px"
+              onClick={() => navigate(meta.category)}
+              style={{ cursor: "pointer" }}
+            >
               <EventItem src={item.imageUrl} />
 
               <TextBox position={meta.position} align={meta.align}>

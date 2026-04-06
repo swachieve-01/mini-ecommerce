@@ -2,6 +2,10 @@ import React, { useEffect, useState } from "react";
 import styled from "@emotion/styled";
 import { useWishStore } from "../stores/WishlisStore";
 import { useNavigate } from "react-router-dom";
+import useAuthStore from "../stores/useAuthStore";
+import { useCartStore } from "../stores/useCartStore";
+import Modal from "../components/ui/Modal";
+import { Button } from "../components/ui/Button";
 
 // =============================== 전체 =====================
 
@@ -662,6 +666,78 @@ const PageNumber = styled.button`
   }
 `;
 
+// 모달 부분
+const LoginModalOverlay = styled.div`
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  z-index: 9999;
+`;
+
+const LoginModalBox = styled.div`
+  width: 420px;
+  padding: 36px 28px;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+const LoginModalTitle = styled.h3`
+  margin: 0 0 16px;
+  font-size: 20px;
+  font-weight: 600;
+  color: #4f6a4e;
+`;
+
+const LoginModalText = styled.p`
+  margin: 0 0 28px;
+  font-size: 14px;
+  color: #6f8a6a;
+  text-align: center;
+  line-height: 1.5;
+`;
+
+const LoginModalButtonRow = styled.div`
+  display: flex;
+  gap: 12px;
+`;
+
+const LoginCancelButton = styled.button`
+  height: 44px;
+  padding: 0 18px;
+  border-radius: 999px;
+  border: 1px solid #dcdcdc;
+  background: #fff;
+  color: #666;
+  cursor: pointer;
+
+  &:hover {
+    background: #f5f5f5;
+  }
+`;
+
+const LoginConfirmButton = styled.button`
+  height: 44px;
+  padding: 0 22px;
+  border-radius: 999px;
+  border: none;
+  background: #8fa77e;
+  color: #fff;
+  font-weight: 500;
+  cursor: pointer;
+
+  &:hover {
+    background: #6f8e66;
+  }
+`;
+
 /* ================== 페이지 ================== */
 
 export default function WishlistPage() {
@@ -671,6 +747,9 @@ export default function WishlistPage() {
   const [sort, setSort] = useState("latest");
   const [currentPage, setCurrentPage] = useState(1);
   const [checkedItems, setCheckedItems] = useState([]);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const addToCart = useCartStore((state) => state.addToCart);
   const navigate = useNavigate();
   const itemsPerPage = 15;
 
@@ -728,10 +807,6 @@ export default function WishlistPage() {
         return "";
     }
   };
-  //   자동 스크롤
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [currentPage]);
 
   return (
     <WishlistWrapper>
@@ -769,7 +844,30 @@ export default function WishlistPage() {
             전체 선택 {checkedItems.length}개 선택됨
           </ActionButton>
 
-          <ActionButton>
+          <ActionButton
+            onClick={() => {
+              if (!isAuthenticated) {
+                setShowLoginModal(true);
+                return;
+              }
+
+              wishList.forEach((item) => {
+                if (!item) return;
+
+                addToCart({
+                  id: item.id,
+                  name: item.name,
+                  price: item.discountPrice || item.price,
+                  image: item.imageUrl || item.image || item.thumbnail || "",
+                  quantity: 1,
+                  categoryId: item.categoryId,
+                  checked: true,
+                });
+              });
+
+              alert("전체 상품이 장바구니에 담겼습니다.");
+            }}
+          >
             {/* 장바구니 */}
             <svg viewBox="0 0 24 24" fill="none">
               <path
@@ -807,6 +905,49 @@ export default function WishlistPage() {
               />
             </svg>
             선택 삭제
+          </ActionButton>
+
+          <ActionButton
+            onClick={() => {
+              if (!isAuthenticated) {
+                setShowLoginModal(true);
+                return;
+              }
+              if (checkedItems.length === 0) {
+                alert("선택된 상품이 없습니다.");
+                return;
+              }
+
+              checkedItems.forEach((id) => {
+                const item = wishList.find((w) => w.id === id);
+
+                if (!item) return;
+
+                addToCart({
+                  id: item.id,
+                  name: item.name,
+                  price: item.discountPrice || item.price,
+                  image: item.imageUrl || item.image || item.thumbnail || "",
+                  quantity: 1,
+                  categoryId: item.categoryId,
+                  checked: true,
+                });
+              });
+
+              alert("선택한 상품이 장바구니에 담겼습니다.");
+            }}
+          >
+            {/* 장바구니 */}
+            <svg viewBox="0 0 24 24" fill="none">
+              <path
+                d="M6 6h15l-1.5 9h-12zM6 6L5 3H2M9 21a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm9 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"
+                stroke="#4f6a4e"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            선택 담기
           </ActionButton>
         </ActionLeft>
 
@@ -892,7 +1033,9 @@ export default function WishlistPage() {
               </WishlistHeart>
 
               {/* 수정사항 ( 옵션넣기 ) */}
-              <WishlistImage src={item.imageUrl} />
+              <WishlistImage
+                src={item.imageUrl || item.image || item.thumbnail}
+              />
               <CardContent>
                 <WishlisTextBox>
                   <WishlistName>{item.name}</WishlistName>
@@ -902,7 +1045,28 @@ export default function WishlistPage() {
                   </ProductOption>
                 </WishlisTextBox>
                 <WishlistButtonRow>
-                  <CartButton>장바구니</CartButton>
+                  <CartButton
+                    onClick={() => {
+                      if (!isAuthenticated) {
+                        setShowLoginModal(true);
+                        return;
+                      }
+
+                      addToCart({
+                        id: item.id,
+                        name: item.name,
+                        price: item.discountPrice || item.price,
+                        image:
+                          item.imageUrl || item.image || item.thumbnail || "",
+                        quantity: 1,
+                        checked: true,
+                      });
+
+                      alert("장바구니에 담겼습니다.");
+                    }}
+                  >
+                    장바구니
+                  </CartButton>
                   <WishlistDeleteButton onClick={() => removeWish(item.id)}>
                     삭제하기
                   </WishlistDeleteButton>
@@ -959,6 +1123,30 @@ export default function WishlistPage() {
             찜한 상품이 품절되기 전에 <strong>장바구니에 담아보세요!</strong>
           </NoticeText>
         </WishlistNotice>
+      )}
+
+      {/* 모달 */}
+      {showLoginModal && (
+        <LoginModalOverlay onClick={() => setShowLoginModal(false)}>
+          <LoginModalBox onClick={(e) => e.stopPropagation()}>
+            <LoginModalTitle>로그인이 필요합니다</LoginModalTitle>
+
+            <LoginModalText>
+              장바구니에 저장되었습니다. <br />
+              장바구니를 이용하려면 로그인해주세요
+            </LoginModalText>
+
+            <LoginModalButtonRow>
+              <LoginCancelButton onClick={() => setShowLoginModal(false)}>
+                취소
+              </LoginCancelButton>
+
+              <LoginConfirmButton onClick={() => navigate("/login")}>
+                로그인하러 가기
+              </LoginConfirmButton>
+            </LoginModalButtonRow>
+          </LoginModalBox>
+        </LoginModalOverlay>
       )}
     </WishlistWrapper>
   );

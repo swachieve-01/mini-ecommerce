@@ -113,22 +113,65 @@ const Header = styled.div`
     flex-direction: column;
     gap: 10px;
   }
+`;
 
-  button {
-    span {
-      opacity: 1;
-      visibility: visible;
-      color: inherit;
+const HelpfulButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 6px 12px;
+  border-radius: 999px;
+
+  font-size: 13px;
+  font-weight: 500;
+
+  color: ${({ theme }) => theme.colors.textSub};
+
+  background: #f5f7f4;
+  border: 1px solid #e3e8e1;
+
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  span {
+    font-size: 12px;
+    opacity: 0.8;
+  }
+
+  svg {
+    transition: all 0.2s ease;
+  }
+
+  &:hover {
+    background: #eef2ec;
+    transform: translateY(-1px);
+
+    svg {
+      stroke: #8fa77e;
+      transform: scale(1.1);
     }
+  }
 
-    color: ${({ theme }) => theme.colors.textMain};
-    border: ${({ theme }) => theme.border.thin};
-    background-color: transparent;
-    cursor: pointer;
-    width: 90px;
-    height: 30px;
+  &:active {
+    transform: scale(0.95);
   }
 `;
+
+const HeartIcon = ({ active }) => (
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill={active ? "#8FA77E" : "none"}
+    stroke="#8FA77E"
+    strokeWidth="1.8"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M12 21s-6.5-4.35-9-8.5C1.5 8.5 3.5 5 7 5c2 0 3.5 1 5 2.5C13.5 6 15 5 17 5c3.5 0 5.5 3.5 4 7.5C18.5 16.65 12 21 12 21z" />
+  </svg>
+);
 
 const ProductName = styled.span`
   font-size: ${({ theme }) => theme.fontSize.lg};
@@ -244,33 +287,21 @@ const InfoGroup = styled.div`
 `;
 
 export default function ReviewItem({ review, onOpenModal }) {
-  // review가 null일 경우에도 Hook 호출 순서를 유지하기 위해 안전 객체 사용
-  const safeReview = review ?? {};
+  const [count, setCount] = useState(review?.helpCount || 0);
 
-  // 초기값 설정 시 review가 undefined여도 에러 방지
-  const [count, setCount] = useState(safeReview.helpCount ?? 0);
-
-  // images 접근 시 undefined 방어
-  const images = safeReview.images ?? [];
+  if (!review) return null;
+  const images = review.images || [];
   const imageCount = images.length;
 
-  // 모달 열기 핸들러 (review 없을 경우 실행 방지)
-  const handleOpenModal = useCallback(() => {
-    if (!review) return;
-    onOpenModal(review);
-  }, [onOpenModal, review]);
+  const handleOpenModal = (e) => {
+    e?.stopPropagation();
+    onOpenModal?.(review);
+  };
 
-  // 도움돼요 버튼 (이벤트 버블링 방지 + 함수형 업데이트)
-  const handleLike = useCallback((e) => {
+  const handleLike = (e) => {
     e.stopPropagation();
     setCount((prev) => prev + 1);
-  }, []);
-
-  // 단순 연산은 useMemo 대신 직접 계산 (불필요한 최적화 제거)
-  const ratingStars = "★".repeat(review?.rating ?? 5);
-
-  // review 없으면 렌더링하지 않음
-  if (!review) return null;
+  };
 
   return (
     <Card>
@@ -283,13 +314,14 @@ export default function ReviewItem({ review, onOpenModal }) {
         <Header>
           <ProductName>{review.productName}</ProductName>
 
-          <Button size="small" variant="outline" onClick={handleLike}>
-            도움돼요 {count}
-          </Button>
+          <HelpfulButton onClick={handleLike}>
+            <HeartIcon active={true} />
+            <span>{count}</span>
+          </HelpfulButton>
         </Header>
 
         <RatingRow>
-          {ratingStars}
+          {"★".repeat(Number(review.rating) || 5)}
           <UserId>{review.userId}</UserId>
         </RatingRow>
 
@@ -309,9 +341,7 @@ export default function ReviewItem({ review, onOpenModal }) {
                   alt={`${review.productName} 리뷰 이미지 ${idx + 1}`}
                 />
 
-                {idx === 3 && imageCount > 5 && (
-                  <div className="more-overlay">+{imageCount - 5}</div>
-                )}
+                {idx === 3 && imageCount > 5 && <div>+{imageCount - 5}</div>}
 
                 <ZoomLabel>확대</ZoomLabel>
               </SubImgWrapper>

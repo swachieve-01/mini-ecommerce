@@ -33,10 +33,10 @@ export default function NotFoundPage() {
             </NotFoundDescription>
 
             <Button
-              width="288px"
-              height="62px"
+              width="240px"
+              height="48px"
               radius="pill"
-              fontSize="xxl"
+              fontSize="md"
               fontWeight="medium"
               textColor="white"
               onClick={handleGoHome}
@@ -76,7 +76,8 @@ const NotFoundOverlay = styled.div`
   justify-content: center;
   min-height: 100dvh;
   padding: 40px 20px;
-  background-color: rgba(255, 255, 255, 0.4);
+  background-color: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(2px);
   box-sizing: border-box;
 `;
 
@@ -93,7 +94,7 @@ const NotFoundTopGroup = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 43px;
+  gap: 20px;
 `;
 
 /* 하단 그룹 */
@@ -116,17 +117,17 @@ const NotFoundLeafIcon = styled.img`
 const NotFoundErrorCode = styled.h1`
   margin: 0;
   color: ${({ theme }) => theme.colors.primary};
-  font-size: 100px;
-  font-weight: ${({ theme }) => theme.fontWeight.medium};
-  line-height: 1;
+  font-size: 72px;
+  font-weight: ${({ theme }) => theme.fontWeight.semibold};
+  opacity: 0.9;
 `;
 
 /* 제목 */
 const NotFoundTitle = styled.h2`
   margin: 0;
   color: ${({ theme }) => theme.colors.primary};
-  font-size: 26px;
-  font-weight: ${({ theme }) => theme.fontWeight.medium};
+  font-size: 20px;
+  font-weight: ${({ theme }) => theme.fontWeight.semibold};
   line-height: 1;
 `;
 
@@ -134,8 +135,8 @@ const NotFoundTitle = styled.h2`
 const NotFoundDescription = styled.p`
   margin: 0;
   color: ${({ theme }) => theme.colors.primary};
-  font-size: 26px;
+  font-size: 15px;
   font-weight: ${({ theme }) => theme.fontWeight.medium};
-  line-height: 50px;
+  line-height: 1.6;
   text-align: center;
 `;

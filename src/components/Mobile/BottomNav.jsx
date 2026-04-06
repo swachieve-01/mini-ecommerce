@@ -10,10 +10,8 @@ const BottomNavWrapper = styled.nav`
 
   width: 100%;
   height: 60px;
-
   background: #fff;
   border-top: 1px solid #eee;
-
   display: flex;
   justify-content: space-around;
   align-items: center;
@@ -31,7 +29,7 @@ const BottomNavItem = styled(NavLink)`
   color: #777;
   text-decoration: none;
 
-  padding: 10px 30px;
+  padding: 10px 5px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -62,7 +60,7 @@ export default function BottomNav() {
           <rect x="14" y="14" width="7" height="7" rx="1" />
         </svg>
       </BottomNavItem>
-      <BottomNavItem to="/wishlist">
+      <BottomNavItem to="/steamlist">
         <svg
           width="24"
           height="24"

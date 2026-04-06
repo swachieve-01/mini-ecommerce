@@ -6,6 +6,7 @@ import logoImage from "../assets/images/푸터 로고.png";
 import { useAuthStore } from "../stores/useAuthStore";
 import { LoginInput } from "../components/ui/Input";
 import { Button } from "../components/ui/Button";
+import { CustomCheckbox, HiddenCheckbox } from "../pages/SignupPage";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -120,11 +121,12 @@ export default function LoginPage() {
             {/* 아이디 저장 */}
             <LoginOptionRow>
               <RememberIdLabel>
-                <RememberIdCheckbox
+                <HiddenCheckbox
                   type="checkbox"
                   checked={isRememberId}
                   onChange={handleRememberIdChange}
                 />
+                <CustomCheckbox checked={isRememberId} />
                 <RememberIdText>아이디 저장</RememberIdText>
               </RememberIdLabel>
             </LoginOptionRow>
@@ -204,7 +206,7 @@ const LoginLogoImage = styled.img`
 const LoginDescriptionText = styled.p`
   margin: 1px 0 0;
   color: ${({ theme }) => theme.colors.primary};
-  font-size: ${({ theme }) => theme.fontSize.md};
+  font-size: ${({ theme }) => theme.fontSize.sm};
   font-weight: ${({ theme }) => theme.fontWeight.medium};
   line-height: 1.4;
   text-align: center;
@@ -215,9 +217,10 @@ const LoginCard = styled.section`
   width: 100%;
   padding: 56px 34px;
   border-radius: ${({ theme }) => theme.radius.lg || "10px"};
-  background-color: rgba(251, 251, 251, 0.66);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  background-color: #fafaf8;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.08);
   box-sizing: border-box;
+  border: 1px solid #eeeeee;
 
   @media (max-width: 1024px) {
     padding: 48px 28px;
@@ -275,15 +278,6 @@ const RememberIdLabel = styled.label`
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  cursor: pointer;
-`;
-
-/* 체크박스 */
-const RememberIdCheckbox = styled.input`
-  width: 18px;
-  height: 18px;
-  margin: 0;
-  accent-color: ${({ theme }) => theme.colors.primary};
   cursor: pointer;
 `;
 
