@@ -363,9 +363,9 @@ const HeaderIcon = styled(NavLink)`
   justify-content: center;
   gap: 4px;
 
-  cursor: pointer;
   position: relative;
   min-width: 33px;
+  cursor: pointer;
 
   svg {
     width: 33px;
@@ -519,7 +519,7 @@ export default function Header() {
 
             {isAuthenticated ? (
               <>
-                <NavLink
+                <HeaderIcon
                   to="/"
                   onClick={(e) => {
                     e.preventDefault();
@@ -527,8 +527,24 @@ export default function Header() {
                     navigate("/");
                   }}
                 >
-                  로그아웃
-                </NavLink>
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <path
+                      d="M12 2v10"
+                      stroke="currentColor"
+                      strokeWidth="1.2"
+                      strokeLinecap="round"
+                      color="#6C825D"
+                    />
+                    <path
+                      d="M6.2 6.2a8 8 0 1011.6 0"
+                      stroke="currentColor"
+                      strokeWidth="1.2"
+                      strokeLinecap="round"
+                      color="#6C825D"
+                    />
+                  </svg>
+                  <span>로그아웃</span>
+                </HeaderIcon>
               </>
             ) : (
               <>
@@ -608,7 +624,9 @@ export default function Header() {
                 />
               </svg>
               <span>장바구니</span>
-              {cartCount > 0 && <CartBadge>{cartCount}</CartBadge>}
+              {cartCount > 0 && (
+                <CartBadge>{cartCount > 99 ? "99+" : cartCount}</CartBadge>
+              )}
             </HeaderIcon>
           </UserMenu>
         </HeaderTop>
