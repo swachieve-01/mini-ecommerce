@@ -6,6 +6,7 @@ import Footer from "./Footer";
 import BottomNav from "../Mobile/BottomNav";
 import Loading from "../ui/Loading";
 import ScrollTop from "../../stores/ScrollTop";
+import ScrollToTopButton from "../product/ScrollToTopButton";
 
 export default function DefaultLayout() {
   return (
@@ -18,6 +19,7 @@ export default function DefaultLayout() {
       </Main>
       <Footer />
       <BottomNav />
+      <ScrollToTopButton />
     </LayoutContainer>
   );
 }
