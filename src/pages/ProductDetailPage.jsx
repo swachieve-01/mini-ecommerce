@@ -719,7 +719,7 @@ export default function ProductDetailPage() {
       quantity,
       category: product.categoryId || product.category || null,
     });
-
+    // window.dispatchEvent(new Event("cartUpdated"));
     // 로그인 여부에 따라 토스트만 다르게
 
     if (isAuthenticated) {
@@ -880,8 +880,11 @@ export default function ProductDetailPage() {
                     value={quantity}
                     onChange={(e) => {
                       const value = e.target.value;
-                      if (value === "") return;
 
+                      if (value === "") {
+                        setQuantity("");
+                        return;
+                      }
                       const nextValue = Number(value);
 
                       if (nextValue < 1) {
@@ -890,6 +893,11 @@ export default function ProductDetailPage() {
                       }
 
                       setQuantity(nextValue);
+                    }}
+                    onBlur={() => {
+                      if (quantity === "" || Number(quantity) < 1) {
+                        setQuantity(1);
+                      }
                     }}
                   />
 
