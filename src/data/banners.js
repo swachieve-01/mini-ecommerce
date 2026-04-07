@@ -3,7 +3,7 @@ export const heroBannerMeta = {
   1: {
     title: "피부가 편안해지는 순간\n순수 자연 세럼",
     sub: "오늘, 피부가 달라집니다",
-    position: { top: "50%", left: "15%" },
+    position: { top: "50%", left: "20%" },
     align: "center",
     hasButton: true,
     isWhiteButton: false,
@@ -19,7 +19,7 @@ export const heroBannerMeta = {
   3: {
     title: "단 한 방울로\n완벽히 달라지는 피부",
     sub: "다양한 친환경 앰플 지금 바로 확인하세요",
-    position: { top: "50%", right: "10%" },
+    position: { top: "50%", right: "18%" },
     align: "center",
     hasButton: true,
     isWhiteButton: false,
