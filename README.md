@@ -1,16 +1,232 @@
-# React + Vite
+## 🛍️ NatureGlow - Beauty E-commerce
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+---
 
-Currently, two official plugins are available:
+## 📌 프로젝트 소개
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+NatureGlow는 React와 Vite를 기반으로 제작한 뷰티 이커머스 웹 애플리케이션입니다.
 
-## React Compiler
+단순한 기능 구현을 넘어서,
+사용자가 **탐색 → 선택 → 구매까지 자연스럽게 이어지는 흐름**을 중심으로
+전체 구조를 설계하고 구현했습니다.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+이 프로젝트는 기능 구현이 아닌
+**사용자 흐름 중심 설계 경험을 목표로 진행했습니다.**
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 🔗 Demo
+
+👉 배포 주소 입력 예정
+
+---
+
+## 🚀 프로젝트 특징
+
+* 사용자 흐름(탐색 → 선택 → 구매)을 중심으로 한 구조 설계
+* 컴포넌트 단위로 분리하여 유지보수 가능한 구조 구성
+* 카테고리 및 라우팅 구조를 기반으로 확장 가능한 구조 고려
+* 사용자 행동을 줄이기 위한 UI/UX 설계
+
+---
+
+## ✨ 주요 기능
+
+* 🔐 회원가입 / 로그인
+* 🏠 메인 페이지 (탐색 중심 구조)
+* 🗂️ 카테고리 기반 상품 리스트
+* 📄 상품 상세 페이지
+* 🛒 장바구니 페이지
+* ❤️ 찜 리스트 기능
+* ⭐ 리뷰 페이지
+* ⚠️ 404 페이지 처리
+* 📱 반응형 레이아웃
+
+---
+
+## 🛠️ 기술 스택
+
+* **React**
+  컴포넌트 기반 UI 구성을 위해 사용
+
+* **Vite**
+  빠른 개발 환경과 빌드 속도를 위해 사용
+
+* **React Router**
+  페이지 이동 및 라우팅 구조 관리
+
+* **Zustand**
+  로그인, 장바구니 등 전역 상태 관리
+
+* **persist**
+  새로고침 이후에도 로그인 상태 유지
+
+* **Emotion**
+  컴포넌트 단위 스타일링 적용
+
+* **API Server**
+  상품 및 사용자 데이터 처리
+
+---
+
+## 📁 폴더 구조
+
+기능과 역할 기준으로 폴더를 분리하여
+유지보수성과 협업 효율을 고려했습니다.
+
+```
+src/
+ ├── api        // API 호출 및 데이터 처리 로직
+ ├── components // 재사용 가능한 UI 및 기능 컴포넌트
+ ├── pages      // 페이지 단위 컴포넌트
+ ├── router     // 라우팅 및 인증 흐름 관리
+ └── stores     // Zustand 기반 전역 상태 관리
+```
+
+---
+
+## 🤝 협업 방식
+
+Git 브랜치 전략(main / dev / feature)을 기반으로 작업을 진행했습니다.
+
+각 기능 단위로 브랜치를 분리하여 개발하고,
+Pull Request를 통해 코드를 병합했습니다.
+
+협업 과정에서 소통 지연과 일정 불균형으로 인해
+작업 속도 차이가 발생하는 문제가 있었습니다.
+
+이를 해결하기 위해 진행 상황을 지속적으로 공유하고,
+작업이 멈추지 않도록 역할을 조율했습니다.
+
+단순히 작업을 나누는 것이 아니라,
+**전체 흐름이 끊기지 않도록 관리하는 협업을 지향했습니다.**
+
+이 경험을 통해 협업에서는
+단순한 역할 분담보다 **실시간 소통과 기준 공유가 중요하다는 것을 배웠습니다.**
+
+---
+
+## ⚠️ 트러블 슈팅
+
+이번 프로젝트에서는 단순한 문제 해결이 아니라,
+**Root Cause(근본 원인)를 해결하는 방식**으로 접근했습니다.
+
+---
+
+### 1. DOM 구조 충돌 문제
+
+**문제**
+코드 병합 과정에서 콘솔 에러 발생
+
+**원인**
+`<a>` 태그 중첩으로 DOM 구조 충돌
+
+**해결**
+
+* ul > li 구조로 변경
+* 컴포넌트 구조 재정리
+
+**결과**
+콘솔 에러 제거 및 DOM 정상 동작
+
+---
+
+### 2. API 구조 불일치 문제
+
+**문제**
+API 호출 방식 및 응답 구조 불일치
+
+**원인**
+
+* 호출 방식이 통일되지 않음
+* 데이터 구조 불일치
+
+**해결**
+
+* apiClient로 API 호출 통일
+* 기능별 API 모듈 분리
+* 데이터 정규화 및 방어 코드 적용
+
+**결과**
+다양한 API 구조에서도 안정적으로 동작
+
+---
+
+### 3. 로그인 상태 유지 문제
+
+**문제**
+새로고침 시 로그인 상태 유지되지 않음
+
+**원인**
+localStorage와 Zustand 상태 미연결
+
+**해결**
+
+* Zustand 상태 동기화
+* persist 적용
+
+**결과**
+새로고침 이후에도 로그인 상태 유지
+
+---
+
+### 4. 404 페이지 및 레이아웃 문제
+
+**문제**
+404 페이지에서도 Header 노출 및 레이아웃 문제
+
+**원인**
+
+* Header 전역 렌더링
+* #root가 레이아웃 역할 수행
+
+**해결**
+
+* Header를 DefaultLayout 내부로 이동
+* 레이아웃 구조 분리
+* 404 페이지를 Layout 외부로 분리
+
+**결과**
+페이지 구조 명확화 및 정상 렌더링
+
+---
+
+## 💡 배운 점
+
+이번 프로젝트를 통해 단순한 문제 해결이 아닌,
+**구조 설계가 문제 발생 자체를 줄일 수 있다는 것**을 배웠습니다.
+
+또한
+
+* 컴포넌트 구조 설계의 중요성
+* API 데이터 흐름과 정규화
+* 상태 관리와 UI 흐름의 연결
+
+을 직접 경험하며 개발 전반에 대한 이해도를 높일 수 있었습니다.
+
+---
+
+## 📝 회고
+
+이번 프로젝트를 통해 단순 기능 구현을 넘어서
+**사용자 흐름과 구조 설계의 중요성**을 깊이 이해할 수 있었습니다.
+
+특히 협업 과정에서
+단순한 역할 분담이 아닌
+전체 흐름을 함께 이해하고 유지하는 것이 중요하다는 것을 느꼈습니다.
+
+또한 예상치 못한 문제 상황에서도
+빠르게 수정하는 것보다
+원인을 분석하고 구조를 개선하는 과정이 더 중요하다는 것을 경험했습니다.
+
+앞으로는 초기 설계 단계에서 구조를 더 깊이 고민하고,
+보다 적극적인 협업을 통해 완성도 높은 프로젝트를 만들어가고자 합니다.
+
+---
+
+## 🔧 개선 방향
+
+* 카테고리 depth 확장을 통한 탐색 구조 개선
+* 검색어 상태 표시 및 자동완성 기능 추가
+* 리뷰를 상품과 연결하여 흐름 개선
+* 상품 옵션 데이터 구조 확장
