@@ -1,19 +1,31 @@
-import Badge from "../components/ui/Badge";
+import React from "react";
+import HeroBannerSection from "../sections/HeroBannerSection";
+import BestSection from "../sections/BestSection";
+import CategorySection from "../sections/CategorySection";
+import NewSection from "../sections/NewSection";
+import HotdealSection from "../sections/HotdealSection";
+import EventSection from "../sections/EventSection";
+import RecommendSection from "../sections/RecommendSection";
+import ReviewSection from "../sections/ReviewSection";
+import styled from "@emotion/styled";
 
-function HomePage() {
+const HomeBanner = styled.main`
+  margin: 0;
+`;
+
+export default function HomePage() {
   return (
-    <div>
-      <div>Home Page</div>
-      <Badge variant="free">무료배송</Badge>
-      <Badge variant="best">BEST</Badge>
-      <Badge variant="sale">세일</Badge>
-      <Badge variant="new">NEW</Badge>
-      <Badge variant="coupon">쿠폰</Badge>
-      <Badge variant="percent">13%</Badge>
-      <Badge variant="shipping">배송중</Badge>
-      <Badge variant="done">배송완료</Badge>{" "}
-    </div>
+    <>
+      <HomeBanner>
+        <HeroBannerSection />
+      </HomeBanner>
+      <BestSection />
+      <CategorySection />
+      <NewSection />
+      <HotdealSection />
+      <EventSection />
+      <RecommendSection />
+      <ReviewSection />
+    </>
   );
 }
-
-export default HomePage;

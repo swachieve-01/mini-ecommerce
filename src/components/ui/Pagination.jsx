@@ -57,19 +57,20 @@ const Wrapper = styled.nav`
   max-width: 1200px;
   margin: 0 auto;
 
+  margin: 50px 0 80px 0;
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 10px;
 `;
 
-const PageList = styled.div`
+const NumberGroup = styled.div`
   display: flex;
   align-items: center;
   gap: 5px;
 `;
 
-const NavButton = styled.button`
+const MoveButton = styled.button`
   min-width: 42px;
   height: 32px;
   padding: 0 11px;

@@ -8,7 +8,7 @@ import LogoImg from "../../assets/images/푸터 로고.png";
 
 const FooterContainer = styled.footer`
   width: 100%;
-  max-width: 1440px;
+  max-width: 1920px;
   min-height: 562px;
   padding: 60px 0 40px;
   background-color: ${(props) => props.theme.colors.bgSoft};
@@ -17,6 +17,16 @@ const FooterContainer = styled.footer`
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  transition: all 0.3s ease;
+
+  @media (max-width: 1280px) {
+    transform: scale(0.98);
+  }
+
+  @media (max-width: 768px) {
+    min-height: auto;
+    padding: 40px 0;
+  }
 `;
 
 const InnerContainer = styled.div`
@@ -28,6 +38,11 @@ const InnerContainer = styled.div`
   align-items: center;
   justify-content: center;
   padding: 0 20px;
+
+  @media (max-width: 768px) {
+    align-items: center;
+    text-align: center;
+  }
 `;
 
 const LogoWrapper = styled.div`
@@ -35,18 +50,25 @@ const LogoWrapper = styled.div`
   display: flex;
   margin-bottom: 40px;
   justify-content: flex-start;
+
+  @media (max-width: 768px) {
+    justify-content: center;
+  }
 `;
 
 const LogoImage = styled.img`
   width: 225px;
   height: 90px;
   object-fit: contain;
-  /* display: block; */
 
   /* 반응형 돌입 시 */
+  @media (max-width: 1024px) {
+    width: 180px;
+  }
+
   @media (max-width: 768px) {
     height: auto;
-    width: 180px;
+    width: 150px;
   }
 `;
 
@@ -54,10 +76,23 @@ const TopSection = styled.div`
   display: flex;
   justify-content: space-between;
   width: 100%;
-  /* max-width: 1167px; */
   min-height: 284px;
   margin: 0 auto;
   flex-wrap: wrap;
+  gap: 20px;
+
+  @media (max-width: 1024px) {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 40px 20px;
+  }
+
+  @media (max-width: 768px) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 50px;
+  }
 `;
 
 const ButtonGroup = styled.div`
@@ -66,7 +101,17 @@ const ButtonGroup = styled.div`
   margin-top: 15px;
   flex-direction: column;
   align-items: flex-start;
+
+  @media (max-width: 1024px) {
+    flex-direction: row;
+  }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    justify-content: center;
+  }
 `;
+
 // 임시 버튼 스타일
 const TempButton = styled.a`
   width: 176px;
@@ -92,7 +137,6 @@ const Column = styled.div`
   display: flex;
   flex-direction: column;
   flex: 1;
-  /* min-width: 200px; */
 
   &:not(:first-of-type) {
     border-left: 1px solid #eee;
@@ -100,10 +144,15 @@ const Column = styled.div`
   }
 
   /* 반응형  */
-  @media (max-width: 768px) {
+  @media (max-width: 1024px) {
     border-left: none;
     padding-left: 0;
-    margin-bottom: 30px;
+    align-items: flex-start;
+  }
+
+  @media (max-width: 768px) {
+    align-items: center;
+    width: 100%;
   }
 `;
 
@@ -113,9 +162,14 @@ const Title = styled.h3`
   margin-bottom: 25px;
   color: ${(props) => props.theme.colors.primaryDark};
   text-align: left;
+
+  @media (max-width: 768px) {
+    text-align: center;
+    margin-bottom: 15px;
+  }
 `;
 
-const List = styled.a`
+const List = styled.ul`
   list-style: none;
   display: flex;
   flex-direction: column;
@@ -128,7 +182,7 @@ const CustomerList = styled(List)`
   gap: 10px;
 `;
 
-const ListItem = styled.a`
+const ListItem = styled.li`
   list-style: none;
   display: flex;
   gap: 0;
@@ -215,8 +269,14 @@ const CircleButtonList = styled.div`
   justify-content: center;
   align-items: center;
   gap: 30px;
-  margin-top: 40px;
+  margin-top: 60px;
   width: 100%;
+  cursor: pointer;
+
+  @media (max-width: 768px) {
+    gap: 20px;
+    margin-top: 40px;
+  }
 `;
 
 const CircleButton = styled.a`
@@ -286,7 +346,7 @@ export default function Footer() {
               {customerService.emails.map((e) => (
                 <EmailItem key={e.id}>
                   <span>{e.title}</span>
-                  <a href={e.url}>{e.address}</a>
+                  <a href={`mailto:${e.address}`}>{e.address}</a>
                 </EmailItem>
               ))}
             </CustomerList>
