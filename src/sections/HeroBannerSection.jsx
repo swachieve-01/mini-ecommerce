@@ -16,8 +16,6 @@ const TextBox = styled.div`
   text-align: ${({ align }) => align || "center"};
   z-index: 2;
 
-  width: min(500px, 90%);
-
   @media (max-width: 768px) {
     width: 90%;
     left: 50%;
